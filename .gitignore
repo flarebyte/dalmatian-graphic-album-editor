@@ -1,0 +1,9 @@
+elm-stuff
+repl-temp-*
+
+*.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+
+*.pyc

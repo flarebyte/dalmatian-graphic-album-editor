@@ -1,10 +1,11 @@
-module Dalmatian.Album.Rights exposing (Localized)
+module Dalmatian.Album.Rights exposing (Model)
 
-type alias Localized =
+import Dalmatian.Album.Thing as Thing
+
+type alias Model =
     { 
-        language : String
-        , license: Hyperlink.Model
-        , rights: Hyperlink.Model
-        , attribution: Hyperlink.Model
+          license: Thing.Model
+        , rights: Thing.Model
+        , attribution: Thing.Model
     }
 

@@ -1,8 +1,9 @@
 module Dalmatian.Album.PublishedWork exposing (Model)
 
-import Dalmatian.Album.Hyperlink as Hyperlink
+import Dalmatian.Album.Thing as Thing
 import Dalmatian.Album.Rights as Rights
 import Dalmatian.Album.Contribution as Contribution
+import Dalmatian.Album.LocalizedString as LocalizedString
 
 type alias Model =
     { 
@@ -11,7 +12,8 @@ type alias Model =
     , language: String
     , title: List LocalizedString.Localized
     , description: List LocalizedString.Localized
-    , medium: Hyperlink.Model
-    , format: Hyperlink.Model
-    , style: Hyperlink.Model
+    , medium: Thing.Model
+    , format: Thing.Model
+    , style: Thing.Model
+    , contribution: List Contribution
 }

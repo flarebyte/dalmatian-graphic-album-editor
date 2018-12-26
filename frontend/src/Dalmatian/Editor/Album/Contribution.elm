@@ -1,24 +1,14 @@
-module Dalmatian.Album.Contribution exposing (Localized)
+module Dalmatian.Album.Contributor exposing (Contribution)
 
-import Dalmatian.Album.Hyperlink as Hyperlink
-import Dalmatian.Album.Person as Person
-import Dalmatian.Album.Rights as Rights
+-- Creator | Contributor | Publisher | Sponsor | Translator | Artist | Author | Colorist | Inker | Letterer | Penciler | Editor | Sponsor
+ 
+type Contribution =
+    ContributionHeader String String-- ex: main, minor
+    | ContributionLanguage String -- ex: en-gb
+    | ContributionFooter String String -- ex: type, description
+    | Contributor Thing String String -- type, comment
+    
 
-type alias Localized =
-    { 
-        language : String
-        , creator: List Person.Model
-        , contributor: List Person.Model
-        , publisher: List Person.Model
-        , sponsor: List Person.Model
-        , translator: List Person.Model
-        , artist: List Person.Model
-        , author: List Person.Model
-        , colorist: List Person.Model
-        , inker: List Person.Model
-        , letterer: List Person.Model
-        , penciler: List Person.Model
-        , editor: List Person.Model
 
-}
+
 

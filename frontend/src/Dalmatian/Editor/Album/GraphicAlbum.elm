@@ -1,8 +1,9 @@
 module Dalmatian.Album.CreativeWork exposing (Model)
 
-import Dalmatian.Album.Hyperlink as Hyperlink
+import Dalmatian.Album.Thing as Thing
 import Dalmatian.Album.Rights as Rights
 import Dalmatian.Album.Contribution as Contribution
+import Dalmatian.Album.LocalizedString as LocalizedString
 
 type alias Model =
     { 
@@ -12,8 +13,8 @@ type alias Model =
     , modified: String
     , title: List LocalizedString.Localized
     , description: List LocalizedString.Localized
-    , keywords: List LocalizedString.Localized
-    , rights: List Rights.Localized
-    , contribution: List Contribution.Localized
+    , keyword: List LocalizedString.Localized
+    , rights: Rights.Model
+    , contribution: List Contribution
     
 }

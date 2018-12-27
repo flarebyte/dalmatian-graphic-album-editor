@@ -14,10 +14,14 @@ type TileInstruction =
     | BackgroundColorId Id
     | BackgroundColorId Id
     | Margin Fraction -- width
-    | SolidBorder Id -- color
+    | SolidBorderColor Id
 
-type Layout =
-    TileLayout (List TileInstruction)
+type alias Layout = {
+    layout: List TileInstruction
+    , counterSection: Int
+    , counterPage: Int
+    , counterPanel: Int
+}
 
 
 

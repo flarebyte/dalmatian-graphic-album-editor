@@ -8,7 +8,3 @@ type Contribution =
     | ContributionFooter String String -- ex: type, description
     | Contributor Thing String String -- type, comment
     
-
-
-
-

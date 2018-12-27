@@ -1,6 +1,5 @@
 module Dalmatian.Album.PublishedWork exposing (Model)
 
-import Dalmatian.Album.Thing as Thing
 import Dalmatian.Album.Rights as Rights
 import Dalmatian.Album.Contribution as Contribution
 import Dalmatian.Album.LocalizedString as LocalizedString

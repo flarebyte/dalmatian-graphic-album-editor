@@ -1,27 +1,17 @@
 module Dalmatian.Album.Layout exposing (Composition, Stencil)
 
-import Dalmatian.Album.Thing as Thing
-import Dalmatian.Album.Curve exposing (Draw)
-
-type alias Fraction = {
-    numerator: Int
-    , denominator: Int
-}
-
-type alias Position = {
-    x: Fraction,
-    y: Fraction,
-    width: Fraction,
-    height: Fraction
-}
+import Dalmatian.Album.Unit exposing (Fraction, Position2D, Dimension2D)
+import Dalmatian.Album.Identifier exposing (Id)
 
 type TileInstruction =
-    Section Int --id
-    | Page Int -- id
-    | Panel Int Position -- id
-    | StencilId String
-    | SpeechId String
-    | ColorId String -- unique id
+    Section Id
+    | Page Id
+    | RectPanel Id Position2D Dimension2D
+    | SquarePanel Id Fraction Fraction -- position dimension
+    | StencilId Id
+    | SpeechId Id
+    | ColorId Id
+    | BackgroundColorId Id
 
 type Layout =
     TileLayout (List TileInstruction)

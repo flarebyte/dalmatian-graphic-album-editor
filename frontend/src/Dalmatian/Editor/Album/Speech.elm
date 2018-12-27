@@ -1,12 +1,13 @@
 module Dalmatian.Album.Speech exposing (Interlocutor, Transcript, Model)
 
 import Dalmatian.Album.Thing as Thing
+import Dalmatian.Album.Identifier exposing (Id)
 
 type Interlocutor =
-    SpeakingCharacter String -- ex: id
-    | ThinkingCharacter String -- ex: id
-    | ListeningCharacter String -- ex: id
-    | Narrator String -- ex: id
+    SpeakingCharacter Id
+    | ThinkingCharacter Id
+    | ListeningCharacter Id
+    | Narrator Id
 
 type Transcript =
     TranscriptLanguage String

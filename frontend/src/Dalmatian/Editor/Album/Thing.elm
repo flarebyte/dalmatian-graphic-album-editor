@@ -1,10 +1,11 @@
 module Dalmatian.Album.Thing exposing (Model)
 
 import Dalmatian.Album.LocalizedString as LocalizedString
+import Dalmatian.Album.Identifier exposing (Id)
 
 type alias Model =
     { 
-        identifier: String  
+        identifier: Id  
         , name: List LocalizedString.Model
         , description: List LocalizedString.Model
         , homepage: List String

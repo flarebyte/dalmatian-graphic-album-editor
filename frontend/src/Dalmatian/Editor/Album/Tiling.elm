@@ -12,6 +12,9 @@ type TileInstruction =
     | SpeechId Id
     | ColorId Id
     | BackgroundColorId Id
+    | BackgroundColorId Id
+    | Margin Fraction -- width
+    | SolidBorder Id -- color
 
 type Layout =
     TileLayout (List TileInstruction)

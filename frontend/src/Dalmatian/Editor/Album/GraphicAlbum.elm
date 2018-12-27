@@ -5,6 +5,7 @@ import Dalmatian.Album.Contribution as Contribution
 import Dalmatian.Album.LocalizedString as LocalizedString
 import Dalmatian.Album.Compositing exposing (Stencil)
 import module Dalmatian.Album.Speech exposing (Model)
+import Dalmatian.Album.Coloring exposing (Model)
 
 
 type alias Model =
@@ -20,5 +21,6 @@ type alias Model =
     , contribution: List Contribution
     , stencil: List Stencil.Model
     , speech: List Speech.Model
+    , color: List Coloring.Model
     
 }

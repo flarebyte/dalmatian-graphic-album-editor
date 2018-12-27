@@ -13,9 +13,7 @@ type alias Model =
     , language: String
     , title: List LocalizedString.Localized
     , description: List LocalizedString.Localized
-    , medium: Thing.Model
-    , format: Thing.Model
-    , style: Thing.Model
-    , contribution: List Contribution
+    , medium: String
+    , format: String
     , layout: Layout
 }

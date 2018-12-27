@@ -13,7 +13,6 @@ type Composition =
     | Dim Dimension2DInt
     | Blending Int -- Source-destination  0b1111
 
-
 type alias Stencil = {
     identifier: Id  
     , compositing: List Composition

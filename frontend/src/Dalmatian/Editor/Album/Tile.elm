@@ -1,4 +1,4 @@
-module Dalmatian.Album.Layout exposing (Composition, Stencil)
+module Dalmatian.Album.Tiling exposing (Layout, TileInstruction)
 
 import Dalmatian.Album.Unit exposing (Fraction, Position2D, Dimension2D)
 import Dalmatian.Album.Identifier exposing (Id)

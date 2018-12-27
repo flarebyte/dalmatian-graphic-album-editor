@@ -1,20 +1,20 @@
 module Dalmatian.Album.Curve exposing (Draw, ArcFlag)
 
-import Dalmatian.Album.Thing as Thing
+import Dalmatian.Album.Unit exposing (Position2DInt, Dimension2DInt)
 
 type ArcFlag = LargeArcA | SmallArcA | LargeArcB | SmallArcB
 
 type Draw =
-    Point Int Int Int -- x, y, sid
-    | MoveTo Int Int -- x, y
-    | LineTo Int Int -- x, y
+    Point Position2DInt Int -- x, y, sid
+    | MoveTo Position2DInt -- x, y
+    | LineTo Position2DInt -- x, y
     | Horizontal Int -- x
     | Vertical Int -- y
-    | CubicCurve Int Int Int Int Int Int
-    | SmoothCubicCurve Int Int Int Int
-    | QuadraticCurve Int Int Int Int
-    | SmoothQuadraticCurve Int Int
-    | EllipticalArc Int Int Float ArcFlag Int Int
+    | CubicCurve Position2DInt Position2DInt Position2DInt
+    | SmoothCubicCurve Position2DInt Position2DInt
+    | QuadraticCurve Position2DInt Position2DInt
+    | SmoothQuadraticCurve Position2DInt
+    | EllipticalArc Position2DInt Float ArcFlag Position2DInt
 
  
 

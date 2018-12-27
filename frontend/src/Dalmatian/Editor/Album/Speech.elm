@@ -22,7 +22,8 @@ type Transcript =
 
 type alias Model =
     {
-        interlocutor: List Interlocutor
+        identifier: Id  
+        , interlocutor: List Interlocutor
         , transcript: List Transcript
     }
 

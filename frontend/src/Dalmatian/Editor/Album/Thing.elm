@@ -10,6 +10,6 @@ type alias Model =
         , description: List LocalizedString.Model
         , homepage: List String
         , sameAs: List String --ex: wikipedia page
-        , stencilId: Int
+        , stencilId: Maybe Int
         , keyword: List LocalizedString.Model -- RealPerson| Pseudonym | Organization | Machine
     }

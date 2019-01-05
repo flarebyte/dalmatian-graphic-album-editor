@@ -13,9 +13,14 @@ type Composition =
     | Dim Dimension2DInt
     | Blending Int -- Source-destination  0b1111
 
+type BinaryData =
+    IntCsv String -- 12 345
+    | ProxyImage String -- cache:1235
+
 type alias Illustration = {
-    identifier: Id  
-    , data: List Int
+    identifier: Id
+    , dimension: Dimension2DInt  
+    , data: BinaryData
 }
 
 type alias Stencil = {

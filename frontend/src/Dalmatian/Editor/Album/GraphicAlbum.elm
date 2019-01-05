@@ -24,6 +24,7 @@ type alias Model =
     , illustration: List Illustration
     , stencil: List Stencil
     , font: List Thing.Model
+    , character: List Thing.Model
     , speech: List Speech.Model
     , color: List Coloring.Model
     , publishedWork: List PublishedWork

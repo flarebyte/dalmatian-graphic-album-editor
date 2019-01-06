@@ -1,4 +1,4 @@
-module Dalmatian.Album.Schema exposing (Model)
+module Dalmatian.Album.Schema exposing (dalmatianUI)
 
 type alias ListBoxItem = {
     value: String
@@ -46,91 +46,88 @@ type FieldType = ShortLocalizedType
 
 
 type SchemaUI =
-   SchemaField String FieldType  -- name
-   | SchemaListField String FieldType  -- name
+   SchemaField String String FieldType  -- name description
+   | SchemaListField String String FieldType  -- name description
    | ScreenUI String
    | PanelUI String
    | ExclusivePanelUI String
    | ListManagerUI String
+   | SaveAsTemplateUI
 
 dalmatianUI = [ 
     ScreenUI "Graphic Album" --
-    , SchemaField "version" VersionType
-    , SchemaField "created" DateTimeType
-    , SchemaField "modified" DateTimeType
-    , SchemaField "title" MediumLocalizedType
-    , SchemaField "description" TextAreaLocalizedType
-    , SchemaListField "language" LanguageType
-    , SchemaListField "keyword" ShortLocalizedType
+    , SchemaField "version" "Version of the album" VersionType
+    , SchemaField "created" "Date the album was first created" DateTimeType
+    , SchemaField "modified" "Date the album was officially modified" DateTimeType
+    , SchemaField "title" "Official title of the album" MediumLocalizedType
+    , SchemaField "description" "Official description of the album" TextAreaLocalizedType
+    , SchemaListField "language" "List of supported languages" LanguageType
+    , SchemaListField "keyword" "Keywords that describe the nature of the content" ShortLocalizedType
     , ScreenUI "Rights and License" --
     , PanelUI "License"
-    , SchemaField "name" MediumLocalizedType
-    , SchemaField "description" TextAreaLocalizedType
-    , SchemaListField "homepage" UrlType
-    , SchemaListField "sameAs" UrlType
+    , SaveAsTemplateUI
+    , SchemaField "name" "Common name for the license" MediumLocalizedType
+    , SchemaField "description" "Details of the license" TextAreaLocalizedType
+    , SchemaListField "homepage" "Webpages linking to the license" UrlType
     , PanelUI "Rights"
-    , SchemaField "name" MediumLocalizedType
-    , SchemaField "description" TextAreaLocalizedType
-    , SchemaListField "homepage" UrlType
-    , SchemaListField "sameAs" UrlType
+    , SaveAsTemplateUI
+    , SchemaField "name" "Copyright name" MediumLocalizedType
+    , SchemaField "description" "Copyrights detailed description" TextAreaLocalizedType
+    , SchemaListField "homepage" "Webpages linking to the copyrights" UrlType
     , PanelUI "Attribution"
-    , SchemaField "name" MediumLocalizedType
-    , SchemaField "description" TextAreaLocalizedType
-    , SchemaListField "homepage" UrlType
-    , SchemaListField "sameAs" UrlType    
+    , SchemaField "name" "Short attribution" MediumLocalizedType
+    , SchemaField "description" "Detailed attribution" TextAreaLocalizedType
+    , SchemaListField "homepage" "Webpages linking to the attributions" UrlType
     , ScreenUI "Contribution" --
-    , SchemaField "contribution" ContributionType
+    , SchemaField "contribution" "Credits" ContributionType
     , ScreenUI "Illustration"
-    , SchemaField "dimension" Dimension2DIntType
-    , SchemaField "data" BinaryDataType
+    , SchemaField "dimension" "Dimension of the image" Dimension2DIntType
+    , SchemaField "data" "Reference image" BinaryDataType
     , ScreenUI "Stencil" --
     , ExclusivePanelUI "List of stencils"
     , ListManagerUI "stencil"
     , ExclusivePanelUI "Edit stencil"
-    , SchemaField "compositing" CompositionType
+    , SchemaField "compositing" "Compositing of several illustrations" CompositionType
     , ScreenUI "Font" --
     , ExclusivePanelUI "List of fonts"
     , ListManagerUI "font"
     , ExclusivePanelUI "Edit font"
-    , SchemaField "name" MediumLocalizedType
-    , SchemaField "description" TextAreaLocalizedType
-    , SchemaListField "homepage" UrlType
-    , SchemaListField "sameAs" UrlType
+    , SchemaField "name" "Common name for the font" MediumLocalizedType
+    , SchemaField "description" "Description of the font" TextAreaLocalizedType
+    , SchemaListField "homepage" "Links to font" UrlType
     , ScreenUI "Color" --
     , ExclusivePanelUI "List of colors"
     , ListManagerUI "color"
     , ExclusivePanelUI "Edit color"
-    , SchemaField "name" MediumLocalizedType
-    , SchemaField "description" TextAreaLocalizedType
-    , SchemaListField "sameAs" UrlType
-    , SchemaField "printColor" ChromaType
-    , SchemaField "screenColor" ChromaType
+    , SchemaField "name" "Common name for the color" MediumLocalizedType
+    , SchemaField "description" "Description of the color" TextAreaLocalizedType
+    , SchemaListField "sameAs" "Links to that font on encyclopedy sites" UrlType
+    , SchemaField "printColor" "The best color used for print" ChromaType
+    , SchemaField "screenColor" "The best color used for screen" ChromaType
     , ScreenUI "Character" --
     , ExclusivePanelUI "List of characters"
     , ListManagerUI "character"
     , ExclusivePanelUI "Edit character"
-    , SchemaField "name" MediumLocalizedType
-    , SchemaField "description" TextAreaLocalizedType
-    , SchemaListField "homepage" UrlType
-    , SchemaListField "sameAs" UrlType
+    , SchemaField "name" "Name of the character" MediumLocalizedType
+    , SchemaField "description" "Description of the character" TextAreaLocalizedType
+    , SchemaListField "homepage" "Links to webpages about this character" UrlType
     , ScreenUI "Speech" --
     , ExclusivePanelUI "List of speech"
     , ListManagerUI "speech"
     , ExclusivePanelUI "Edit speech"
-    , SchemaField "interlocutor" InterlocutorType
-    , SchemaField "transcript" TranscriptType
+    , SchemaField "interlocutor" "The different interlocutors in the speech bubble" InterlocutorType
+    , SchemaField "transcript" "The transcript of the speech bubble with formatting" TranscriptType
     , ScreenUI "Published Work" --
     , ExclusivePanelUI "List of published works"
     , ListManagerUI "publishedWork"
     , ExclusivePanelUI "Edit published work"
-    , SchemaField "interlocutor" InterlocutorType
-    , SchemaField "version" VersionType
-    , SchemaField "title" MediumLocalizedType
-    , SchemaField "description" TextAreaLocalizedType
-    , SchemaListField "language" LanguageType
-    , SchemaField "medium" (ListBoxType mediumList)
-    , SchemaField "format" (ListBoxType formatList)
-    , SchemaField "layout" LayoutType
+    , SchemaField "version" "Version of the published work" VersionType
+    , SchemaField "title" "Title if different than album" MediumLocalizedType
+    , SchemaField "description" "Description if different than album" TextAreaLocalizedType
+    , SchemaListField "language" "The language of the published work" LanguageType
+    , SchemaField "medium" "Material or physical carrier" (ListBoxType mediumList)
+    , SchemaField "format" "File format, physical medium, or dimensions" (ListBoxType formatList)
+    , SchemaField "layout" "Layout of the album" LayoutType
     ]
 
 

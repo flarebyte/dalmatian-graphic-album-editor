@@ -1,4 +1,4 @@
-module Dalmatian.Album.Schema exposing (dalmatianUI)
+module Dalmatian.Album.Schema exposing (appUI, Zone)
 
 type alias ListBoxItem = {
     value: String
@@ -44,18 +44,30 @@ type FieldType = ShortLocalizedType
     | InterlocutorType
     | TranscriptType
 
+type Zone =
+    GraphicAlbumZone
+    | RightsZone
+    | ContributionZone
+    | ColorZone
+    | FontZone
+    | IllustrationZone
+    | StencilZone
+    | SpeechZone
+    | PublishedWorkZone
+    | LanguageZone
+    | CharacterZone
 
 type SchemaUI =
    SchemaField String String FieldType  -- name description
    | SchemaListField String String FieldType  -- name description
-   | ScreenUI String
+   | ScreenUI Zone String
    | PanelUI String
    | ExclusivePanelUI String
    | ListManagerUI String
    | SaveAsTemplateUI
 
-dalmatianUI = [ 
-    ScreenUI "Graphic Album" --
+appUI = [ 
+    ScreenUI GraphicAlbumZone "Graphic Album" --
     , SchemaField "version" "Version of the album" VersionType
     , SchemaField "created" "Date the album was first created" DateTimeType
     , SchemaField "modified" "Date the album was officially modified" DateTimeType
@@ -63,7 +75,7 @@ dalmatianUI = [
     , SchemaField "description" "Official description of the album" TextAreaLocalizedType
     , SchemaListField "language" "List of supported languages" LanguageType
     , SchemaListField "keyword" "Keywords that describe the nature of the content" ShortLocalizedType
-    , ScreenUI "Rights and License" --
+    , ScreenUI RightsZone "Rights and License" --
     , PanelUI "License"
     , SaveAsTemplateUI
     , SchemaField "name" "Common name for the license" MediumLocalizedType
@@ -78,24 +90,24 @@ dalmatianUI = [
     , SchemaField "name" "Short attribution" MediumLocalizedType
     , SchemaField "description" "Detailed attribution" TextAreaLocalizedType
     , SchemaListField "homepage" "Webpages linking to the attributions" UrlType
-    , ScreenUI "Contribution" --
+    , ScreenUI ContributionZone "Contribution" --
     , SchemaField "contribution" "Credits" ContributionType
     , ScreenUI "Illustration"
     , SchemaField "dimension" "Dimension of the image" Dimension2DIntType
     , SchemaField "data" "Reference image" BinaryDataType
-    , ScreenUI "Stencil" --
+    , ScreenUI StencilZone "Stencil" --
     , ExclusivePanelUI "List of stencils"
     , ListManagerUI "stencil"
     , ExclusivePanelUI "Edit stencil"
     , SchemaField "compositing" "Compositing of several illustrations" CompositionType
-    , ScreenUI "Font" --
+    , ScreenUI FontZone "Font" --
     , ExclusivePanelUI "List of fonts"
     , ListManagerUI "font"
     , ExclusivePanelUI "Edit font"
     , SchemaField "name" "Common name for the font" MediumLocalizedType
     , SchemaField "description" "Description of the font" TextAreaLocalizedType
     , SchemaListField "homepage" "Links to font" UrlType
-    , ScreenUI "Color" --
+    , ScreenUI ColorZone "Color" --
     , ExclusivePanelUI "List of colors"
     , ListManagerUI "color"
     , ExclusivePanelUI "Edit color"
@@ -104,20 +116,20 @@ dalmatianUI = [
     , SchemaListField "sameAs" "Links to that font on encyclopedy sites" UrlType
     , SchemaField "printColor" "The best color used for print" ChromaType
     , SchemaField "screenColor" "The best color used for screen" ChromaType
-    , ScreenUI "Character" --
+    , ScreenUI CharacterZone "Character" --
     , ExclusivePanelUI "List of characters"
     , ListManagerUI "character"
     , ExclusivePanelUI "Edit character"
     , SchemaField "name" "Name of the character" MediumLocalizedType
     , SchemaField "description" "Description of the character" TextAreaLocalizedType
     , SchemaListField "homepage" "Links to webpages about this character" UrlType
-    , ScreenUI "Speech" --
+    , ScreenUI SpeechZone "Speech" --
     , ExclusivePanelUI "List of speech"
     , ListManagerUI "speech"
     , ExclusivePanelUI "Edit speech"
     , SchemaField "interlocutor" "The different interlocutors in the speech bubble" InterlocutorType
     , SchemaField "transcript" "The transcript of the speech bubble with formatting" TranscriptType
-    , ScreenUI "Published Work" --
+    , ScreenUI PublishedWorkZone "Published Work" --
     , ExclusivePanelUI "List of published works"
     , ListManagerUI "publishedWork"
     , ExclusivePanelUI "Edit published work"

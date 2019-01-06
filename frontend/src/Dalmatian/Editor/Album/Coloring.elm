@@ -1,4 +1,4 @@
-module Dalmatian.Album.Coloring exposing (Model)
+module Dalmatian.Album.Coloring exposing (Model, Chroma)
 
 import Dalmatian.Album.LocalizedString as LocalizedString
 import Dalmatian.Album.Identifier exposing (Id)

@@ -1,4 +1,4 @@
-module Dalmatian.Album.Compositing exposing (Composition, Illustration, Stencil)
+module Dalmatian.Album.Compositing exposing (Composition, Illustration, Stencil, BinaryData)
 
 import Dalmatian.Album.Curve exposing (Draw)
 import Dalmatian.Album.Unit exposing (Position2DInt, Dimension2DInt)

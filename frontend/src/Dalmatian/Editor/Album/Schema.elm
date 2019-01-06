@@ -1,4 +1,4 @@
-module Dalmatian.Album.Schema exposing (appUI, Zone, FieldType, PredicateKey)
+module Dalmatian.Album.Schema exposing (appUI, ScreenZone, FieldType, PredicateKey)
 
 type alias ListBoxItem = {
     value: String
@@ -43,18 +43,18 @@ type FieldType = ShortLocalizedType
     | InterlocutorType
     | TranscriptType
 
-type Zone =
-    GraphicAlbumZone
-    | RightsZone
-    | ContributionZone
-    | ColorZone
-    | FontZone
-    | IllustrationZone
-    | StencilZone
-    | SpeechZone
-    | PublishedWorkZone
-    | LanguageZone
-    | CharacterZone
+type ScreenZone =
+    GraphicAlbumScreen
+    | RightsScreen
+    | ContributionScreen
+    | ColorScreen
+    | FontScreen
+    | IllustrationScreen
+    | StencilScreen
+    | SpeechScreen
+    | PublishedWorkScreen
+    | LanguageScreen
+    | CharacterScreen
 
 type PredicateKey =
     IdKey
@@ -82,14 +82,14 @@ type PredicateKey =
 type SchemaUI =
    SchemaField PredicateKey String FieldType  -- name description
    | SchemaListField PredicateKey String FieldType  -- name description
-   | ScreenUI Zone String
+   | ScreenUI ScreenZone String
    | PanelUI String
    | ExclusivePanelUI String
    | ListManagerUI
    | SaveAsTemplateUI
 
 appUI = [ 
-    ScreenUI GraphicAlbumZone "Graphic Album" --
+    ScreenUI GraphicAlbumScreen "Graphic Album" --
     , SchemaField VersionKey "Version of the album" VersionType
     , SchemaField CreatedKey "Date the album was first created" DateTimeType
     , SchemaField ModifiedKey "Date the album was officially modified" DateTimeType
@@ -97,7 +97,7 @@ appUI = [
     , SchemaField DescriptionKey "Official description of the album" TextAreaLocalizedType
     , SchemaListField LanguageKey "List of supported languages" LanguageType
     , SchemaListField KeywordKey "Keywords that describe the nature of the content" ShortLocalizedType
-    , ScreenUI RightsZone "Rights and License" --
+    , ScreenUI RightsScreen "Rights and License" --
     , PanelUI "License"
     , SaveAsTemplateUI
     , SchemaField NameKey "Common name for the license" MediumLocalizedType
@@ -112,24 +112,24 @@ appUI = [
     , SchemaField NameKey "Short attribution" MediumLocalizedType
     , SchemaField DescriptionKey "Detailed attribution" TextAreaLocalizedType
     , SchemaListField HomepageKey"Webpages linking to the attributions" UrlType
-    , ScreenUI ContributionZone "Contribution" --
+    , ScreenUI ContributionScreen "Contribution" --
     , SchemaField ContributionKey "Credits" ContributionType
     , ScreenUI "Illustration"
     , SchemaField DimensionKey "Dimension of the image" Dimension2DIntType
     , SchemaField DataKey "Reference image" BinaryDataType
-    , ScreenUI StencilZone "Stencil" --
+    , ScreenUI StencilScreen "Stencil" --
     , ExclusivePanelUI "List of stencils"
     , ListManagerUI
     , ExclusivePanelUI "Edit stencil"
     , SchemaField "compositing" "Compositing of several illustrations" CompositionType
-    , ScreenUI FontZone "Font" --
+    , ScreenUI FontScreen "Font" --
     , ExclusivePanelUI "List of fonts"
     , ListManagerUI
     , ExclusivePanelUI "Edit font"
     , SchemaField NameKey "Common name for the font" MediumLocalizedType
     , SchemaField DescriptionKey "Description of the font" TextAreaLocalizedType
     , SchemaListField HomepageKey "Links to font" UrlType
-    , ScreenUI ColorZone "Color" --
+    , ScreenUI ColorScreen "Color" --
     , ExclusivePanelUI "List of colors"
     , ListManagerUI
     , ExclusivePanelUI "Edit color"
@@ -138,20 +138,20 @@ appUI = [
     , SchemaListField SameAsKey "Links to that font on encyclopedy sites" UrlType
     , SchemaField PrintColorKey "The best color used for print" ChromaType
     , SchemaField ScreenColorKey "The best color used for screen" ChromaType
-    , ScreenUI CharacterZone "Character" --
+    , ScreenUI CharacterScreen "Character" --
     , ExclusivePanelUI "List of characters"
     , ListManagerUI
     , ExclusivePanelUI "Edit character"
     , SchemaField NameKey "Name of the character" MediumLocalizedType
     , SchemaField DescriptionKey "Description of the character" TextAreaLocalizedType
     , SchemaListField HomepageKey "Links to webpages about this character" UrlType
-    , ScreenUI SpeechZone "Speech" --
+    , ScreenUI SpeechScreen "Speech" --
     , ExclusivePanelUI "List of speech"
     , ListManagerUI
     , ExclusivePanelUI "Edit speech"
     , SchemaField InterlocutorKey "The different interlocutors in the speech bubble" InterlocutorType
     , SchemaField TranscriptKey "The transcript of the speech bubble with formatting" TranscriptType
-    , ScreenUI PublishedWorkZone "Published Work" --
+    , ScreenUI PublishedWorkScreen "Published Work" --
     , ExclusivePanelUI "List of published works"
     , ListManagerUI
     , ExclusivePanelUI "Edit published work"

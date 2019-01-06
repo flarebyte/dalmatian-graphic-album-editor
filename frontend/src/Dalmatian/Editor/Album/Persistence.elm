@@ -1,6 +1,6 @@
 module Dalmatian.Album.Persistence
 
-import Dalmatian.Album.Schema exposing(appUI, Zone, FieldType)
+import Dalmatian.Album.Schema exposing(appUI, FieldType)
 import Dalmatian.Album.Identifier exposing (Id)
 import Dalmatian.Album.Compositing exposing (Composition, Stencil, Illustration, BinaryData)
 import module Dalmatian.Album.Speech exposing (Model)

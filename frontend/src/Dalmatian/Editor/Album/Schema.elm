@@ -25,11 +25,11 @@ formatList = [
     , ListBoxItem "dlm:format/screen/portrait" "Screen Portrait"
     ]
 
-type FieldType = ShortLocalizedType 
+type FieldType = ShortLocalizedListType 
     | MediumLocalizedType
     | TextAreaLocalizedType 
     | IdType
-    | UrlType 
+    | UrlListType 
     | DateTimeType 
     | VersionType
     | LanguageType
@@ -81,7 +81,6 @@ type PredicateKey =
 
 type SchemaUI =
    SchemaField PredicateKey String FieldType  -- name description
-   | SchemaListField PredicateKey String FieldType  -- name description
    | ScreenUI ScreenZone String
    | PanelUI String
    | ExclusivePanelUI String
@@ -95,23 +94,22 @@ appUI = [
     , SchemaField ModifiedKey "Date the album was officially modified" DateTimeType
     , SchemaField TitleKey "Official title of the album" MediumLocalizedType
     , SchemaField DescriptionKey "Official description of the album" TextAreaLocalizedType
-    , SchemaListField LanguageKey "List of supported languages" LanguageType
-    , SchemaListField KeywordKey "Keywords that describe the nature of the content" ShortLocalizedType
+    , SchemaField KeywordKey "Keywords that describe the nature of the content" ShortLocalizedListType
     , ScreenUI RightsScreen "Rights and License" --
     , PanelUI "License"
     , SaveAsTemplateUI
     , SchemaField NameKey "Common name for the license" MediumLocalizedType
     , SchemaField DescriptionKey "Details of the license" TextAreaLocalizedType
-    , SchemaListField HomepageKey "Webpages linking to the license" UrlType
+    , SchemaField HomepageKey "Webpages linking to the license" UrlListType
     , PanelUI "Rights"
     , SaveAsTemplateUI
     , SchemaField NameKey "Copyright name" MediumLocalizedType
     , SchemaField DescriptionKey "Copyrights detailed description" TextAreaLocalizedType
-    , SchemaListField HomepageKey "Webpages linking to the copyrights" UrlType
+    , SchemaField HomepageKey "Webpages linking to the copyrights" UrlListType
     , PanelUI "Attribution"
     , SchemaField NameKey "Short attribution" MediumLocalizedType
     , SchemaField DescriptionKey "Detailed attribution" TextAreaLocalizedType
-    , SchemaListField HomepageKey"Webpages linking to the attributions" UrlType
+    , SchemaField HomepageKey"Webpages linking to the attributions" UrlListType
     , ScreenUI ContributionScreen "Contribution" --
     , SchemaField ContributionKey "Credits" ContributionType
     , ScreenUI "Illustration"
@@ -128,14 +126,14 @@ appUI = [
     , ExclusivePanelUI "Edit font"
     , SchemaField NameKey "Common name for the font" MediumLocalizedType
     , SchemaField DescriptionKey "Description of the font" TextAreaLocalizedType
-    , SchemaListField HomepageKey "Links to font" UrlType
+    , SchemaField HomepageKey "Links to font" UrlListType
     , ScreenUI ColorScreen "Color" --
     , ExclusivePanelUI "List of colors"
     , ListManagerUI
     , ExclusivePanelUI "Edit color"
     , SchemaField NameKey "Common name for the color" MediumLocalizedType
     , SchemaField DescriptionKey "Description of the color" TextAreaLocalizedType
-    , SchemaListField SameAsKey "Links to that font on encyclopedy sites" UrlType
+    , SchemaField SameAsKey "Links to that font on encyclopedy sites" UrlListType
     , SchemaField PrintColorKey "The best color used for print" ChromaType
     , SchemaField ScreenColorKey "The best color used for screen" ChromaType
     , ScreenUI CharacterScreen "Character" --
@@ -144,7 +142,7 @@ appUI = [
     , ExclusivePanelUI "Edit character"
     , SchemaField NameKey "Name of the character" MediumLocalizedType
     , SchemaField DescriptionKey "Description of the character" TextAreaLocalizedType
-    , SchemaListField HomepageKey "Links to webpages about this character" UrlType
+    , SchemaField HomepageKey "Links to webpages about this character" UrlListType
     , ScreenUI SpeechScreen "Speech" --
     , ExclusivePanelUI "List of speech"
     , ListManagerUI
@@ -158,7 +156,7 @@ appUI = [
     , SchemaField VersionKey "Version of the published work" VersionType
     , SchemaField TitleKey "Title if different than album" MediumLocalizedType
     , SchemaField  DescriptionKey "Description if different than album" TextAreaLocalizedType
-    , SchemaListField LanguageKey "The language of the published work" LanguageType
+    , SchemaField LanguageKey "The language of the published work" LanguageType
     , SchemaField MediumKey "Material or physical carrier" (ListBoxType mediumList)
     , SchemaField FormatKey "File format, physical medium, or dimensions" (ListBoxType formatList)
     , SchemaField LayoutKey "Layout of the album" LayoutType

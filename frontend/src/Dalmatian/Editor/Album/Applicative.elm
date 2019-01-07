@@ -1,4 +1,4 @@
-module Dalmatian.Album.App exposing (Model)
+module Dalmatian.Album.Applicative exposing (Model)
 
 import Dalmatian.Album.Persistence exposing(StoreValue)
 

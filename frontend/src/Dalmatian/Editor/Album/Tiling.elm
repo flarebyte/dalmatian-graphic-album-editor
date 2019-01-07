@@ -1,4 +1,4 @@
-module Dalmatian.Album.Tile exposing (Layout, TileInstruction)
+module Dalmatian.Album.Tile exposing (TileInstruction)
 
 import Dalmatian.Album.Unit exposing (Fraction, Position2D, Dimension2D)
 import Dalmatian.Album.Identifier exposing (Id)
@@ -16,12 +16,6 @@ type TileInstruction =
     | Margin Fraction -- width
     | SolidBorderColor Id
 
-type alias Layout = {
-    layout: List TileInstruction
-    , counterSection: Int
-    , counterPage: Int
-    , counterPanel: Int
-}
 
 
 

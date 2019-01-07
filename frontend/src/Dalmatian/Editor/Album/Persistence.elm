@@ -1,6 +1,6 @@
-module Dalmatian.Album.Persistence
+module Dalmatian.Album.Persistence exposing(StoreValue)
 
-import Dalmatian.Album.Schema exposing(appUI, FieldType, PredicateKey)
+import Dalmatian.Album.Schema exposing(appUI, FieldType, PredicateKey, ScreenZone, FieldKey)
 import Dalmatian.Album.Identifier exposing (Id)
 import Dalmatian.Album.Compositing exposing (Composition, Stencil, Illustration, BinaryData)
 import module Dalmatian.Album.Speech exposing (Model)
@@ -31,8 +31,11 @@ type FieldValue = ShortLocalizedListValue (List LocalizedString.Model)
     | TranscriptValue (List Transcript)
 
  type alias StoreValue = {
-     path: String
-     , key: PredicateKey
-     , fieldType: FieldType
+     , key: FieldKey
      , value: FieldValue
- }   
+ }
+
+findByKey: FieldKey -> List StoreValue -> Maybe FieldValue
+findByKey key list =
+    Nothing
+

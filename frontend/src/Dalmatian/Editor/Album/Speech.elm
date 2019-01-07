@@ -1,6 +1,5 @@
-module Dalmatian.Album.Speech exposing (Interlocutor, Transcript, Model)
+module Dalmatian.Album.Speech exposing (Interlocutor, Transcript)
 
-import Dalmatian.Album.Thing as Thing
 import Dalmatian.Album.Identifier exposing (Id)
 
 type Interlocutor =
@@ -17,15 +16,8 @@ type Transcript =
     | DeletedText
     | SubscriptText
     | SuperscriptText
-    | MarkedText
-    | TextFont Thing.Model Int -- , size
+    | MarkedText Int Int -- fontId, size
 
-type alias Model =
-    {
-        identifier: Id  
-        , interlocutor: List Interlocutor
-        , transcript: List Transcript
-    }
 
 
 

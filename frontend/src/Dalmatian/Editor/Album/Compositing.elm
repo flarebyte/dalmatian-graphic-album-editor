@@ -1,4 +1,4 @@
-module Dalmatian.Album.Compositing exposing (Composition, Illustration, Stencil, BinaryData)
+module Dalmatian.Album.Compositing exposing (Composition, BinaryData)
 
 import Dalmatian.Album.Curve exposing (Draw)
 import Dalmatian.Album.Unit exposing (Position2DInt, Dimension2DInt)
@@ -17,16 +17,6 @@ type BinaryData =
     IntCsv String -- 12 345
     | ProxyImage String -- cache:1235
 
-type alias Illustration = {
-    identifier: Id
-    , dimension: Dimension2DInt  
-    , data: BinaryData
-}
-
-type alias Stencil = {
-    identifier: Id  
-    , compositing: List Composition
-}
     
 
 

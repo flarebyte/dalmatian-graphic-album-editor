@@ -1,4 +1,4 @@
-module Dalmatian.Album.Schema exposing (appUI, ScreenZone, FieldType, PredicateKey)
+module Dalmatian.Album.Schema exposing (appUI, ScreenZone, FieldType, PredicateKey, FieldKey)
 
 type alias ListBoxItem = {
     value: String
@@ -46,6 +46,9 @@ type FieldType = ShortLocalizedListType
 type ScreenZone =
     GraphicAlbumScreen
     | RightsScreen
+    | CopyrightsPanel
+    | LicensePanel
+    | AttributionPanel
     | ContributionScreen
     | ColorScreen
     | FontScreen
@@ -82,7 +85,7 @@ type PredicateKey =
 type SchemaUI =
    SchemaField PredicateKey String FieldType  -- name description
    | ScreenUI ScreenZone String
-   | PanelUI String
+   | PanelUI ScreenZone String
    | ExclusivePanelUI String
    | ListManagerUI
    | SaveAsTemplateUI
@@ -96,17 +99,17 @@ appUI = [
     , SchemaField DescriptionKey "Official description of the album" TextAreaLocalizedType
     , SchemaField KeywordKey "Keywords that describe the nature of the content" ShortLocalizedListType
     , ScreenUI RightsScreen "Rights and License" --
-    , PanelUI "License"
+    , PanelUI LicensePanel "License"
     , SaveAsTemplateUI
     , SchemaField NameKey "Common name for the license" MediumLocalizedType
     , SchemaField DescriptionKey "Details of the license" TextAreaLocalizedType
     , SchemaField HomepageKey "Webpages linking to the license" UrlListType
-    , PanelUI "Rights"
+    , PanelUI CopyrightsPanel "Rights"
     , SaveAsTemplateUI
     , SchemaField NameKey "Copyright name" MediumLocalizedType
     , SchemaField DescriptionKey "Copyrights detailed description" TextAreaLocalizedType
     , SchemaField HomepageKey "Webpages linking to the copyrights" UrlListType
-    , PanelUI "Attribution"
+    , PanelUI AttributionPanel "Attribution"
     , SchemaField NameKey "Short attribution" MediumLocalizedType
     , SchemaField DescriptionKey "Detailed attribution" TextAreaLocalizedType
     , SchemaField HomepageKey"Webpages linking to the attributions" UrlListType
@@ -162,4 +165,10 @@ appUI = [
     , SchemaField LayoutKey "Layout of the album" LayoutType
     ]
 
+type alias FieldKey = {
+     , screen: ScreenZone
+     , key: PredicateKey
+     , uid: Int
+     , fieldType: FieldType
+ }   
 

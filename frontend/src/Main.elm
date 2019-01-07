@@ -4,7 +4,7 @@ import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-
+import Dalmatian.Album.Applicative exposing (Model)
 
 main =
     Browser.document

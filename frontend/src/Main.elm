@@ -4,7 +4,8 @@ import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Dalmatian.Album.Applicative exposing (Model)
+import Dalmatian.Editor.Applicative as Applicative exposing (Model)
+import Dalmatian.Editor.Schema exposing (ScreenZone(..), PanelZone(..), UIEvent(..))
 
 main =
     Browser.document
@@ -20,13 +21,28 @@ main =
 
 
 type alias Model =
-    { greeting : String }
+    { greeting : String
+      , applicative: Applicative.Model
+    }
+
+defaultModel: Model
+defaultModel =
+    { greeting = "Hello Goodbye"
+    , applicative = {
+        counter = 0
+      , languages = ["en-gb"]
+      , panelKey = { screen = GraphicAlbumScreen,panel = DefaultPanel, uid = 0 }
+      , panelValues = []
+      , deletedPanelKey = []
+      , album = []
+      , albumDiff = []
+    }
+    }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { greeting = "Hello Goodbye" }, Cmd.none )
-
+    ( defaultModel, Cmd.none )
 
 
 -- UPDATE
@@ -35,6 +51,7 @@ init _ =
 type Msg
     = Hello
     | Goodbye
+    | OnUIEvent UIEvent
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -44,6 +61,9 @@ update msg model =
             ( { model | greeting = "I say \"hello\"" }, Cmd.none )
 
         Goodbye ->
+            ( { model | greeting = "You say \"goodbye\"" }, Cmd.none )
+        
+        OnUIEvent event ->
             ( { model | greeting = "You say \"goodbye\"" }, Cmd.none )
 
 

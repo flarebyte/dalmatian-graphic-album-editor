@@ -1,10 +1,11 @@
-module Dalmatian.Album.Tile exposing (TileInstruction)
+module Dalmatian.Editor.Tiling exposing (TileInstruction)
 
-import Dalmatian.Album.Unit exposing (Fraction, Position2D, Dimension2D)
-import Dalmatian.Album.Identifier exposing (Id)
+import Dalmatian.Editor.Identifier exposing (Id)
+import Dalmatian.Editor.Unit exposing (Dimension2D, Fraction, Position2D)
 
-type TileInstruction =
-    Section Id
+
+type TileInstruction
+    = Section Id
     | Page Id
     | RectPanel Id Position2D Dimension2D
     | SquarePanel Id Fraction Fraction -- position dimension
@@ -12,12 +13,5 @@ type TileInstruction =
     | SpeechId Id
     | ColorId Id
     | BackgroundColorId Id
-    | BackgroundColorId Id
     | Margin Fraction -- width
     | SolidBorderColor Id
-
-
-
-
-
-

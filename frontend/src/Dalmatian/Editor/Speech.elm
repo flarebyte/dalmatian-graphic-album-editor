@@ -1,15 +1,17 @@
-module Dalmatian.Album.Speech exposing (Interlocutor, Transcript)
+module Dalmatian.Editor.Speech exposing (Interlocutor, Transcript)
 
-import Dalmatian.Album.Identifier exposing (Id)
+import Dalmatian.Editor.Identifier exposing (Id)
 
-type Interlocutor =
-    SpeakingCharacter Id
+
+type Interlocutor
+    = SpeakingCharacter Id
     | ThinkingCharacter Id
     | ListeningCharacter Id
     | Narrator Id
 
-type Transcript =
-    TranscriptLanguage String
+
+type Transcript
+    = TranscriptLanguage String
     | SpeechText String
     | StrongText
     | EmphasizedText
@@ -17,12 +19,3 @@ type Transcript =
     | SubscriptText
     | SuperscriptText
     | MarkedText Int Int -- fontId, size
-
-
-
-
-    
-
-
-
-

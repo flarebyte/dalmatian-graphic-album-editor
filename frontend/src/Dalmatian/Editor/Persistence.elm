@@ -5,7 +5,7 @@ import Dalmatian.Editor.Identifier exposing (Id(..))
 import Dalmatian.Editor.Compositing exposing (Composition, BinaryData(..))
 import Dalmatian.Editor.Speech exposing (Interlocutor, Transcript)
 import Dalmatian.Editor.Coloring exposing (Chroma, toChroma)
-import Dalmatian.Editor.Speech exposing (Interlocutor, Transcript)
+import Dalmatian.Editor.Speech exposing (Interlocutor, Transcript, fromStringInterlocutor)
 import Dalmatian.Editor.LocalizedString exposing (Model)
 import Dalmatian.Editor.Unit exposing (Fraction, Position2D, Dimension2D, Position2DInt, Dimension2DInt, toDimension2DInt)
 import Dalmatian.Editor.Tiling exposing (TileInstruction)
@@ -34,6 +34,22 @@ type alias StoreValue = {
      key: FieldKey
      , value: FieldValue
     }
+
+getFieldValueAsStringList: FieldValue -> List String
+getFieldValueAsStringList value =
+    case value of
+        UrlListValue list ->
+            list
+        _ ->
+            []
+
+getFieldValueAsInterlocutorList: FieldValue -> List Interlocutor
+getFieldValueAsInterlocutorList value =
+    case value of
+        InterlocutorValue list ->
+            list
+        _ ->
+            []
 
 findByPanelKey: PanelKey -> List StoreValue -> List StoreValue
 findByPanelKey key list = list
@@ -83,5 +99,9 @@ toStringFieldValue fieldType language value old =
             BinaryDataValue (ProxyImage value)
         ChromaType ->
             ChromaValue (toChroma value)
+        UrlListType ->
+            getFieldValueAsStringList old |> (::) value |>  UrlListValue
+        InterlocutorType ->
+            getFieldValueAsInterlocutorList old |> (::) (fromStringInterlocutor value) |> InterlocutorValue
         _ ->
             TodoField

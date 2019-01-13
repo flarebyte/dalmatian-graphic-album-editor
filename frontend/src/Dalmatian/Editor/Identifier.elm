@@ -1,4 +1,4 @@
-module Dalmatian.Editor.Identifier exposing (Id)
+module Dalmatian.Editor.Identifier exposing (Id(..))
 
 
 type Id

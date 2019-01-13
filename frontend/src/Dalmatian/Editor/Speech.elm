@@ -1,6 +1,6 @@
-module Dalmatian.Editor.Speech exposing (Interlocutor, Transcript)
+module Dalmatian.Editor.Speech exposing (Interlocutor, Transcript, fromStringInterlocutor)
 
-import Dalmatian.Editor.Identifier exposing (Id)
+import Dalmatian.Editor.Identifier exposing (Id(..))
 
 
 type Interlocutor
@@ -19,3 +19,7 @@ type Transcript
     | SubscriptText
     | SuperscriptText
     | MarkedText Int Int -- fontId, size
+
+fromStringInterlocutor: String -> Interlocutor
+fromStringInterlocutor text =
+    Narrator (StringId "")

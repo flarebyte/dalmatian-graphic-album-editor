@@ -208,6 +208,7 @@ appUI =
 type alias PanelKey = 
     { screen : ScreenZone
     , panel: PanelZone
+    , language: String
     , uid : Int
     }
 

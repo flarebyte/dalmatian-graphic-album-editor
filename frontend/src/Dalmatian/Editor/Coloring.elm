@@ -1,4 +1,4 @@
-module Dalmatian.Editor.Coloring exposing (Chroma)
+module Dalmatian.Editor.Coloring exposing (Chroma, toChroma)
 
 import Dalmatian.Editor.Unit exposing (Fraction)
 
@@ -8,3 +8,7 @@ type Chroma
     | HSLA Fraction Fraction Fraction Fraction
     | CMYK Fraction Fraction Fraction Fraction
     | ColorName String
+
+toChroma: String -> Chroma
+toChroma value =
+    ColorName value

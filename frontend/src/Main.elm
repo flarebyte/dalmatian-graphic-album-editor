@@ -31,7 +31,7 @@ defaultModel =
     , applicative = {
         counter = 0
       , languages = ["en-gb"]
-      , panelKey = { screen = GraphicAlbumScreen,panel = DefaultPanel, uid = 0 }
+      , panelKey = { screen = GraphicAlbumScreen,panel = DefaultPanel, uid = 0, language = "en-gb" }
       , panelValues = []
       , deletedPanelKey = []
       , album = []

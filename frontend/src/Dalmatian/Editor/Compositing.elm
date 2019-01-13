@@ -1,4 +1,4 @@
-module Dalmatian.Editor.Compositing exposing (BinaryData, Composition)
+module Dalmatian.Editor.Compositing exposing (BinaryData(..), Composition)
 
 import Dalmatian.Editor.Curve exposing (Draw)
 import Dalmatian.Editor.Unit exposing (Dimension2DInt, Position2DInt)

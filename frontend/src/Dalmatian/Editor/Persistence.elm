@@ -2,9 +2,9 @@ module Dalmatian.Editor.Persistence exposing(StoreValue, findByPanelKey, updateS
 
 import Dalmatian.Editor.Schema exposing(appUI, FieldType(..), PredicateKey, ScreenZone, FieldKey, PanelKey)
 import Dalmatian.Editor.Identifier exposing (Id(..))
-import Dalmatian.Editor.Compositing exposing (Composition, BinaryData)
+import Dalmatian.Editor.Compositing exposing (Composition, BinaryData(..))
 import Dalmatian.Editor.Speech exposing (Interlocutor, Transcript)
-import Dalmatian.Editor.Coloring exposing (Chroma)
+import Dalmatian.Editor.Coloring exposing (Chroma, toChroma)
 import Dalmatian.Editor.Speech exposing (Interlocutor, Transcript)
 import Dalmatian.Editor.LocalizedString exposing (Model)
 import Dalmatian.Editor.Unit exposing (Fraction, Position2D, Dimension2D, Position2DInt, Dimension2DInt, toDimension2DInt)
@@ -12,9 +12,7 @@ import Dalmatian.Editor.Tiling exposing (TileInstruction)
 import Dalmatian.Editor.LocalizedString as LocalizedString exposing (Model)
 import Dalmatian.Editor.Contributing exposing (Contribution)
 
-type FieldValue = ShortLocalizedListValue (List LocalizedString.Model)
-    | MediumLocalizedValue (List LocalizedString.Model)
-    | TextAreaLocalizedValue (List LocalizedString.Model)
+type FieldValue = LocalizedListValue (List LocalizedString.Model)
     | IdValue Id
     | VersionValue String
     | UrlListValue (List String)
@@ -50,8 +48,20 @@ deletePanelKey key list = list
 updateStoreKeyValue: FieldKey -> (List String) -> List StoreValue -> List StoreValue
 updateStoreKeyValue key values list = list
 
-toStringFieldValue: FieldType -> String -> FieldValue
-toStringFieldValue fieldType value =
+updateLocalizedString: String -> String -> FieldValue -> FieldValue
+updateLocalizedString language value old =
+    case old of
+        LocalizedListValue oldValue ->
+            oldValue 
+                |> List.filter (\v -> v.language /= language) 
+                |> (::) (LocalizedString.Model language value) 
+                |> LocalizedListValue
+        _ ->
+            old
+
+
+toStringFieldValue: FieldType -> String -> String -> FieldValue -> FieldValue
+toStringFieldValue fieldType language value old =
     case fieldType of
         DateTimeType ->
             DateTimeValue value
@@ -63,5 +73,15 @@ toStringFieldValue fieldType value =
             value |> toDimension2DInt (Dimension2DInt 0 0)|> Dimension2DIntValue
         ListBoxType any ->
             ListBoxValue value
+        ShortLocalizedListType ->
+             updateLocalizedString language value old   
+        MediumLocalizedType ->
+             updateLocalizedString language value old   
+        TextAreaLocalizedType ->
+             updateLocalizedString language value old
+        BinaryDataType ->
+            BinaryDataValue (ProxyImage value)
+        ChromaType ->
+            ChromaValue (toChroma value)
         _ ->
             TodoField

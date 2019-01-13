@@ -4400,7 +4400,7 @@ var author$project$Main$defaultModel = {
 		deletedPanelKey: _List_Nil,
 		languages: _List_fromArray(
 			['en-gb']),
-		panelKey: {panel: author$project$Dalmatian$Editor$Schema$DefaultPanel, screen: author$project$Dalmatian$Editor$Schema$GraphicAlbumScreen, uid: 0},
+		panelKey: {language: 'en-gb', panel: author$project$Dalmatian$Editor$Schema$DefaultPanel, screen: author$project$Dalmatian$Editor$Schema$GraphicAlbumScreen, uid: 0},
 		panelValues: _List_Nil
 	},
 	greeting: 'Hello Goodbye'

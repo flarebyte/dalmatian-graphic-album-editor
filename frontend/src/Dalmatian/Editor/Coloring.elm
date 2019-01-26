@@ -9,6 +9,7 @@ type Chroma
     | CMYK Fraction Fraction Fraction Fraction
     | ColorName String
 
-toChroma: String -> Chroma
+
+toChroma : String -> Chroma
 toChroma value =
     ColorName value

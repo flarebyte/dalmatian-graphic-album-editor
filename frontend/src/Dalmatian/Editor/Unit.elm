@@ -1,4 +1,4 @@
-module Dalmatian.Editor.Unit exposing (..)
+module Dalmatian.Editor.Unit exposing (Dimension2D, Dimension2DInt, Fraction, Position2D, Position2DInt, toDimension2DInt)
 
 
 type alias Fraction =
@@ -30,6 +30,7 @@ type alias Dimension2DInt =
     , height : Int
     }
 
-toDimension2DInt: Dimension2DInt -> String -> Dimension2DInt
+
+toDimension2DInt : Dimension2DInt -> String -> Dimension2DInt
 toDimension2DInt defaultValue text =
     defaultValue

@@ -1,11 +1,12 @@
 module Main exposing (Document, Model, Msg(..), init, main, subscriptions, update, view)
 
 import Browser
+import Dalmatian.Editor.Applicative as Applicative exposing (Model)
+import Dalmatian.Editor.Schema exposing (PanelZone(..), ScreenZone(..), UIEvent(..))
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Dalmatian.Editor.Applicative as Applicative exposing (Model)
-import Dalmatian.Editor.Schema exposing (ScreenZone(..), PanelZone(..), UIEvent(..))
+
 
 main =
     Browser.document
@@ -22,27 +23,29 @@ main =
 
 type alias Model =
     { greeting : String
-      , applicative: Applicative.Model
+    , applicative : Applicative.Model
     }
 
-defaultModel: Model
+
+defaultModel : Model
 defaultModel =
     { greeting = "Hello Goodbye"
-    , applicative = {
-        counter = 0
-      , languages = ["en-gb"]
-      , panelKey = { screen = GraphicAlbumScreen,panel = DefaultPanel, uid = 0, language = "en-gb" }
-      , panelValues = []
-      , deletedPanelKey = []
-      , album = []
-      , albumDiff = []
-    }
+    , applicative =
+        { counter = 0
+        , languages = [ "en-gb" ]
+        , panelKey = { screen = GraphicAlbumScreen, panel = DefaultPanel, uid = 0, language = "en-gb" }
+        , panelValues = []
+        , deletedPanelKey = []
+        , album = []
+        , albumDiff = []
+        }
     }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
     ( defaultModel, Cmd.none )
+
 
 
 -- UPDATE
@@ -62,7 +65,7 @@ update msg model =
 
         Goodbye ->
             ( { model | greeting = "You say \"goodbye\"" }, Cmd.none )
-        
+
         OnUIEvent event ->
             ( { model | greeting = "You say \"goodbye\"" }, Cmd.none )
 

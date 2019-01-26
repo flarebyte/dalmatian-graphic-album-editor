@@ -1,45 +1,50 @@
 module Dalmatian.Editor.Applicative exposing (Model)
 
-import Dalmatian.Editor.Persistence exposing (StoreValue, findByPanelKey, updateStoreKeyValue, savePanelKey, deletePanelKey)
-import Dalmatian.Editor.Schema exposing (ScreenZone, PanelZone, UIEvent(..), PanelKey)
+import Dalmatian.Editor.Persistence exposing (StoreValue, deleteByPanelKey, findByPanelKey, savePanelKey, updateStoreKeyValue)
+import Dalmatian.Editor.Schema exposing (PanelKey, PanelZone, ScreenZone, UIEvent(..))
+
 
 type alias Model =
     { counter : Int
-      , languages: List String  
-      , panelKey: PanelKey
-      , album : List StoreValue
-      , albumDiff: List StoreValue
-      , deletedPanelKey: List PanelKey
-      , panelValues: List StoreValue
+    , languages : List String
+    , panelKey : PanelKey
+    , album : List StoreValue
+    , albumDiff : List StoreValue
+    , deletedPanelKey : List PanelKey
+    , panelValues : List StoreValue
     }
 
-processUIEvent: UIEvent -> Model -> Model
+
+processUIEvent : UIEvent -> Model -> Model
 processUIEvent event model =
     case event of
         OnNewPanelUI key ->
-            { model | counter = model.counter + 1
-            , panelKey = { key | uid = model.counter }
-            , panelValues = []
+            { model
+                | counter = model.counter + 1
+                , panelKey = { key | uid = model.counter }
+                , panelValues = []
             }
+
         OnLoadPanelUI key ->
-            { model | panelKey = key
-            , panelValues = findByPanelKey key model.album
+            { model
+                | panelKey = key
+                , panelValues = findByPanelKey key model.album
             }
+
         OnDeletePanelKey key ->
-            {
-                model | deletedPanelKey = key :: model.deletedPanelKey
-                , album = deletePanelKey key model.album
-                , albumDiff = deletePanelKey key model.albumDiff
+            { model
+                | deletedPanelKey = key :: model.deletedPanelKey
+                , album = deleteByPanelKey key model.album
+                , albumDiff = deleteByPanelKey key model.albumDiff
             }
-        OnSavePanelKey ->
-            { model | 
-                album = savePanelKey model.panelValues model.album
-                , albumDiff = savePanelKey model.panelValues model.albumDiff
+
+        OnSavePanelKey key ->
+            { model
+                | album = savePanelKey key model.panelValues model.album
+                , albumDiff = savePanelKey key model.panelValues model.albumDiff
             }
+
         OnChangeField key values ->
-            { model | 
-                panelValues = updateStoreKeyValue key values model.album
+            { model
+                | panelValues = updateStoreKeyValue key values model.album
             }
-
-         
-

@@ -20,6 +20,7 @@ type Transcript
     | SuperscriptText
     | MarkedText Int Int -- fontId, size
 
-fromStringInterlocutor: String -> Interlocutor
+
+fromStringInterlocutor : String -> Interlocutor
 fromStringInterlocutor text =
     Narrator (StringId "")

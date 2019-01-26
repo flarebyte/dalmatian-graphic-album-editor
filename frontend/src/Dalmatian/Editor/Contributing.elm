@@ -4,6 +4,7 @@ module Dalmatian.Editor.Contributing exposing (Contribution)
 
 import Dalmatian.Editor.Identifier exposing (Id)
 
+
 type Contribution
     = ContributionHeader String String -- ex: main, minor
     | ContributionLanguage String -- ex: en-gb

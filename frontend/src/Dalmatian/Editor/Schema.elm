@@ -1,4 +1,4 @@
-module Dalmatian.Editor.Schema exposing (..)
+module Dalmatian.Editor.Schema exposing (FieldKey, FieldType(..), ListBoxItem, PanelKey, PanelZone(..), PredicateKey(..), SchemaUI(..), ScreenZone(..), UIEvent(..), appUI, formatList, mediumList)
 
 
 type alias ListBoxItem =
@@ -63,6 +63,7 @@ type ScreenZone
     | LanguageScreen
     | CharacterScreen
 
+
 type PanelZone
     = CopyrightsPanel
     | DefaultPanel
@@ -71,7 +72,7 @@ type PanelZone
     | ContributorEditPanel
     | AttributionPanel
     | StencilListPanel
-    | StencilEditPanel    
+    | StencilEditPanel
     | FontListPanel
     | FontEditPanel
     | ColorListPanel
@@ -82,6 +83,7 @@ type PanelZone
     | SpeechEditPanel
     | PublishedListPanel
     | PublishedEditPanel
+
 
 type PredicateKey
     = IdKey
@@ -116,12 +118,14 @@ type SchemaUI
     | ListManagerUI
     | SaveAsTemplateUI
 
+
 type UIEvent
     = OnNewPanelUI PanelKey
-        | OnLoadPanelUI PanelKey
-        | OnSavePanelKey
-        | OnDeletePanelKey PanelKey
-        | OnChangeField FieldKey (List String)
+    | OnLoadPanelUI PanelKey
+    | OnSavePanelKey PanelKey
+    | OnDeletePanelKey PanelKey
+    | OnChangeField FieldKey (List String)
+
 
 appUI =
     [ ScreenUI GraphicAlbumScreen "Graphic Album" --
@@ -205,12 +209,14 @@ appUI =
     , SchemaField LayoutKey "Layout of the album" LayoutType
     ]
 
-type alias PanelKey = 
+
+type alias PanelKey =
     { screen : ScreenZone
-    , panel: PanelZone
-    , language: String
+    , panel : PanelZone
+    , language : String
     , uid : Int
     }
+
 
 type alias FieldKey =
     { panelKey : PanelKey

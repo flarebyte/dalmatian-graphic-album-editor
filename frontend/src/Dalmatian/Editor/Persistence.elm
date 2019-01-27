@@ -118,13 +118,10 @@ versionParser =
 
 parseVersion: String -> FieldValue
 parseVersion str =
-    let 
-        maybeVersion = run versionParser str
-    in
-        case maybeVersion of
-            Ok foundVersion ->
-                VersionValue foundVersion
-            Err msg ->
+    case run versionParser str of
+        Ok foundVersion ->
+            VersionValue foundVersion
+        Err msg ->
                 WarningMessage "The format for version should be like 1.0.0"
 
 

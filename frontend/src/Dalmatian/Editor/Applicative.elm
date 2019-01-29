@@ -44,7 +44,7 @@ processUIEvent event model =
                 , albumDiff = savePanelKey key model.panelValues model.albumDiff
             }
 
-        OnChangeField key values ->
+        OnChangeField key tokenId str ->
             { model
-                | panelValues = updateStoreKeyValue key values model.album
+                | panelValues = updateStoreKeyValue key tokenId str model.album
             }

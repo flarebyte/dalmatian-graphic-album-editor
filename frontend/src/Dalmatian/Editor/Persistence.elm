@@ -26,14 +26,14 @@ type FieldValue
     | DateTimeValue String
     | LanguageValue String
     | ChromaValue Chroma
-    | CompositionValue (List Composition)
+    | CompositionValue (List (Int, Composition))
     | BinaryDataValue BinaryData
     | Dimension2DIntValue Dimension2DInt
-    | ContributionValue (List Contribution)
+    | ContributionValue (List (Int, Contribution))
     | ListBoxValue String
-    | LayoutValue (List TileInstruction)
+    | LayoutValue (List (Int, TileInstruction))
     | InterlocutorValue (List Interlocutor)
-    | TranscriptValue (List Transcript)
+    | TranscriptValue (List (Int, Transcript))
     | TodoField
     | WarningMessage String
 
@@ -86,8 +86,8 @@ savePanelKey key newValues oldValues =
     deleteByPanelKey key oldValues |> (++) newValues
 
 
-updateStoreKeyValue : FieldKey -> List String -> List StoreValue -> List StoreValue
-updateStoreKeyValue key values list =
+updateStoreKeyValue : FieldKey -> Int -> List String -> List StoreValue -> List StoreValue
+updateStoreKeyValue key tokenId str list =
     list
 
 
@@ -125,8 +125,8 @@ parseVersion str =
                 WarningMessage "The format for version should be like 1.0.0"
 
 
-toStringFieldValue : FieldType -> String -> String -> FieldValue -> FieldValue
-toStringFieldValue fieldType language value old =
+toStringFieldValue : FieldType -> String -> Int -> String -> FieldValue -> FieldValue
+toStringFieldValue fieldType language tokenId value old =
     case fieldType of
         DateTimeType ->
             DateTimeValue value
@@ -163,6 +163,18 @@ toStringFieldValue fieldType language value old =
 
         InterlocutorType ->
             getFieldValueAsInterlocutorList old |> (::) (fromStringInterlocutor value) |> InterlocutorValue
+        
+        IdType ->
+            TodoField
+        
+        CompositionType ->
+            TodoField
 
-        _ ->
+        ContributionType ->
+            TodoField
+
+        LayoutType ->
+            TodoField
+
+        TranscriptType ->
             TodoField

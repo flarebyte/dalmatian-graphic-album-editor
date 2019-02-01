@@ -1,4 +1,4 @@
-module Dalmatian.Editor.Dialog exposing (InputType(..), DialogField, DialogBox, DialogBoxes)
+module Dalmatian.Editor.Dialog exposing (InputType(..), DialogField, DialogBoxOption, DialogBox, DialogBoxType(..))
 
 type alias ListBoxItem =
     { value : String
@@ -13,17 +13,18 @@ type InputType = LineTextInputType
 
 type alias DialogField = {
     kind: InputType
-    , display : String
+    , label : String
     }
+
+type alias DialogBoxOption = {
+    display : String
+    , items: List (Int, DialogField)
+    }
+
+type DialogBoxType = ContributionDBT | CompositionDBT
 
 type alias DialogBox = {
-    id: String
+    kind: DialogBoxType
     , display : String
-    , items: List DialogField
-    }
-
-type alias DialogBoxes = {
-    id: String
-    , display : String
-    , items: List DialogBox
+    , items: List DialogBoxOption
     }

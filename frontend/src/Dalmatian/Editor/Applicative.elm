@@ -12,6 +12,7 @@ type alias Model =
     , albumDiff : List StoreValue
     , deletedPanelKey : List PanelKey
     , panelValues : List StoreValue
+    , dialogValues: List (Int, String)
     }
 
 

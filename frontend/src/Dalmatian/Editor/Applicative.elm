@@ -1,6 +1,8 @@
 module Dalmatian.Editor.Applicative exposing (Model)
 
-import Dalmatian.Editor.Persistence exposing (StoreValue, deleteByPanelKey, findByPanelKey, savePanelKey, updateStoreKeyValue)
+import Dalmatian.Editor.Persistence exposing (StoreValue, deleteByPanelKey, findByPanelKey,
+    savePanelKey, updateStoreKeyValue,
+    findDialogValues, saveFieldDialog, deleteFieldDialog, changeFieldDialog)
 import Dalmatian.Editor.Schema exposing (PanelKey, PanelZone, ScreenZone, UIEvent(..))
 
 
@@ -45,7 +47,35 @@ processUIEvent event model =
                 , albumDiff = savePanelKey key model.panelValues model.albumDiff
             }
 
-        OnChangeField key tokenId str ->
+        OnChangeField fkey str ->
             { model
-                | panelValues = updateStoreKeyValue key tokenId str model.album
+                | panelValues = updateStoreKeyValue fkey str model.panelValues
             }
+        
+        OnShowFieldDialog fkey tokenId ->
+            { model 
+            | dialogValues = findDialogValues fkey tokenId model.panelValues
+            }
+
+        OnSaveFieldDialog fkey tokenId ->
+            { model 
+            | panelValues = saveFieldDialog fkey tokenId model.dialogValues
+            | dialogValues = []
+            }
+
+        OnDeleteFieldDialog fkey tokenId ->
+            { model 
+            | panelValues = deleteFieldDialog fkey tokenId model.panelValues
+            | dialogValues = []
+            }
+
+        OnCancelFieldDialog fkey ->
+            { model 
+            | dialogValues = []
+            }
+
+        OnChangeFieldDialog fkey tokenId position value->
+            { model 
+            | dialogValues = changeFieldDialog fkey tokenId position value model.dialogValues
+            }
+

@@ -124,7 +124,13 @@ type UIEvent
     | OnLoadPanelUI PanelKey
     | OnSavePanelKey PanelKey
     | OnDeletePanelKey PanelKey
-    | OnChangeField FieldKey Int String
+    | OnChangeField FieldKey String
+    | OnShowFieldDialog FieldKey Int
+    | OnSaveFieldDialog FieldKey Int
+    | OnDeleteFieldDialog FieldKey Int
+    | OnCancelFieldDialog FieldKey
+    | OnChangeFieldDialog FieldKey Int Int String
+
 
 
 appUI =

@@ -1,16 +1,18 @@
-module Dalmatian.Editor.Persistence exposing (StoreValue, FieldValue(..), deleteByPanelKey, findByPanelKey, savePanelKey, updateStoreKeyValue, toStringFieldValue, isValidFieldValue, SemanticVersion)
+module Dalmatian.Editor.Persistence exposing (StoreValue, FieldValue(..), deleteByPanelKey,
+    findByPanelKey, savePanelKey, updateStoreKeyValue, toStringFieldValue, isValidFieldValue, SemanticVersion, 
+    findDialogValues, deleteFieldDialog, saveFieldDialog)
 
 import Parser exposing (Parser, (|.), (|=), succeed, symbol, int, spaces, run, getChompedString, map, chompWhile)
 import Dalmatian.Editor.Coloring exposing (Chroma, toChroma)
 import Dalmatian.Editor.Compositing exposing (BinaryData(..), Composition)
-import Dalmatian.Editor.Contributing exposing (Contribution)
+import Dalmatian.Editor.Contributing as Contributing exposing (Contribution)
 import Dalmatian.Editor.Identifier exposing (Id(..))
 import Dalmatian.Editor.LocalizedString as LocalizedString exposing (Model)
 import Dalmatian.Editor.Schema exposing (FieldKey, FieldType(..), PanelKey, PredicateKey, ScreenZone, appUI)
 import Dalmatian.Editor.Speech exposing (Interlocutor, Transcript, fromStringInterlocutor)
 import Dalmatian.Editor.Tiling exposing (TileInstruction)
 import Dalmatian.Editor.Unit exposing (Dimension2D, Dimension2DInt, Fraction, Position2D, Position2DInt, toDimension2DInt)
-
+import Dalmatian.Editor.Token as Token exposing(findToken, deleteToken)
 
 type alias SemanticVersion =
   { major : Int
@@ -35,6 +37,7 @@ type FieldValue
     | InterlocutorValue (List Interlocutor)
     | TranscriptValue (List (Int, Transcript))
     | TodoField
+    | NoValue
     | WarningMessage String
 
 type alias StoreValue =
@@ -85,11 +88,9 @@ savePanelKey : PanelKey -> List StoreValue -> List StoreValue -> List StoreValue
 savePanelKey key newValues oldValues =
     deleteByPanelKey key oldValues |> (++) newValues
 
-
-updateStoreKeyValue : FieldKey -> Int -> List String -> List StoreValue -> List StoreValue
-updateStoreKeyValue key tokenId str list =
+updateStoreKeyValue : FieldKey  -> List String -> List StoreValue -> List StoreValue
+updateStoreKeyValue key str list =
     list
-
 
 updateLocalizedString : String -> String -> FieldValue -> FieldValue
 updateLocalizedString language value old =
@@ -178,3 +179,31 @@ toStringFieldValue fieldType language tokenId value old =
 
         TranscriptType ->
             TodoField
+
+deleteByFieldKey: FieldKey ->  List StoreValue -> List StoreValue
+deleteByFieldKey fkey list =
+    list |> List.filter (\sv -> sv.key /= fkey)
+
+findOneValueByFieldKey: FieldKey ->  List StoreValue ->  FieldValue
+findOneValueByFieldKey fkey list =
+    list |> List.filter (\sv -> sv.key == fkey) |> List.head |> Maybe.map .value |> Maybe.withDefault NoValue
+
+findDialogValues: FieldKey -> Int -> List StoreValue -> List (Int, String)
+findDialogValues fkey tokenId list =
+    case (findOneValueByFieldKey fkey list) of
+            ContributionValue tokens ->
+                findToken tokenId tokens |> Maybe.map Contributing.toStringList |> Maybe.withDefault []
+            anythingElse ->
+                []
+
+deleteFieldDialog:  FieldKey -> Int -> List StoreValue -> List StoreValue
+deleteFieldDialog fkey tokenId list =
+    case (findOneValueByFieldKey fkey list) of
+            ContributionValue tokens ->
+                deleteByFieldKey fkey list |> (::) {key = fkey, value = deleteToken tokenId tokens |> ContributionValue}
+            anythingElse ->
+                list
+
+saveFieldDialog: FieldKey -> Int -> List StoreValue -> List StoreValue
+saveFieldDialog fkey tokenId list =
+    []

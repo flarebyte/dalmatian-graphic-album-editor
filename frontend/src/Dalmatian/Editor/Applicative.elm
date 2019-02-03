@@ -59,14 +59,14 @@ processUIEvent event model =
 
         OnSaveFieldDialog fkey tokenId ->
             { model 
-            | panelValues = saveFieldDialog fkey tokenId model.dialogValues
-            | dialogValues = []
+            | panelValues = saveFieldDialog fkey tokenId model.dialogValues model.panelValues
+            , dialogValues = []
             }
 
         OnDeleteFieldDialog fkey tokenId ->
             { model 
             | panelValues = deleteFieldDialog fkey tokenId model.panelValues
-            | dialogValues = []
+            , dialogValues = []
             }
 
         OnCancelFieldDialog fkey ->

@@ -197,13 +197,23 @@ findDialogValues fkey tokenId list =
                 []
 
 deleteFieldDialog:  FieldKey -> Int -> List StoreValue -> List StoreValue
-deleteFieldDialog fkey tokenId list =
-    case (findOneValueByFieldKey fkey list) of
+deleteFieldDialog fkey tokenId panelValues =
+    case (findOneValueByFieldKey fkey panelValues) of
             ContributionValue tokens ->
-                deleteByFieldKey fkey list |> (::) {key = fkey, value = deleteToken tokenId tokens |> ContributionValue}
+                deleteByFieldKey fkey panelValues |> (::) {key = fkey, value = deleteToken tokenId tokens |> ContributionValue}
             anythingElse ->
-                list
+                panelValues
 
-saveFieldDialog: FieldKey -> Int -> List StoreValue -> List StoreValue
-saveFieldDialog fkey tokenId list =
-    []
+updateContributionValueToken: FieldKey -> Int  -> List (Int, Contribution) -> List StoreValue -> Contribution -> List StoreValue
+updateContributionValueToken fkey tokenId tokens panelValues token =
+    deleteByFieldKey fkey panelValues |> (::) {key = fkey, value = deleteToken tokenId tokens |> (::) (tokenId, token)|> ContributionValue}
+
+saveFieldDialog: FieldKey -> Int -> List (Int, String) -> List StoreValue -> List StoreValue
+saveFieldDialog fkey tokenId dialogValues panelValues =
+    case (findOneValueByFieldKey fkey panelValues) of
+            ContributionValue tokens ->
+                Contributing.fromStringList dialogValues 
+                |> Maybe.map (updateContributionValueToken fkey tokenId tokens panelValues) 
+                |> Maybe.withDefault panelValues
+            anythingElse ->
+                panelValues

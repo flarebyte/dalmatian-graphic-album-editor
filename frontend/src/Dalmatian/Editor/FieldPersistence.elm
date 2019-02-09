@@ -1,4 +1,4 @@
-module Dalmatian.Editor.FieldPersistence exposing (FieldValue(..), toStringFieldValue, isValidFieldValue, upsertContributionValue)
+module Dalmatian.Editor.FieldPersistence exposing (FieldValue(..), toStringFieldValue, isValidFieldValue, upsertContributionValue, getNextRank)
 
 import Dalmatian.Editor.Coloring exposing (Chroma, toChroma)
 import Dalmatian.Editor.Compositing exposing (BinaryData(..), Composition)
@@ -20,17 +20,17 @@ type FieldValue
     | DateTimeValue String
     | LanguageValue String
     | ChromaValue Chroma
-    | CompositionValue (List (TokenValue Composition))
     | BinaryDataValue BinaryData
     | Dimension2DIntValue Dimension2DInt
-    | ContributionValue (List (TokenValue Contribution))
     | ListBoxValue String
+    | CompositionValue (List (TokenValue Composition))
+    | ContributionValue (List (TokenValue Contribution))
     | LayoutValue (List (TokenValue TileInstruction))
     | InterlocutorValue (List (TokenValue Interlocutor))
     | TranscriptValue (List (TokenValue Transcript))
+    | WarningMessage String
     | TodoField
     | NoValue
-    | WarningMessage String
 
 
 isValidFieldValue: FieldValue -> Bool
@@ -70,6 +70,23 @@ upsertContributionValue oldValue tokenContribution =
             Token.upsert tokenContribution tokens |> ContributionValue
         otherwise ->
             WarningMessage "Something went wrong (upsertContributionValue)"
+
+
+getNextRank: Int -> FieldValue ->  Int
+getNextRank start fieldValue =
+    case fieldValue of
+        CompositionValue tokens ->
+            Token.getNextRank start tokens 
+        ContributionValue tokens ->
+            Token.getNextRank start tokens
+        LayoutValue tokens ->
+            Token.getNextRank start tokens
+        InterlocutorValue tokens ->
+            Token.getNextRank start tokens
+        TranscriptValue tokens ->
+            Token.getNextRank start tokens
+        otherwise ->
+            1000
 
 
 toStringFieldValue : FieldType -> String -> Int -> String -> FieldValue -> FieldValue

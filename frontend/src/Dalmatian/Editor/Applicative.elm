@@ -2,7 +2,7 @@ module Dalmatian.Editor.Applicative exposing (Model, processUIEvent)
 
 import Dalmatian.Editor.Persistence exposing (StoreValue, deleteByPanelKey, findByPanelKey,
     savePanelKey, updateStoreKeyValue,
-    selectToken, saveToken, deleteToken, moveTokenUp, moveTokenDown, getRankAfter)
+    selectToken, saveToken, deleteToken, moveTokenUp, moveTokenDown, getNextRank)
 import Dalmatian.Editor.Schema exposing (PanelKey, PanelZone, ScreenZone, UIEvent(..), FieldKey)
 import Dalmatian.Editor.Token exposing (TokenValue)
 
@@ -66,11 +66,14 @@ processUIEvent event model =
         OnSelectToken tokenId ->
              { model
                 |  tokenValue = selectToken model.fieldKey tokenId model.panelValues
-            }                               
-
+            }
+                                           
         OnNewToken ->
              { model
-                | tokenValue = Just (TokenValue (model.counter) [] (getRankAfter model.tokenValue))
+                | tokenValue = Maybe.map2 (\fkey tokenValue -> 
+                          TokenValue (model.counter) [] (getNextRank fkey tokenValue model.panelValues)
+                        ) model.fieldKey model.tokenValue
+                    |> Maybe.withDefault (TokenValue (model.counter) [] 1000) |> Just
                 , counter = model.counter + 1
             }
 

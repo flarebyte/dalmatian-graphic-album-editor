@@ -30,10 +30,6 @@ upsert: TokenValue a -> List (TokenValue a) -> List (TokenValue a)
 upsert token tokens=
     delete token.uid tokens |> (::) token
 
-sortByRank: List (TokenValue a) -> List (TokenValue a)
-sortByRank tokens =
-    List.sortBy .rank tokens
-
 getNextRankAbove: Int -> List (TokenValue a) -> Int
 getNextRankAbove start tokens =
     List.map .rank tokens |> List.sort |> List.filter (\rank -> rank > start) |> List.head |> Maybe.withDefault (start + 1000)

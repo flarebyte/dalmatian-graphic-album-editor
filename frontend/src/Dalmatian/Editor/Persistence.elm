@@ -1,9 +1,9 @@
 module Dalmatian.Editor.Persistence exposing (StoreValue, deleteByPanelKey,
     findByPanelKey, savePanelKey, updateStoreKeyValue, 
-    selectToken, deleteToken, saveToken, moveTokenUp, moveTokenDown, getRankAfter)
+    selectToken, deleteToken, saveToken, moveTokenUp, moveTokenDown, getNextRank)
 
 import Dalmatian.Editor.Schema exposing (FieldKey, FieldType(..), PanelKey, PredicateKey, ScreenZone, appUI)
-import Dalmatian.Editor.FieldPersistence exposing (FieldValue(..), upsertContributionValue)
+import Dalmatian.Editor.FieldPersistence as FieldPersistence exposing (FieldValue(..), upsertContributionValue)
 import Dalmatian.Editor.Contributing as Contributing
 import Dalmatian.Editor.Token as Token exposing (TokenValue)
 
@@ -58,10 +58,9 @@ selectToken maybeFkey tokenId list =
         Nothing ->
             Nothing
 
--- pretty wrong
-getRankAfter: Maybe FieldKey  -> Maybe (TokenValue (List (Int, String)))  -> List StoreValue-> Int
-getRankAfter maybeFieldKey maybeTokenValue list =
-    maybeTokenValue |> Maybe.map (\t -> t.rank + 1) |> Maybe.withDefault 0
+getNextRank: FieldKey  -> (TokenValue (List (Int, String)))  -> List StoreValue -> Int
+getNextRank fieldKey tokenValue list =
+    findOneValueByFieldKey fieldKey list |> FieldPersistence.getNextRank tokenValue.rank
 
 deleteToken:  FieldKey -> TokenValue (List (Int, String)) -> List StoreValue -> List StoreValue
 deleteToken fkey tokenValue panelValues =

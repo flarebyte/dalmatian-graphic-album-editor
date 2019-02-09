@@ -1,10 +1,10 @@
-module Dalmatian.Editor.Contributing exposing (Contribution, toStringList, fromStringList)
+module Dalmatian.Editor.Contributing exposing (Contribution, toStringList, fromStringList, fromStringListToken, toStringListToken)
 
 -- Creator | Contributor | Publisher | Sponsor | Translator | Artist | Author | Colorist | Inker | Letterer | Penciler | Editor | Sponsor
 
 import Dalmatian.Editor.Identifier as Identifier exposing (Id)
 import Dalmatian.Editor.Dialog exposing (InputType(..), DialogField, DialogBoxOption, DialogBox, DialogBoxType(..))
-import Dalmatian.Editor.Token as Token exposing(findStringByPosition)
+import Dalmatian.Editor.Token as Token exposing(TokenValue, findStringByPosition)
 
 type Contribution
     = ContributionHeader String String -- ex: main, minor
@@ -37,8 +37,15 @@ fromStringList list =
                 Contributor (findStringByPosition 0 list |> Identifier.fromString) (findStringByPosition 1 list) (findStringByPosition 2 list) |> Just
             otherwise ->
                 Nothing
-   
 
+fromStringListToken: TokenValue (List (Int, String)) -> Maybe (TokenValue Contribution)
+fromStringListToken tokenValue =
+    fromStringList tokenValue.value |> Maybe.map (\contrib -> TokenValue tokenValue.uid contrib tokenValue.rank)
+
+toStringListToken: TokenValue Contribution -> TokenValue (List (Int, String))
+toStringListToken tokenValue =
+    TokenValue tokenValue.uid (toStringList tokenValue.value) tokenValue.rank
+   
 dialogBox: DialogBox
 dialogBox = {
      kind = ContributionDBT

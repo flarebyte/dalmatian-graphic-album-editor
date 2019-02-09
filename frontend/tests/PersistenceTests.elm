@@ -4,7 +4,8 @@ import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer, intRange, list, string, constant, oneOf)
 import Test exposing (..)
 import Dalmatian.Editor.Schema exposing (FieldKey, FieldType(..), PanelKey, PredicateKey(..), ScreenZone(..), PanelZone(..))
-import Dalmatian.Editor.Persistence exposing (StoreValue, FieldValue(..), findByPanelKey, deleteByPanelKey, savePanelKey, toStringFieldValue, isValidFieldValue, SemanticVersion)
+import Dalmatian.Editor.Persistence exposing (StoreValue, findByPanelKey, deleteByPanelKey, savePanelKey)
+import Dalmatian.Editor.FieldPersistence exposing (FieldValue(..), isValidFieldValue)
 
 screenZones = [GraphicAlbumScreen, RightsScreen, ContributionScreen, ContributorScreen, ColorScreen, FontScreen, IllustrationScreen]
 panelZones = [CopyrightsPanel, DefaultPanel, LicensePanel, ContributorListPanel, ContributorEditPanel, AttributionPanel, StencilListPanel, StencilEditPanel]
@@ -36,10 +37,6 @@ fuzzyFieldType = fieldTypes |> List.map constant |> oneOf
 fuzzyPanelKey: Fuzzer PanelKey
 fuzzyPanelKey = panelKeys |> List.map constant |> oneOf
 
-createVersion: Int -> Int -> Int -> String
-createVersion a b c =
-    (String.fromInt a) ++ "." ++ (String.fromInt b ) ++ "." ++ (String.fromInt c)
-
 suite : Test
 suite =
     describe "The Persistence Module"
@@ -70,18 +67,5 @@ suite =
                         ] storageValues
                         |> List.length
                         |> Expect.equal (List.length panelKeys + 1)
-        ]
-        , describe "toStringFieldValue"
-        [
-            fuzz3 (intRange 0 1000) (intRange 0 100000) (intRange 0 100000) "should support valid version" <|
-                \a b c ->
-                    toStringFieldValue VersionType "en" 0 (createVersion a b c) (VersionValue (SemanticVersion 1 1 0))
-                        |> Expect.equal (VersionValue (SemanticVersion a b c))
-
-            , fuzz string "should reject invalid version" <|
-                \newStr ->
-                    toStringFieldValue VersionType "en" 0 newStr (VersionValue (SemanticVersion 1 1 0))
-                        |> isValidFieldValue
-                        |> Expect.equal False
         ]
     ]

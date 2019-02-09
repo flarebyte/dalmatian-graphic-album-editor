@@ -122,15 +122,16 @@ type SchemaUI
 type UIEvent
     = OnNewPanelUI PanelKey
     | OnLoadPanelUI PanelKey
-    | OnSavePanelKey PanelKey
     | OnDeletePanelKey PanelKey
+    | OnSavePanelKey
     | OnChangeField FieldKey String
-    | OnShowFieldDialog FieldKey Int
-    | OnSaveFieldDialog FieldKey Int
-    | OnDeleteFieldDialog FieldKey Int
-    | OnCancelFieldDialog FieldKey
-    | OnChangeFieldDialog FieldKey Int Int String
-
+    | OnSelectComplexField FieldKey
+    | OnNewToken
+    | OnSelectToken Int
+    | OnDeleteToken
+    | OnSaveToken
+    | OnMoveTokenUp
+    | OnMoveTokenDown
 
 
 appUI =

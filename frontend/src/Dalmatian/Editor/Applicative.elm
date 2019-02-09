@@ -1,10 +1,10 @@
-module Dalmatian.Editor.Applicative exposing (Model)
+module Dalmatian.Editor.Applicative exposing (Model, processUIEvent)
 
 import Dalmatian.Editor.Persistence exposing (StoreValue, deleteByPanelKey, findByPanelKey,
     savePanelKey, updateStoreKeyValue,
-    findDialogValues, saveFieldDialog, deleteFieldDialog, changeFieldDialog)
-import Dalmatian.Editor.Schema exposing (PanelKey, PanelZone, ScreenZone, UIEvent(..))
-
+    selectToken, saveToken, deleteToken, moveTokenUp, moveTokenDown, getRankAfter)
+import Dalmatian.Editor.Schema exposing (PanelKey, PanelZone, ScreenZone, UIEvent(..), FieldKey)
+import Dalmatian.Editor.Token exposing (TokenValue)
 
 type alias Model =
     { counter : Int
@@ -14,7 +14,8 @@ type alias Model =
     , albumDiff : List StoreValue
     , deletedPanelKey : List PanelKey
     , panelValues : List StoreValue
-    , dialogValues: List (Int, String)
+    , fieldKey : Maybe FieldKey
+    , tokenValue: Maybe (TokenValue (List (Int, String)))
     }
 
 
@@ -26,12 +27,16 @@ processUIEvent event model =
                 | counter = model.counter + 1
                 , panelKey = { key | uid = model.counter }
                 , panelValues = []
+                , fieldKey = Nothing
+                , tokenValue = Nothing
             }
 
         OnLoadPanelUI key ->
             { model
                 | panelKey = key
                 , panelValues = findByPanelKey key model.album
+                , fieldKey = Nothing
+                , tokenValue = Nothing
             }
 
         OnDeletePanelKey key ->
@@ -41,41 +46,57 @@ processUIEvent event model =
                 , albumDiff = deleteByPanelKey key model.albumDiff
             }
 
-        OnSavePanelKey key ->
+        OnSavePanelKey ->
             { model
-                | album = savePanelKey key model.panelValues model.album
-                , albumDiff = savePanelKey key model.panelValues model.albumDiff
+                | album = savePanelKey model.panelKey model.panelValues model.album
+                , albumDiff = savePanelKey model.panelKey model.panelValues model.albumDiff
             }
 
         OnChangeField fkey str ->
             { model
                 | panelValues = updateStoreKeyValue fkey str model.panelValues
             }
-        
-        OnShowFieldDialog fkey tokenId ->
+
+        OnSelectComplexField fkey ->
             { model 
-            | dialogValues = findDialogValues fkey tokenId model.panelValues
+            |  fieldKey = Just fkey
+             , tokenValue = Nothing
+           }
+ 
+        OnSelectToken tokenId ->
+             { model
+                |  tokenValue = selectToken model.fieldKey tokenId model.panelValues
+            }                               
+
+        OnNewToken ->
+             { model
+                | tokenValue = Just (TokenValue (model.counter) [] (getRankAfter model.tokenValue))
+                , counter = model.counter + 1
             }
 
-        OnSaveFieldDialog fkey tokenId ->
+        OnDeleteToken ->
             { model 
-            | panelValues = saveFieldDialog fkey tokenId model.dialogValues model.panelValues
-            , dialogValues = []
+            | panelValues = Maybe.map2 (\fkey tokenValue -> deleteToken fkey tokenValue model.panelValues ) model.fieldKey model.tokenValue
+                |> Maybe.withDefault model.panelValues
+            , tokenValue = Nothing
             }
 
-        OnDeleteFieldDialog fkey tokenId ->
+        OnSaveToken ->
             { model 
-            | panelValues = deleteFieldDialog fkey tokenId model.panelValues
-            , dialogValues = []
+            | panelValues = Maybe.map2 (\fkey tokenValue -> saveToken fkey tokenValue model.panelValues ) model.fieldKey model.tokenValue
+                |> Maybe.withDefault model.panelValues
+            , tokenValue = Nothing
             }
 
-        OnCancelFieldDialog fkey ->
+        OnMoveTokenUp ->
             { model 
-            | dialogValues = []
+            | panelValues = Maybe.map2 (\fkey tokenValue -> moveTokenUp fkey tokenValue model.panelValues) model.fieldKey model.tokenValue
+                |> Maybe.withDefault model.panelValues
             }
 
-        OnChangeFieldDialog fkey tokenId position value->
+        OnMoveTokenDown ->
             { model 
-            | dialogValues = changeFieldDialog fkey tokenId position value model.dialogValues
+            | panelValues = Maybe.map2 (\fkey tokenValue -> moveTokenDown fkey tokenValue model.panelValues) model.fieldKey model.tokenValue
+                |> Maybe.withDefault model.panelValues
+            , tokenValue = Nothing
             }
-

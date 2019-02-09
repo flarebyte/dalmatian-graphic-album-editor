@@ -1,16 +1,17 @@
-module Dalmatian.Editor.FieldPersistence exposing (FieldValue(..), toStringFieldValue, isValidFieldValue, upsertContributionValue, getNextRank)
+module Dalmatian.Editor.FieldPersistence exposing (FieldValue(..), getNextRank, isValidFieldValue, toStringFieldValue, upsertContributionValue)
 
 import Dalmatian.Editor.Coloring exposing (Chroma, toChroma)
 import Dalmatian.Editor.Compositing exposing (BinaryData(..), Composition)
 import Dalmatian.Editor.Contributing as Contributing exposing (Contribution)
 import Dalmatian.Editor.Identifier exposing (Id(..))
 import Dalmatian.Editor.LocalizedString as LocalizedString exposing (Model)
+import Dalmatian.Editor.Schema exposing (FieldType(..))
 import Dalmatian.Editor.Speech exposing (Interlocutor, Transcript, fromStringInterlocutor)
 import Dalmatian.Editor.Tiling exposing (TileInstruction)
+import Dalmatian.Editor.Token as Token exposing (TokenValue)
 import Dalmatian.Editor.Unit exposing (Dimension2D, Dimension2DInt, Fraction, Position2D, Position2DInt, toDimension2DInt)
 import Dalmatian.Editor.Version as Version exposing (SemanticVersion)
-import Dalmatian.Editor.Schema exposing (FieldType(..))
-import Dalmatian.Editor.Token as Token exposing (TokenValue)
+
 
 type FieldValue
     = LocalizedListValue (List LocalizedString.Model)
@@ -33,13 +34,18 @@ type FieldValue
     | NoValue
 
 
-isValidFieldValue: FieldValue -> Bool
+isValidFieldValue : FieldValue -> Bool
 isValidFieldValue value =
     case value of
-        TodoField -> False
-        WarningMessage msg -> False
-        anyOther -> True
-    
+        TodoField ->
+            False
+
+        WarningMessage msg ->
+            False
+
+        anyOther ->
+            True
+
 
 getFieldValueAsStringList : FieldValue -> List String
 getFieldValueAsStringList value =
@@ -63,28 +69,35 @@ updateLocalizedString language value old =
         _ ->
             old
 
-upsertContributionValue: FieldValue -> TokenValue Contribution -> FieldValue
+
+upsertContributionValue : FieldValue -> TokenValue Contribution -> FieldValue
 upsertContributionValue oldValue tokenContribution =
     case oldValue of
         ContributionValue tokens ->
             Token.upsert tokenContribution tokens |> ContributionValue
+
         otherwise ->
             WarningMessage "Something went wrong (upsertContributionValue)"
 
 
-getNextRank: Int -> FieldValue ->  Int
+getNextRank : Int -> FieldValue -> Int
 getNextRank start fieldValue =
     case fieldValue of
         CompositionValue tokens ->
-            Token.getNextRank start tokens 
+            Token.getNextRank start tokens
+
         ContributionValue tokens ->
             Token.getNextRank start tokens
+
         LayoutValue tokens ->
             Token.getNextRank start tokens
+
         InterlocutorValue tokens ->
             Token.getNextRank start tokens
+
         TranscriptValue tokens ->
             Token.getNextRank start tokens
+
         otherwise ->
             1000
 
@@ -99,6 +112,7 @@ toStringFieldValue fieldType language tokenId value old =
             case Version.parse value of
                 Ok version ->
                     VersionValue version
+
                 Err msg ->
                     WarningMessage msg
 
@@ -131,10 +145,10 @@ toStringFieldValue fieldType language tokenId value old =
 
         InterlocutorType ->
             TodoField
-        
+
         IdType ->
             TodoField
-        
+
         CompositionType ->
             TodoField
 
@@ -146,4 +160,3 @@ toStringFieldValue fieldType language tokenId value old =
 
         TranscriptType ->
             TodoField
-

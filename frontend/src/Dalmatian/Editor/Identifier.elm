@@ -1,18 +1,21 @@
-module Dalmatian.Editor.Identifier exposing (Id(..), toString, fromString)
+module Dalmatian.Editor.Identifier exposing (Id(..), fromString, toString)
 
 
 type Id
     = StringId String
     | IntId Int
 
-toString: Id -> String
+
+toString : Id -> String
 toString id =
     case id of
         StringId str ->
             "id:" ++ str
+
         IntId n ->
-            "uid:" ++ (String.fromInt n)
- 
-fromString: String -> Id
+            "uid:" ++ String.fromInt n
+
+
+fromString : String -> Id
 fromString str =
-      StringId "TODO"  
+    StringId "TODO"

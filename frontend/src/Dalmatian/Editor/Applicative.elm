@@ -1,10 +1,22 @@
 module Dalmatian.Editor.Applicative exposing (Model, processUIEvent)
 
-import Dalmatian.Editor.Persistence exposing (StoreValue, deleteByPanelKey, findByPanelKey,
-    savePanelKey, updateStoreKeyValue,
-    selectToken, saveToken, deleteToken, moveTokenUp, moveTokenDown, getNextRank)
-import Dalmatian.Editor.Schema exposing (PanelKey, PanelZone, ScreenZone, UIEvent(..), FieldKey)
+import Dalmatian.Editor.Persistence
+    exposing
+        ( StoreValue
+        , deleteByPanelKey
+        , deleteToken
+        , findByPanelKey
+        , getNextRank
+        , moveTokenDown
+        , moveTokenUp
+        , savePanelKey
+        , saveToken
+        , selectToken
+        , updateStoreKeyValue
+        )
+import Dalmatian.Editor.Schema exposing (FieldKey, PanelKey, PanelZone, ScreenZone, UIEvent(..))
 import Dalmatian.Editor.Token exposing (TokenValue)
+
 
 type alias Model =
     { counter : Int
@@ -15,7 +27,7 @@ type alias Model =
     , deletedPanelKey : List PanelKey
     , panelValues : List StoreValue
     , fieldKey : Maybe FieldKey
-    , tokenValue: Maybe (TokenValue (List (Int, String)))
+    , tokenValue : Maybe (TokenValue (List ( Int, String )))
     }
 
 
@@ -58,48 +70,57 @@ processUIEvent event model =
             }
 
         OnSelectComplexField fkey ->
-            { model 
-            |  fieldKey = Just fkey
-             , tokenValue = Nothing
-           }
- 
-        OnSelectToken tokenId ->
-             { model
-                |  tokenValue = selectToken model.fieldKey tokenId model.panelValues
+            { model
+                | fieldKey = Just fkey
+                , tokenValue = Nothing
             }
-                                           
+
+        OnSelectToken tokenId ->
+            { model
+                | tokenValue = selectToken model.fieldKey tokenId model.panelValues
+            }
+
         OnNewToken ->
-             { model
-                | tokenValue = Maybe.map2 (\fkey tokenValue -> 
-                          TokenValue (model.counter) [] (getNextRank fkey tokenValue model.panelValues)
-                        ) model.fieldKey model.tokenValue
-                    |> Maybe.withDefault (TokenValue (model.counter) [] 1000) |> Just
+            { model
+                | tokenValue =
+                    Maybe.map2
+                        (\fkey tokenValue ->
+                            TokenValue model.counter [] (getNextRank fkey tokenValue model.panelValues)
+                        )
+                        model.fieldKey
+                        model.tokenValue
+                        |> Maybe.withDefault (TokenValue model.counter [] 1000)
+                        |> Just
                 , counter = model.counter + 1
             }
 
         OnDeleteToken ->
-            { model 
-            | panelValues = Maybe.map2 (\fkey tokenValue -> deleteToken fkey tokenValue model.panelValues ) model.fieldKey model.tokenValue
-                |> Maybe.withDefault model.panelValues
-            , tokenValue = Nothing
+            { model
+                | panelValues =
+                    Maybe.map2 (\fkey tokenValue -> deleteToken fkey tokenValue model.panelValues) model.fieldKey model.tokenValue
+                        |> Maybe.withDefault model.panelValues
+                , tokenValue = Nothing
             }
 
         OnSaveToken ->
-            { model 
-            | panelValues = Maybe.map2 (\fkey tokenValue -> saveToken fkey tokenValue model.panelValues ) model.fieldKey model.tokenValue
-                |> Maybe.withDefault model.panelValues
-            , tokenValue = Nothing
+            { model
+                | panelValues =
+                    Maybe.map2 (\fkey tokenValue -> saveToken fkey tokenValue model.panelValues) model.fieldKey model.tokenValue
+                        |> Maybe.withDefault model.panelValues
+                , tokenValue = Nothing
             }
 
         OnMoveTokenUp ->
-            { model 
-            | panelValues = Maybe.map2 (\fkey tokenValue -> moveTokenUp fkey tokenValue model.panelValues) model.fieldKey model.tokenValue
-                |> Maybe.withDefault model.panelValues
+            { model
+                | panelValues =
+                    Maybe.map2 (\fkey tokenValue -> moveTokenUp fkey tokenValue model.panelValues) model.fieldKey model.tokenValue
+                        |> Maybe.withDefault model.panelValues
             }
 
         OnMoveTokenDown ->
-            { model 
-            | panelValues = Maybe.map2 (\fkey tokenValue -> moveTokenDown fkey tokenValue model.panelValues) model.fieldKey model.tokenValue
-                |> Maybe.withDefault model.panelValues
-            , tokenValue = Nothing
+            { model
+                | panelValues =
+                    Maybe.map2 (\fkey tokenValue -> moveTokenDown fkey tokenValue model.panelValues) model.fieldKey model.tokenValue
+                        |> Maybe.withDefault model.panelValues
+                , tokenValue = Nothing
             }

@@ -1,4 +1,4 @@
-module Dalmatian.Editor.FieldPersistence exposing (FieldValue(..), getNextRank, isValidFieldValue, toStringFieldValue, upsertContributionValue)
+module Dalmatian.Editor.FieldPersistence exposing (FieldValue(..), getNextRank, getPreviousRank, updateRank, isValidFieldValue, toStringFieldValue, upsertContributionValue)
 
 import Dalmatian.Editor.Coloring exposing (Chroma, toChroma)
 import Dalmatian.Editor.Compositing exposing (BinaryData(..), Composition)
@@ -100,6 +100,48 @@ getNextRank start fieldValue =
 
         otherwise ->
             1000
+
+getPreviousRank : Int -> FieldValue -> Int
+getPreviousRank start fieldValue =
+    case fieldValue of
+        CompositionValue tokens ->
+            Token.getPreviousRank start tokens
+
+        ContributionValue tokens ->
+            Token.getPreviousRank start tokens
+
+        LayoutValue tokens ->
+            Token.getPreviousRank start tokens
+
+        InterlocutorValue tokens ->
+            Token.getPreviousRank start tokens
+
+        TranscriptValue tokens ->
+            Token.getPreviousRank start tokens
+
+        otherwise ->
+            1000
+
+updateRank: Int -> Int -> FieldValue -> FieldValue
+updateRank tokenId rank fieldValue =
+    case fieldValue of
+        CompositionValue tokens ->
+            Token.updateRank tokens tokenId rank |> CompositionValue
+
+        ContributionValue tokens ->
+            Token.updateRank tokens tokenId rank |> ContributionValue
+
+        LayoutValue tokens ->
+            Token.updateRank tokens tokenId rank |> LayoutValue
+
+        InterlocutorValue tokens ->
+            Token.updateRank tokens tokenId rank |> InterlocutorValue
+
+        TranscriptValue tokens ->
+            Token.updateRank tokens tokenId rank |> TranscriptValue
+
+        otherwise ->
+            WarningMessage "Something went wrong (updateRank)"
 
 
 toStringFieldValue : FieldType -> String -> Int -> String -> FieldValue -> FieldValue

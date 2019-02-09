@@ -111,10 +111,19 @@ saveToken fkey tokenValue panelValues =
 
 
 moveTokenUp : FieldKey -> TokenValue (List ( Int, String )) -> List StoreValue -> List StoreValue
-moveTokenUp fkey tokenValue panelValues =
-    panelValues
+moveTokenUp fieldKey tokenValue panelValues =
+    let
+        fieldValue = findOneValueByFieldKey fieldKey panelValues
+        newRank = fieldValue |> FieldPersistence.getPreviousRank tokenValue.rank
+    in
+        upsertStoreValue panelValues { key = fieldKey, value = FieldPersistence.updateRank tokenValue.uid newRank fieldValue }
 
 
 moveTokenDown : FieldKey -> TokenValue (List ( Int, String )) -> List StoreValue -> List StoreValue
-moveTokenDown fkey tokenValue panelValues =
-    panelValues
+moveTokenDown fieldKey tokenValue panelValues =
+    let
+        fieldValue = findOneValueByFieldKey fieldKey panelValues
+        newRank = fieldValue |> FieldPersistence.getNextRank tokenValue.rank
+    in
+        upsertStoreValue panelValues { key = fieldKey, value = FieldPersistence.updateRank tokenValue.uid newRank fieldValue }
+    

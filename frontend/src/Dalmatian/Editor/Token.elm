@@ -1,4 +1,4 @@
-module Dalmatian.Editor.Token exposing (TokenValue, delete, find, findByPosition, findStringByPosition, getNextRank, update, upsert)
+module Dalmatian.Editor.Token exposing (TokenValue, delete, find, findByPosition, findStringByPosition, getNextRank, getPreviousRank, update, upsert, updateRank)
 
 
 type alias TokenValue v =
@@ -40,6 +40,17 @@ update tokens tokenId token =
                     t
             )
 
+updateRank: List (TokenValue a) -> Int -> Int -> List (TokenValue a)
+updateRank tokens tokenId rank =
+    tokens
+        |> List.map
+            (\t ->
+                if t.uid == tokenId then
+                    { t | rank = rank }
+
+                else
+                    t
+            )
 
 upsert : TokenValue a -> List (TokenValue a) -> List (TokenValue a)
 upsert token tokens =
@@ -48,9 +59,23 @@ upsert token tokens =
 
 getNextRankAbove : Int -> List (TokenValue a) -> Int
 getNextRankAbove start tokens =
-    List.map .rank tokens |> List.sort |> List.filter (\rank -> rank > start) |> List.head |> Maybe.withDefault (start + 1000)
+    List.map .rank tokens |> List.filter (\rank -> rank > start) |> List.sort |> List.head |> Maybe.withDefault (start + 1000)
 
 
 getNextRank : Int -> List (TokenValue a) -> Int
 getNextRank start tokens =
     start + (getNextRankAbove start tokens - start) // 2
+
+flippedComparison a b =
+    case compare a b of
+      LT -> GT
+      EQ -> EQ
+      GT -> LT
+
+getPreviousRankBelow : Int -> List (TokenValue a) -> Int
+getPreviousRankBelow start tokens =
+    List.map .rank tokens  |> List.filter (\rank -> rank < start) |> List.sortWith flippedComparison |> List.head |> Maybe.withDefault (start - 1000)
+
+getPreviousRank : Int -> List (TokenValue a) -> Int
+getPreviousRank start tokens =
+    start - (start - getPreviousRankBelow start tokens) // 2

@@ -1,4 +1,4 @@
-module Dalmatian.Editor.Token exposing (TokenValue, delete, find, findByPosition, findStringByPosition, getNextRank, getPreviousRank, update, upsert, updateRank)
+module Dalmatian.Editor.Token exposing (TokenValue, delete, find, getNextRank, getPreviousRank, update, updateRank)
 
 
 type alias TokenValue v =
@@ -6,16 +6,6 @@ type alias TokenValue v =
     , value : v
     , rank : Int
     }
-
-
-findByPosition : Int -> List ( Int, String ) -> Maybe String
-findByPosition idx list =
-    list |> List.filter (\iv -> Tuple.first iv == idx) |> List.head |> Maybe.map Tuple.second
-
-
-findStringByPosition : Int -> List ( Int, String ) -> String
-findStringByPosition idx list =
-    findByPosition idx list |> Maybe.withDefault ""
 
 
 find : Int -> List (TokenValue a) -> Maybe (TokenValue a)
@@ -29,12 +19,12 @@ delete tokenId tokens =
 
 
 update : List (TokenValue a) -> Int -> a -> List (TokenValue a)
-update tokens tokenId token =
+update tokens tokenId value =
     tokens
         |> List.map
             (\t ->
                 if t.uid == tokenId then
-                    { t | value = token }
+                    { t | value = value }
 
                 else
                     t
@@ -51,11 +41,6 @@ updateRank tokens tokenId rank =
                 else
                     t
             )
-
-upsert : TokenValue a -> List (TokenValue a) -> List (TokenValue a)
-upsert token tokens =
-    delete token.uid tokens |> (::) token
-
 
 getNextRankAbove : Int -> List (TokenValue a) -> Int
 getNextRankAbove start tokens =

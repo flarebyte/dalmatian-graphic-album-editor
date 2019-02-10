@@ -26,6 +26,14 @@ defaultPanelValues =
         , StoreValue (FieldKey defaultPanelKey LanguageKey LanguageType) (LanguageValue "en-gb")
     ]
 
+modifiedDefaultPanelValues: List StoreValue
+modifiedDefaultPanelValues =
+    [ 
+        StoreValue (FieldKey defaultPanelKey TitleKey MediumLocalizedType) (LocalizedListValue [LocalizedString.Model "en-gb" "title 00" ])
+        , StoreValue (FieldKey defaultPanelKey DescriptionKey TextAreaLocalizedType) (LocalizedListValue [LocalizedString.Model "en-gb" "description 00" ])
+        , StoreValue (FieldKey defaultPanelKey LanguageKey LanguageType) (LanguageValue "en-gb")
+    ]
+
 defaultFrPanelValues: List StoreValue
 defaultFrPanelValues =
     [ 
@@ -83,6 +91,15 @@ suite =
                 \panelKey ->
                     processUIEvent (OnLoadPanelUI panelKey) model |> .panelValues |> guessPanelKey
                         |> Expect.equal (Just panelKey)
+
+            , fuzz fuzzyPanelKey "OnDeletePanelKey should delete existing panel" <|
+                \panelKey ->
+                    processUIEvent (OnDeletePanelKey panelKey) model |> .album |> List.length
+                        |> Expect.equal 6
+            
+            , test "OnSavePanelKey should save existing panel" <|
+                \_ -> processUIEvent (OnSavePanelKey) { model | panelValues = modifiedDefaultPanelValues }|> .album
+                        |> Expect.equal (modifiedDefaultPanelValues ++ defaultFrPanelValues ++ contributorPanelValues)
 
          ]
     ]

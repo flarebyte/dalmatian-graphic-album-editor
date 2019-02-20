@@ -1,4 +1,4 @@
-module Dalmatian.Editor.FieldPersistence exposing (FieldValue(..), getNextRank, getPreviousRank, updateRank, isValidFieldValue, toStringFieldValue, upsertContributionValue)
+module Dalmatian.Editor.FieldPersistence exposing (FieldValue(..), getNextRank, getPreviousRank, isValidFieldValue, toStringFieldValue, updateRank)
 
 import Dalmatian.Editor.Coloring exposing (Chroma, toChroma)
 import Dalmatian.Editor.Compositing exposing (BinaryData(..), Composition)
@@ -70,14 +70,14 @@ updateLocalizedString language value old =
             old
 
 
-upsertContributionValue : FieldValue -> TokenValue Contribution -> FieldValue
-upsertContributionValue oldValue tokenContribution =
-    case oldValue of
-        ContributionValue tokens ->
-            Token.upsert tokenContribution tokens |> ContributionValue
+-- upsertContributionValue : FieldValue -> TokenValue Contribution -> FieldValue
+-- upsertContributionValue oldValue tokenContribution =
+--     case oldValue of
+--         ContributionValue tokens ->
+--             Token.upsert tokenContribution tokens |> ContributionValue
 
-        otherwise ->
-            WarningMessage "Something went wrong (upsertContributionValue)"
+--         otherwise ->
+--             WarningMessage "Something went wrong (upsertContributionValue)"
 
 
 getNextRank : Int -> FieldValue -> Int
@@ -101,6 +101,7 @@ getNextRank start fieldValue =
         otherwise ->
             1000
 
+
 getPreviousRank : Int -> FieldValue -> Int
 getPreviousRank start fieldValue =
     case fieldValue of
@@ -122,7 +123,8 @@ getPreviousRank start fieldValue =
         otherwise ->
             1000
 
-updateRank: Int -> Int -> FieldValue -> FieldValue
+
+updateRank : Int -> Int -> FieldValue -> FieldValue
 updateRank tokenId rank fieldValue =
     case fieldValue of
         CompositionValue tokens ->

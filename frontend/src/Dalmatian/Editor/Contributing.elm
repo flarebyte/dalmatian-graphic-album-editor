@@ -4,7 +4,7 @@ module Dalmatian.Editor.Contributing exposing (Contribution, fromStringList, fro
 
 import Dalmatian.Editor.Dialog exposing (DialogBox, DialogBoxOption, DialogBoxType(..), DialogField, InputType(..))
 import Dalmatian.Editor.Identifier as Identifier exposing (Id)
-import Dalmatian.Editor.Token as Token exposing (TokenValue, findStringByPosition)
+import Dalmatian.Editor.Token as Token exposing (TokenValue)
 
 
 type Contribution
@@ -13,6 +13,9 @@ type Contribution
     | ContributionFooter String String -- ex: type, description
     | Contributor Id String String -- contributorId, type, comment
 
+findStringByPosition: Int -> List ( Int, String ) -> String
+findStringByPosition position list =
+    list |> List.filter (\v -> Tuple.first v == position) |> List.head |> Maybe.map Tuple.second |> Maybe.withDefault ""
 
 toStringList : Contribution -> List ( Int, String )
 toStringList contribution =

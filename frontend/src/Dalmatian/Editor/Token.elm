@@ -30,7 +30,8 @@ update tokens tokenId value =
                     t
             )
 
-updateRank: List (TokenValue a) -> Int -> Int -> List (TokenValue a)
+
+updateRank : List (TokenValue a) -> Int -> Int -> List (TokenValue a)
 updateRank tokens tokenId rank =
     tokens
         |> List.map
@@ -42,6 +43,7 @@ updateRank tokens tokenId rank =
                     t
             )
 
+
 getNextRankAbove : Int -> List (TokenValue a) -> Int
 getNextRankAbove start tokens =
     List.map .rank tokens |> List.filter (\rank -> rank > start) |> List.sort |> List.head |> Maybe.withDefault (start + 1000)
@@ -51,15 +53,23 @@ getNextRank : Int -> List (TokenValue a) -> Int
 getNextRank start tokens =
     start + (getNextRankAbove start tokens - start) // 2
 
+
 flippedComparison a b =
     case compare a b of
-      LT -> GT
-      EQ -> EQ
-      GT -> LT
+        LT ->
+            GT
+
+        EQ ->
+            EQ
+
+        GT ->
+            LT
+
 
 getPreviousRankBelow : Int -> List (TokenValue a) -> Int
 getPreviousRankBelow start tokens =
-    List.map .rank tokens  |> List.filter (\rank -> rank < start) |> List.sortWith flippedComparison |> List.head |> Maybe.withDefault (start - 1000)
+    List.map .rank tokens |> List.filter (\rank -> rank < start) |> List.sortWith flippedComparison |> List.head |> Maybe.withDefault (start - 1000)
+
 
 getPreviousRank : Int -> List (TokenValue a) -> Int
 getPreviousRank start tokens =

@@ -13,7 +13,7 @@ module Dalmatian.Editor.Persistence exposing
     )
 
 import Dalmatian.Editor.Contributing as Contributing
-import Dalmatian.Editor.FieldPersistence as FieldPersistence exposing (FieldValue(..), upsertContributionValue)
+import Dalmatian.Editor.FieldPersistence as FieldPersistence exposing (FieldValue(..))
 import Dalmatian.Editor.Schema exposing (FieldKey, FieldType(..), PanelKey, PredicateKey, ScreenZone, appUI)
 import Dalmatian.Editor.Token as Token exposing (TokenValue)
 
@@ -113,17 +113,22 @@ saveToken fkey tokenValue panelValues =
 moveTokenUp : FieldKey -> TokenValue (List ( Int, String )) -> List StoreValue -> List StoreValue
 moveTokenUp fieldKey tokenValue panelValues =
     let
-        fieldValue = findOneValueByFieldKey fieldKey panelValues
-        newRank = fieldValue |> FieldPersistence.getPreviousRank tokenValue.rank
+        fieldValue =
+            findOneValueByFieldKey fieldKey panelValues
+
+        newRank =
+            fieldValue |> FieldPersistence.getPreviousRank tokenValue.rank
     in
-        upsertStoreValue panelValues { key = fieldKey, value = FieldPersistence.updateRank tokenValue.uid newRank fieldValue }
+    upsertStoreValue panelValues { key = fieldKey, value = FieldPersistence.updateRank tokenValue.uid newRank fieldValue }
 
 
 moveTokenDown : FieldKey -> TokenValue (List ( Int, String )) -> List StoreValue -> List StoreValue
 moveTokenDown fieldKey tokenValue panelValues =
     let
-        fieldValue = findOneValueByFieldKey fieldKey panelValues
-        newRank = fieldValue |> FieldPersistence.getNextRank tokenValue.rank
+        fieldValue =
+            findOneValueByFieldKey fieldKey panelValues
+
+        newRank =
+            fieldValue |> FieldPersistence.getNextRank tokenValue.rank
     in
-        upsertStoreValue panelValues { key = fieldKey, value = FieldPersistence.updateRank tokenValue.uid newRank fieldValue }
-    
+    upsertStoreValue panelValues { key = fieldKey, value = FieldPersistence.updateRank tokenValue.uid newRank fieldValue }

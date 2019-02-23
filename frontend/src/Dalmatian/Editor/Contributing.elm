@@ -1,10 +1,16 @@
-module Dalmatian.Editor.Contributing exposing (Contribution, fromStringList, fromStringListToken, toStringList, toStringListToken)
+module Dalmatian.Editor.Contributing exposing (Contribution(..)
+    , fromStringList
+    , fromStringListToken
+    , toStringList
+    , toStringListToken)
 
 -- Creator | Contributor | Publisher | Sponsor | Translator | Artist | Author | Colorist | Inker | Letterer | Penciler | Editor | Sponsor
 
 import Dalmatian.Editor.Dialog exposing (DialogBox, DialogBoxOption, DialogBoxType(..), DialogField, InputType(..))
 import Dalmatian.Editor.Identifier as Identifier exposing (Id)
 import Dalmatian.Editor.Token as Token exposing (TokenValue)
+import Parser exposing ((|.), (|=), Parser, oneOf, chompWhile, getChompedString, int, variable, map, run, spaces, succeed, symbol)
+import Set
 
 
 type Contribution
@@ -93,3 +99,20 @@ dialogBox =
             )
         ]
     }
+
+contributionParser : Parser Contribution
+contributionParser =
+  oneOf
+    [   succeed ContributionHeader
+        |. symbol "H"
+        |= variable
+        { start = Char.isAlphaNum
+        , inner = \c -> Char.isAlphaNum c || c == '_' || c == '-' || c == '/' || c == '.'
+        , reserved = Set.empty
+        }
+        |= variable
+        { start = Char.isAlphaNum
+        , inner = \c -> Char.isAlphaNum c || c == '_' || c == '-' || c == '/' || c == '.'
+        , reserved = Set.empty
+        }    
+    ]

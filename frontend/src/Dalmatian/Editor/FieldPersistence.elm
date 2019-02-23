@@ -1,4 +1,9 @@
-module Dalmatian.Editor.FieldPersistence exposing (FieldValue(..), getNextRank, getPreviousRank, isValidFieldValue, toStringFieldValue, updateRank)
+module Dalmatian.Editor.FieldPersistence exposing (FieldValue(..), 
+    getNextRank, 
+    getPreviousRank, 
+    isValidFieldValue, 
+    toStringFieldValue,
+    updateRank)
 
 import Dalmatian.Editor.Coloring exposing (Chroma, toChroma)
 import Dalmatian.Editor.Compositing exposing (BinaryData(..), Composition)
@@ -9,7 +14,7 @@ import Dalmatian.Editor.Schema exposing (FieldType(..))
 import Dalmatian.Editor.Speech exposing (Interlocutor, Transcript, fromStringInterlocutor)
 import Dalmatian.Editor.Tiling exposing (TileInstruction)
 import Dalmatian.Editor.Token as Token exposing (TokenValue)
-import Dalmatian.Editor.Unit exposing (Dimension2D, Dimension2DInt, Fraction, Position2D, Position2DInt, toDimension2DInt)
+import Dalmatian.Editor.Unit as Unit exposing (Dimension2D, Dimension2DInt, Fraction, Position2D, Position2DInt)
 import Dalmatian.Editor.Version as Version exposing (SemanticVersion)
 
 
@@ -164,7 +169,12 @@ toStringFieldValue fieldType language tokenId value old =
             LanguageValue value
 
         Dimension2DIntType ->
-            value |> toDimension2DInt (Dimension2DInt 0 0) |> Dimension2DIntValue
+           case Unit.parseDimension2DInt value of
+                Ok dim ->
+                    Dimension2DIntValue dim
+
+                Err msg ->
+                    WarningMessage msg
 
         ListBoxType any ->
             ListBoxValue value

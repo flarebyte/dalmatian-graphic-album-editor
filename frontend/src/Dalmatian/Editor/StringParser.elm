@@ -1,4 +1,4 @@
-module Dalmatian.Editor.StringParser exposing (stringParser, toDialectString)
+module Dalmatian.Editor.StringParser exposing (stringParser, toDialectString, postParsing)
 
 import Parser exposing (..)
 import Set
@@ -6,8 +6,10 @@ import Regex
 
 quoteMarker = "❘"
 quoteMarkerChar = '❘'
-escapeMarker = "❙"
-escapeMarkerChar = '❙'
+escapeMarker = "\\"
+escapeMarkerChar = '\\'
+
+internMarker = "❚"
 
 replaceAll : String -> String -> String -> String
 replaceAll userRegex replacement str =
@@ -28,7 +30,11 @@ stringParser =
 
 toDialectString: String -> String
 toDialectString str =
-  quoteMarker ++ (str |> replaceAll quoteMarker "") ++ quoteMarker
+  quoteMarker ++ (str |> replaceAll quoteMarker "" |> replaceAll "\\\\" internMarker ) ++ quoteMarker
+
+postParsing: String -> String
+postParsing str =
+  str |> replaceAll internMarker "\\"
 
 stringHelp : List String -> Parser (Step (List String) String)
 stringHelp revChunks =

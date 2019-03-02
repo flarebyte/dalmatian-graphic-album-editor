@@ -2,7 +2,10 @@ module Dalmatian.Editor.Contributing exposing (Contribution(..)
     , fromStringList
     , fromStringListToken
     , toStringList
-    , toStringListToken)
+    , toStringListToken
+    , contributionParser
+    , toString
+    )
 
 -- Creator | Contributor | Publisher | Sponsor | Translator | Artist | Author | Colorist | Inker | Letterer | Penciler | Editor | Sponsor
 
@@ -11,6 +14,7 @@ import Dalmatian.Editor.Identifier as Identifier exposing (Id)
 import Dalmatian.Editor.Token as Token exposing (TokenValue)
 import Parser exposing ((|.), (|=), Parser, oneOf, chompWhile, getChompedString, int, variable, map, run, spaces, succeed, symbol)
 import Set
+import Dalmatian.Editor.StringParser as StringParser
 
 
 type Contribution
@@ -104,15 +108,48 @@ contributionParser : Parser Contribution
 contributionParser =
   oneOf
     [   succeed ContributionHeader
-        |. symbol "H"
-        |= variable
-        { start = Char.isAlphaNum
-        , inner = \c -> Char.isAlphaNum c || c == '_' || c == '-' || c == '/' || c == '.'
-        , reserved = Set.empty
-        }
-        |= variable
-        { start = Char.isAlphaNum
-        , inner = \c -> Char.isAlphaNum c || c == '_' || c == '-' || c == '/' || c == '.'
-        , reserved = Set.empty
-        }    
+        |. symbol "Header"
+        |. spaces
+        |= StringParser.stringParser
+        |. spaces
+        |= StringParser.stringParser
+        |. spaces
+        , succeed ContributionFooter
+        |. symbol "Footer"
+        |. spaces
+        |= StringParser.stringParser
+        |. spaces
+        |= StringParser.stringParser
+        |. spaces
+        , succeed ContributionLanguage
+        |. symbol "Language"
+        |. spaces
+        |= StringParser.stringParser
+        |. spaces
+        , succeed Contributor
+        |. symbol "Contributor"
+        |. spaces
+        |= Identifier.idParser
+        |. spaces 
+        |= StringParser.stringParser
+        |. spaces
+        |= StringParser.stringParser
+        |. spaces
     ]
+
+asStr = StringParser.toDialectString
+
+toString: Contribution -> String
+toString contribution =
+    case contribution of
+        ContributionHeader a b ->
+            ["Header", asStr a, asStr b] |> String.join " "
+
+        ContributionLanguage a ->
+            ["Language", asStr a] |> String.join " "
+
+        ContributionFooter a b ->
+            ["Footer", asStr a, asStr b] |> String.join " "
+
+        Contributor a b c ->
+            ["Contributor", Identifier.toString a, asStr b, asStr c] |> String.join " "

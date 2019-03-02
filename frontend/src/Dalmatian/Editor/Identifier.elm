@@ -1,4 +1,4 @@
-module Dalmatian.Editor.Identifier exposing (Id(..), fromString, toString)
+module Dalmatian.Editor.Identifier exposing (Id(..), fromString, toString, idParser)
 
 import Parser exposing ((|.), (|=), Parser, oneOf, chompWhile, getChompedString, int, variable, map, run, spaces, succeed, symbol)
 import Set

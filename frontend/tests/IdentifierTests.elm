@@ -3,7 +3,7 @@ module IdentifierTests exposing (..)
 import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer, int, intRange, list, string, constant, oneOf)
 import Test exposing (..)
-import Dalmatian.Editor.Identifier as Identifier exposing (Id(..))
+import Dalmatian.Editor.Dialect.Identifier as Identifier exposing (Id(..))
 
 
 validStringId: Fuzzer String

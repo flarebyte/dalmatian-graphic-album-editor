@@ -1,4 +1,4 @@
-module Dalmatian.Editor.StringParser exposing (stringParser, toDialectString, postParsing)
+module Dalmatian.Editor.Dialect.Stringy exposing (parser, toString, postParsing)
 
 import Parser exposing (..)
 import Set
@@ -22,14 +22,14 @@ replaceAll userRegex replacement str =
 
 -- STRINGS
 
-stringParser : Parser String
-stringParser =
+parser : Parser String
+parser =
   succeed identity
     |. token quoteMarker
     |= loop [] stringHelp
 
-toDialectString: String -> String
-toDialectString str =
+toString: String -> String
+toString str =
   quoteMarker ++ (str |> replaceAll quoteMarker "" |> replaceAll "\\\\" internMarker ) ++ quoteMarker
 
 postParsing: String -> String

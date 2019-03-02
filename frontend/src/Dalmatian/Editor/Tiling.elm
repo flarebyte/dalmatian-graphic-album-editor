@@ -1,7 +1,9 @@
 module Dalmatian.Editor.Tiling exposing (TileInstruction)
 
-import Dalmatian.Editor.Identifier exposing (Id)
-import Dalmatian.Editor.Unit exposing (Dimension2D, Fraction, Position2D)
+import Dalmatian.Editor.Dialect.Identifier exposing (Id)
+import Dalmatian.Editor.Dialect.Position2DUnit exposing (Position2D)
+import Dalmatian.Editor.Dialect.Dimension2DUnit exposing (Dimension2D)
+import Dalmatian.Editor.Dialect.FractionUnit exposing (Fraction)
 
 
 type TileInstruction

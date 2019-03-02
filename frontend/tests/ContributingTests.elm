@@ -5,9 +5,9 @@ import Fuzz exposing (Fuzzer, int, intRange, list, string, constant, oneOf)
 import Test exposing (..)
 import Parser exposing (run)
 import Dalmatian.Editor.Contributing as Contributing exposing (Contribution(..))
-import Dalmatian.Editor.Identifier as Identifier exposing (Id(..))
+import Dalmatian.Editor.Dialect.Identifier as Identifier exposing (Id(..))
 import Dalmatian.Editor.Token as Token exposing (TokenValue)
-import Dalmatian.Editor.StringParser as StringParser
+import Dalmatian.Editor.Dialect.Stringy as Stringy
 
 fuzzyContribution: Fuzzer Contribution
 fuzzyContribution =

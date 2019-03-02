@@ -10,12 +10,11 @@ module Dalmatian.Editor.Contributing exposing (Contribution(..)
 -- Creator | Contributor | Publisher | Sponsor | Translator | Artist | Author | Colorist | Inker | Letterer | Penciler | Editor | Sponsor
 
 import Dalmatian.Editor.Dialog exposing (DialogBox, DialogBoxOption, DialogBoxType(..), DialogField, InputType(..))
-import Dalmatian.Editor.Identifier as Identifier exposing (Id)
+import Dalmatian.Editor.Dialect.Identifier as Identifier exposing (Id)
 import Dalmatian.Editor.Token as Token exposing (TokenValue)
 import Parser exposing ((|.), (|=), Parser, oneOf, chompWhile, getChompedString, int, variable, map, run, spaces, succeed, symbol)
 import Set
-import Dalmatian.Editor.StringParser as StringParser
-
+import Dalmatian.Editor.Dialect.Stringy as Stringy
 
 type Contribution
     = ContributionHeader String String -- ex: main, minor
@@ -110,34 +109,34 @@ contributionParser =
     [   succeed ContributionHeader
         |. symbol "Header"
         |. spaces
-        |= StringParser.stringParser
+        |= Stringy.parser
         |. spaces
-        |= StringParser.stringParser
+        |= Stringy.parser
         |. spaces
         , succeed ContributionFooter
         |. symbol "Footer"
         |. spaces
-        |= StringParser.stringParser
+        |= Stringy.parser
         |. spaces
-        |= StringParser.stringParser
+        |= Stringy.parser
         |. spaces
         , succeed ContributionLanguage
         |. symbol "Language"
         |. spaces
-        |= StringParser.stringParser
+        |= Stringy.parser
         |. spaces
         , succeed Contributor
         |. symbol "Contributor"
         |. spaces
-        |= Identifier.idParser
+        |= Identifier.parser
         |. spaces 
-        |= StringParser.stringParser
+        |= Stringy.parser
         |. spaces
-        |= StringParser.stringParser
+        |= Stringy.parser
         |. spaces
     ]
 
-asStr = StringParser.toDialectString
+asStr = Stringy.toString
 
 toString: Contribution -> String
 toString contribution =

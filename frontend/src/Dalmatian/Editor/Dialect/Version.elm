@@ -1,4 +1,4 @@
-module Dalmatian.Editor.Version exposing (SemanticVersion, parse)
+module Dalmatian.Editor.Dialect.Version exposing (SemanticVersion, parse)
 
 import Parser exposing ((|.), (|=), Parser, chompWhile, getChompedString, int, map, run, spaces, succeed, symbol)
 
@@ -15,8 +15,8 @@ toIntOrZero str =
     String.toInt str |> Maybe.withDefault 0
 
 
-versionParser : Parser SemanticVersion
-versionParser =
+parser : Parser SemanticVersion
+parser =
     succeed SemanticVersion
         |= (map toIntOrZero <| getChompedString <| chompWhile Char.isDigit)
         |. symbol "."
@@ -27,7 +27,7 @@ versionParser =
 
 parse : String -> Result String SemanticVersion
 parse str =
-    case run versionParser str of
+    case run parser str of
         Ok foundVersion ->
             Ok foundVersion
 

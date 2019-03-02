@@ -1,7 +1,6 @@
 module Dalmatian.Editor.Curve exposing (ArcFlag, Draw)
 
-import Dalmatian.Editor.Unit exposing (Dimension2DInt, Position2DInt)
-
+import Dalmatian.Editor.Dialect.Position2DIntUnit exposing (Position2DInt)
 
 type ArcFlag
     = LargeArcA

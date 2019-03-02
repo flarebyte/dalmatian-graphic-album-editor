@@ -1,4 +1,4 @@
-module Dalmatian.Editor.Identifier exposing (Id(..), fromString, toString, idParser)
+module Dalmatian.Editor.Dialect.Identifier exposing (Id(..), fromString, toString, parser)
 
 import Parser exposing ((|.), (|=), Parser, oneOf, chompWhile, getChompedString, int, variable, map, run, spaces, succeed, symbol)
 import Set
@@ -22,8 +22,8 @@ toString id =
             "The Identifier is invalid: " ++ str
 
 
-idParser : Parser Id
-idParser =
+parser : Parser Id
+parser =
   oneOf
     [succeed StringId
         |. symbol "id:"
@@ -42,7 +42,7 @@ idParser =
 
 fromString : String -> Id
 fromString str =
-    case run idParser str of
+    case run parser str of
         Ok id ->
             id
 

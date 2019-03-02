@@ -1,8 +1,9 @@
 module Dalmatian.Editor.Compositing exposing (BinaryData(..), Composition)
 
 import Dalmatian.Editor.Curve exposing (Draw)
-import Dalmatian.Editor.Identifier exposing (Id)
-import Dalmatian.Editor.Unit exposing (Dimension2DInt, Position2DInt)
+import Dalmatian.Editor.Dialect.Identifier exposing (Id)
+import Dalmatian.Editor.Dialect.Position2DIntUnit exposing (Position2DInt)
+import Dalmatian.Editor.Dialect.Dimension2DIntUnit exposing (Dimension2DInt)
 
 
 type Composition

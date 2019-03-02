@@ -5,17 +5,17 @@ module Dalmatian.Editor.FieldPersistence exposing (FieldValue(..),
     toStringFieldValue,
     updateRank)
 
-import Dalmatian.Editor.Coloring exposing (Chroma, toChroma)
+import Dalmatian.Editor.Dialect.Coloring as Coloring exposing (Chroma)
 import Dalmatian.Editor.Compositing exposing (BinaryData(..), Composition)
 import Dalmatian.Editor.Contributing as Contributing exposing (Contribution)
-import Dalmatian.Editor.Identifier exposing (Id(..))
+import Dalmatian.Editor.Dialect.Identifier exposing (Id(..))
 import Dalmatian.Editor.LocalizedString as LocalizedString exposing (Model)
 import Dalmatian.Editor.Schema exposing (FieldType(..))
 import Dalmatian.Editor.Speech exposing (Interlocutor, Transcript, fromStringInterlocutor)
 import Dalmatian.Editor.Tiling exposing (TileInstruction)
 import Dalmatian.Editor.Token as Token exposing (TokenValue)
-import Dalmatian.Editor.Unit as Unit exposing (Dimension2D, Dimension2DInt, Fraction, Position2D, Position2DInt)
-import Dalmatian.Editor.Version as Version exposing (SemanticVersion)
+import Dalmatian.Editor.Dialect.Dimension2DIntUnit as Dimension2DIntUnit exposing (Dimension2DInt)
+import Dalmatian.Editor.Dialect.Version as Version exposing (SemanticVersion)
 
 
 type FieldValue
@@ -169,7 +169,7 @@ toStringFieldValue fieldType language tokenId value old =
             LanguageValue value
 
         Dimension2DIntType ->
-           case Unit.parseDimension2DInt value of
+           case Dimension2DIntUnit.parse value of
                 Ok dim ->
                     Dimension2DIntValue dim
 
@@ -192,8 +192,13 @@ toStringFieldValue fieldType language tokenId value old =
             BinaryDataValue (ProxyImage value)
 
         ChromaType ->
-            ChromaValue (toChroma value)
+            case Coloring.parse value of
+                Ok chroma ->
+                    ChromaValue chroma
 
+                Err msg ->
+                    WarningMessage msg
+                    
         UrlListType ->
             getFieldValueAsStringList old |> (::) value |> UrlListValue
 

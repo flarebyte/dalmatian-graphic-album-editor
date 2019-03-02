@@ -4,7 +4,7 @@ import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer, intRange, list, string, constant, oneOf)
 import Test exposing (..)
 import Dalmatian.Editor.Schema exposing (FieldKey, FieldType(..))
-import Dalmatian.Editor.Version as Version exposing (SemanticVersion)
+import Dalmatian.Editor.Dialect.Version as Version exposing (SemanticVersion)
 import Dalmatian.Editor.FieldPersistence exposing (FieldValue(..), isValidFieldValue, toStringFieldValue)
 
 

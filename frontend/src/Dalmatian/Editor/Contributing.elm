@@ -11,16 +11,17 @@ module Dalmatian.Editor.Contributing exposing (Contribution(..)
 
 import Dalmatian.Editor.Dialog exposing (DialogBox, DialogBoxOption, DialogBoxType(..), DialogField, InputType(..))
 import Dalmatian.Editor.Dialect.Identifier as Identifier exposing (Id)
+import Dalmatian.Editor.Dialect.ResourceIdentifier as ResourceIdentifier exposing (ResourceId)
 import Dalmatian.Editor.Token as Token exposing (TokenValue)
 import Parser exposing ((|.), (|=), Parser, oneOf, chompWhile, getChompedString, int, variable, map, run, spaces, succeed, symbol)
 import Set
 import Dalmatian.Editor.Dialect.Stringy as Stringy
 
 type Contribution
-    = ContributionHeader String String -- ex: main, minor
+    = ContributionHeader ResourceId String -- ex: main, minor
     | ContributionLanguage String -- ex: en-gb
-    | ContributionFooter String String -- ex: type, description
-    | Contributor Id String String -- contributorId, type, comment
+    | ContributionFooter ResourceId String -- ex: type, description
+    | Contributor Id ResourceId String -- contributorId, type, comment
 
 findStringByPosition: Int -> List ( Int, String ) -> String
 findStringByPosition position list =
@@ -30,32 +31,32 @@ toStringList : Contribution -> List ( Int, String )
 toStringList contribution =
     case contribution of
         ContributionHeader a b ->
-            [ ( 100, "ContributionHeader" ), ( 0, a ), ( 1, b ) ]
+            [ ( 100, "ContributionHeader" ), ( 0, ResourceIdentifier.toString a ), ( 1, b ) ]
 
         ContributionLanguage a ->
             [ ( 100, "ContributionLanguage" ), ( 0, a ) ]
 
         ContributionFooter a b ->
-            [ ( 100, "ContributionFooter" ), ( 0, a ), ( 1, b ) ]
+            [ ( 100, "ContributionFooter" ), ( 0, ResourceIdentifier.toString a ), ( 1, b ) ]
 
         Contributor a b c ->
-            [ ( 100, "Contributor" ), ( 0, Identifier.toString a ), ( 1, b ), ( 2, c ) ]
+            [ ( 100, "Contributor" ), ( 0, Identifier.toString a ), ( 1, ResourceIdentifier.toString b ), ( 2, c ) ]
 
 
 fromStringList : List ( Int, String ) -> Maybe Contribution
 fromStringList list =
     case findStringByPosition 100 list of
         "ContributionHeader" ->
-            ContributionHeader (findStringByPosition 0 list) (findStringByPosition 1 list) |> Just
+            ContributionHeader (findStringByPosition 0 list |> ResourceIdentifier.fromString) (findStringByPosition 1 list) |> Just
 
         "ContributionLanguage" ->
             ContributionLanguage (findStringByPosition 0 list) |> Just
 
         "ContributionFooter" ->
-            ContributionFooter (findStringByPosition 0 list) (findStringByPosition 1 list) |> Just
+            ContributionFooter (findStringByPosition 0 list |> ResourceIdentifier.fromString) (findStringByPosition 1 list) |> Just
 
         "Contributor" ->
-            Contributor (findStringByPosition 0 list |> Identifier.fromString) (findStringByPosition 1 list) (findStringByPosition 2 list) |> Just
+            Contributor (findStringByPosition 0 list |> Identifier.fromString) (findStringByPosition 1 list |> ResourceIdentifier.fromString) (findStringByPosition 2 list) |> Just
 
         otherwise ->
             Nothing
@@ -109,14 +110,14 @@ contributionParser =
     [   succeed ContributionHeader
         |. symbol "Header"
         |. spaces
-        |= Stringy.parser
+        |= ResourceIdentifier.parser
         |. spaces
         |= Stringy.parser
         |. spaces
         , succeed ContributionFooter
         |. symbol "Footer"
         |. spaces
-        |= Stringy.parser
+        |= ResourceIdentifier.parser
         |. spaces
         |= Stringy.parser
         |. spaces
@@ -130,25 +131,23 @@ contributionParser =
         |. spaces
         |= Identifier.parser
         |. spaces 
-        |= Stringy.parser
+        |= ResourceIdentifier.parser
         |. spaces
         |= Stringy.parser
         |. spaces
     ]
 
-asStr = Stringy.toString
-
 toString: Contribution -> String
 toString contribution =
     case contribution of
         ContributionHeader a b ->
-            ["Header", asStr a, asStr b] |> String.join " "
+            ["Header", ResourceIdentifier.toString a, Stringy.toString b] |> String.join " "
 
         ContributionLanguage a ->
-            ["Language", asStr a] |> String.join " "
+            ["Language", Stringy.toString a] |> String.join " "
 
         ContributionFooter a b ->
-            ["Footer", asStr a, asStr b] |> String.join " "
+            ["Footer", ResourceIdentifier.toString a, Stringy.toString b] |> String.join " "
 
         Contributor a b c ->
-            ["Contributor", Identifier.toString a, asStr b, asStr c] |> String.join " "
+            ["Contributor", Identifier.toString a, ResourceIdentifier.toString b, Stringy.toString c] |> String.join " "

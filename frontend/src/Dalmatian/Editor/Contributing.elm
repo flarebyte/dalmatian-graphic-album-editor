@@ -12,6 +12,7 @@ module Dalmatian.Editor.Contributing exposing (Contribution(..)
 import Dalmatian.Editor.Dialog exposing (DialogBox, DialogBoxOption, DialogBoxType(..), DialogField, InputType(..))
 import Dalmatian.Editor.Dialect.Identifier as Identifier exposing (Id)
 import Dalmatian.Editor.Dialect.ResourceIdentifier as ResourceIdentifier exposing (ResourceId)
+import Dalmatian.Editor.Dialect.LanguageIdentifier as LanguageIdentifier exposing (LanguageId)
 import Dalmatian.Editor.Token as Token exposing (TokenValue)
 import Parser exposing ((|.), (|=), Parser, oneOf, chompWhile, getChompedString, int, variable, map, run, spaces, succeed, symbol)
 import Set
@@ -19,7 +20,7 @@ import Dalmatian.Editor.Dialect.Stringy as Stringy
 
 type Contribution
     = ContributionHeader ResourceId String -- ex: main, minor
-    | ContributionLanguage String -- ex: en-gb
+    | ContributionLanguage LanguageId -- ex: en-gb
     | ContributionFooter ResourceId String -- ex: type, description
     | Contributor Id ResourceId String -- contributorId, type, comment
 
@@ -34,7 +35,7 @@ toStringList contribution =
             [ ( 100, "ContributionHeader" ), ( 0, ResourceIdentifier.toString a ), ( 1, b ) ]
 
         ContributionLanguage a ->
-            [ ( 100, "ContributionLanguage" ), ( 0, a ) ]
+            [ ( 100, "ContributionLanguage" ), ( 0, LanguageIdentifier.toString a ) ]
 
         ContributionFooter a b ->
             [ ( 100, "ContributionFooter" ), ( 0, ResourceIdentifier.toString a ), ( 1, b ) ]
@@ -50,7 +51,7 @@ fromStringList list =
             ContributionHeader (findStringByPosition 0 list |> ResourceIdentifier.fromString) (findStringByPosition 1 list) |> Just
 
         "ContributionLanguage" ->
-            ContributionLanguage (findStringByPosition 0 list) |> Just
+            ContributionLanguage (findStringByPosition 0 list |> LanguageIdentifier.fromString) |> Just
 
         "ContributionFooter" ->
             ContributionFooter (findStringByPosition 0 list |> ResourceIdentifier.fromString) (findStringByPosition 1 list) |> Just
@@ -124,7 +125,7 @@ contributionParser =
         , succeed ContributionLanguage
         |. symbol "Language"
         |. spaces
-        |= Stringy.parser
+        |= LanguageIdentifier.parser
         |. spaces
         , succeed Contributor
         |. symbol "Contributor"
@@ -144,7 +145,7 @@ toString contribution =
             ["Header", ResourceIdentifier.toString a, Stringy.toString b] |> String.join " "
 
         ContributionLanguage a ->
-            ["Language", Stringy.toString a] |> String.join " "
+            ["Language", LanguageIdentifier.toString a] |> String.join " "
 
         ContributionFooter a b ->
             ["Footer", ResourceIdentifier.toString a, Stringy.toString b] |> String.join " "

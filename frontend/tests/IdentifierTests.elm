@@ -4,7 +4,7 @@ import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer, int, intRange, list, string, constant, oneOf)
 import Test exposing (..)
 import Dalmatian.Editor.Dialect.Identifier as Identifier exposing (Id(..))
-
+import Fuzzing exposing (identifier)
 
 validStringId: Fuzzer String
 validStringId =
@@ -31,7 +31,7 @@ suite =
                 \a ->
                     Identifier.fromString (Identifier.toString (IntId a))
                         |> Expect.equal (IntId a)
-            , fuzz validStringId "should support StringId" <|
+            , fuzz identifier "should support StringId" <|
                 \str ->
                     Identifier.fromString (Identifier.toString (StringId str))
                         |> Expect.equal (StringId str)

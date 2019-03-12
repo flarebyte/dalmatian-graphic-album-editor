@@ -21,8 +21,8 @@ alphaNumChar =
             ( 1, RandChar.char 48 57 ) -- digits
         ]
 
-identifierChar : Generator Char
-identifierChar =
+coreIdentifierChar : Generator Char
+coreIdentifierChar =
     RandExtra.frequency
         ( 5, alphaNumChar )
         [ 
@@ -33,6 +33,14 @@ identifierChar =
         ]
 
 
+identifierString : Generator String
+identifierString =
+    Random.pair 
+    (RandString.rangeLengthString 1 1 alphaNumChar)
+    (RandString.rangeLengthString 1 50 coreIdentifierChar)
+    |> Random.map (\p -> Tuple.first p ++ Tuple.second p)
+    
+
 identifier : Fuzzer String
 identifier =
-    custom (RandString.rangeLengthString 1 50 identifierChar) Shrink.noShrink
+    custom identifierString Shrink.noShrink

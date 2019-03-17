@@ -1,7 +1,8 @@
 module Dalmatian.Editor.Dialect.Identifier exposing (Id(..), fromString, toString, parser)
 
-import Parser exposing ((|.), (|=), Parser, oneOf, chompWhile, getChompedString, int, variable, map, run, spaces, succeed, symbol)
+import Parser exposing ((|.), (|=), Parser, oneOf, andThen, chompWhile, getChompedString, int, variable, map, run, spaces, succeed, symbol, keyword, chompUntilEndOr, problem)
 import Set
+import Dalmatian.Editor.Dialect.Separator as Separator
 
 type Id
     = StringId String
@@ -16,27 +17,38 @@ toString id =
             "id:" ++ str
 
         IntId n ->
-            "uid:" ++ String.fromInt n
+            "iid:" ++ String.fromInt n
         
         InvalidId str->
             "The Identifier is invalid: " ++ str
 
-
-parser : Parser Id
-parser =
-  oneOf
-    [succeed StringId
-        |. symbol "id:"
-        |.spaces
-        |= variable
+extractId: Parser String
+extractId = variable
         { start = Char.isAlphaNum
         , inner = \c -> Char.isAlphaNum c || c == '_' || c == '-' || c == '/' || c == '.'
         , reserved = Set.empty
         }
-        |.spaces
-    , succeed IntId
-        |. symbol "uid:"
+
+
+checkId : String -> Parser String
+checkId value =
+      if String.length value <= 70 then
+        succeed value
+      else
+        problem "The id should be less than 70 characters long"
+
+parser : Parser Id
+parser =
+  oneOf
+    [succeed IntId
+        |. keyword "iid"
+        |. symbol ":"
         |= int    
+    ,succeed StringId
+        |. keyword "id"
+        |. symbol ":"
+        |= (extractId |> andThen checkId)
+        |. Separator.space
     ]
 
 

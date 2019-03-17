@@ -4,22 +4,9 @@ import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer, int, intRange, list, string, constant, oneOf)
 import Test exposing (..)
 import Dalmatian.Editor.Dialect.Identifier as Identifier exposing (Id(..))
-import Fuzzing exposing (identifier)
+import Fuzzing exposing (identifier, corruptedIdentifier)
 
-validStringId: Fuzzer String
-validStringId =
-    [
-        "a"
-        , "123e4567-e89b-12d3-a456-426655440000"
-        , "a/b/c.d.e"
-        , "a_b-c"
-        ] |> List.map constant |> oneOf
-
-invalidStringId: Fuzzer String
-invalidStringId =
-    [
-        ""
-        ] |> List.map constant |> oneOf
+longPrefix = String.repeat 100 "a"
 
 suite : Test
 suite =
@@ -31,15 +18,30 @@ suite =
                 \a ->
                     Identifier.fromString (Identifier.toString (IntId a))
                         |> Expect.equal (IntId a)
+            , fuzz (intRange -1000 -1 ) "should reject negative number" <|
+                \a ->
+                    Identifier.fromString (Identifier.toString (IntId a))
+                        |> Expect.equal (InvalidId ("iid:" ++ (String.fromInt a)))
+        
             , fuzz identifier "should support StringId" <|
                 \str ->
                     Identifier.fromString (Identifier.toString (StringId str))
                         |> Expect.equal (StringId str)
-            
-            , fuzz invalidStringId "should reject invalid StringId" <|
+
+            , fuzz corruptedIdentifier "should reject corrupted identifier" <|
                 \str ->
                     Identifier.fromString (Identifier.toString (StringId str))
                         |> Expect.equal (InvalidId ("id:" ++ str))
+            
+            , fuzz identifier "should reject very long identifier" <|
+                \str ->
+                    Identifier.fromString (Identifier.toString (longPrefix ++ str |> StringId))
+                        |> Expect.equal (InvalidId ("id:" ++ longPrefix ++ str))
+
+            , test "should reject empty string" <|
+                \_ ->
+                    Identifier.fromString (Identifier.toString (StringId ""))
+                        |> Expect.equal (InvalidId ("id:"))
                     ]
 
     ]

@@ -5,7 +5,7 @@ import Random as Random exposing (Generator)
 import Random.Char as RandChar
 import Random.Extra as RandExtra
 import Random.String as RandString
-import Shrink
+import Shrink as Shrink exposing(Shrinker)
 
 
 resourceIdentifier : Fuzzer String
@@ -42,7 +42,6 @@ coreIdentifierChar =
         ( 5, alphaNumChar )
         [ 
             ( 1, Random.constant '-' )
-            , ( 1, Random.constant '_' )
             , ( 1, Random.constant '.' )
             , ( 1, Random.constant '/' )
         ]
@@ -61,7 +60,7 @@ unwantedString =
 
 identifier : Fuzzer String
 identifier =
-    custom identifierString Shrink.string
+    custom identifierString Shrink.noShrink
 
 
 corruptString: Int -> String -> String -> String

@@ -25,7 +25,7 @@ toString id =
 extractId: Parser String
 extractId = variable
         { start = Char.isAlphaNum
-        , inner = \c -> Char.isAlphaNum c || c == '_' || c == '-' || c == '/' || c == '.'
+        , inner = \c -> Char.isAlphaNum c ||  c == '-' || c == '/' || c == '.'
         , reserved = Set.empty
         }
 

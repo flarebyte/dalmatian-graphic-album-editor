@@ -5,8 +5,9 @@ import Fuzz exposing (Fuzzer, int, intRange, list, string, constant, oneOf)
 import Test exposing (..)
 import Dalmatian.Editor.Dialect.ResourceIdentifier as ResourceIdentifier exposing (ResourceId(..))
 import Fuzzing exposing (curie, path, corruptedCurie, corruptedPath)
+import Dalmatian.Editor.Dialect.Failing as Failing exposing (FailureKind(..), Failure)
 
-longPrefix = String.repeat 300 "a"
+longPrefix = String.repeat 350 "a"
 
 suite : Test
 suite =
@@ -19,14 +20,24 @@ suite =
                     ResourceIdentifier.fromString (ResourceIdentifier.toString (ResId c p))
                         |> Expect.equal (ResId c p)
 
-            -- , fuzz2 curie corruptedPath "should reject corrupted identifier" <|
-            --     \c p ->
-            --         ResourceIdentifier.fromString (ResourceIdentifier.toString (ResId c p))
-            --             |>ResourceIdentifier.isInvalid |> Expect.equal True
+            , fuzz2 curie corruptedPath "should reject corrupted path" <|
+                \c p ->
+                    ResourceIdentifier.fromString (ResourceIdentifier.toString (ResId c p))
+                        |>ResourceIdentifier.getInvalidResourceId |> Maybe.map .kind |> Expect.equal (Just InvalidFormatFailure)
             
-            -- , fuzz2 curie path "should reject very long identifier" <|
+            , fuzz2 curie path "should reject very long path" <|
+                \c p ->
+                    ResourceIdentifier.fromString (ResourceIdentifier.toString (longPrefix ++ p |> ResId c))
+                        |>ResourceIdentifier.getInvalidResourceId |> Maybe.map .kind |> Expect.equal (Just InvalidLengthFailure)
+           
+           , fuzz2 corruptedCurie path "should reject corrupted curie" <|
+                \c p ->
+                    ResourceIdentifier.fromString (ResourceIdentifier.toString (ResId c p))
+                        |>ResourceIdentifier.getInvalidResourceId |> Maybe.map .kind |> Expect.equal (Just InvalidFormatFailure)
+            
+            -- , fuzz2 curie path "should reject very long curie" <|
             --     \c p ->
-            --         ResourceIdentifier.fromString (ResourceIdentifier.toString (longPrefix ++ p |> ResId c))
+            --         ResourceIdentifier.fromString (ResourceIdentifier.toString ( ResId (longPrefix ++ c) p))
             --             |>ResourceIdentifier.isInvalid |> Expect.equal True
         ]
     ]

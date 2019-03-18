@@ -1,13 +1,14 @@
-module Dalmatian.Editor.Dialect.ResourceIdentifier exposing (ResourceId(..), toString, fromString, parser, isInvalid)
+module Dalmatian.Editor.Dialect.ResourceIdentifier exposing (ResourceId(..), toString, fromString, parser, getInvalidResourceId)
 
 import Parser exposing ((|.), (|=), Parser, andThen, oneOf, chompWhile, getChompedString, int, variable, map, run, spaces, succeed, symbol, problem)
 import Set
 import Dalmatian.Editor.Dialect.Separator as Separator
+import Dalmatian.Editor.Dialect.Failing as Failing exposing (FailureKind(..), Failure)
 
 type ResourceId
     = ResId String String -- curie path
     | FullResId String
-    | InvalidResourceId String
+    | InvalidResourceId Failure
 
 toString : ResourceId -> String
 toString id =
@@ -18,15 +19,17 @@ toString id =
         ResId curie path ->
            curie ++ ":" ++ path
 
-        InvalidResourceId str->
-            "invalid-resource-id"
+        InvalidResourceId failure ->
+           failure.message
 
-isInvalid : ResourceId -> Bool
-isInvalid id =
-    case id of
-       InvalidResourceId str -> True
-       _ -> False
-
+getInvalidResourceId: ResourceId -> Maybe Failure
+getInvalidResourceId resourceId =
+    case resourceId of
+        InvalidResourceId failure ->
+            Just failure
+        otherwise ->
+            Nothing
+        
 -- Ideally we would like to support Internationalized IRI with possible non latin characters;
 -- However, in this case validation will become tricky or pointless, and in practice, we have a controlled vocabulary..for now at least ..
 
@@ -50,14 +53,14 @@ checkPath value =
       if String.length value <= 300 then
         succeed value
       else
-        problem "The path should be less than 300 characters long"
+        Failing.createMessage InvalidLengthFailure "The path should be less than 300 characters long" |> problem
 
 checkCurie : String -> Parser String
 checkCurie value =
       if String.length value <= 30 then
         succeed value
       else
-        problem "The curie should be less than 30 characters long"
+        Failing.createMessage InvalidLengthFailure "The curie should be less than 30 characters long" |> problem
 
 parser : Parser ResourceId
 parser =
@@ -78,7 +81,7 @@ fromString str =
     case run parser str of
         Ok id ->
             id
-
+        
         Err msg ->
-           InvalidResourceId str
+           InvalidResourceId (Failing.fromDeadEndList msg str)
 

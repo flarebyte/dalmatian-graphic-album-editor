@@ -1,4 +1,4 @@
-module Fuzzing exposing (identifier, corruptedIdentifier)
+module Fuzzing exposing (identifier, corruptedIdentifier, curie, path, corruptedCurie, corruptedPath)
 
 import Fuzz as Fuzz exposing (Fuzzer, custom, intRange)
 import Random as Random exposing (Generator)
@@ -16,7 +16,7 @@ resourceIdentifier =
 alphaNumChar : Generator Char
 alphaNumChar = 
     RandExtra.frequency
-        ( 5, RandChar.upperCaseLatin )
+        ( 5, RandChar.english )
         [ 
             ( 1, RandChar.char 48 57 ) -- digits
         ]
@@ -46,7 +46,28 @@ coreIdentifierChar =
             , ( 1, Random.constant '/' )
         ]
 
+pathChar : Generator Char
+pathChar =
+    RandExtra.frequency
+        ( 5, alphaNumChar )
+        [ 
+            ( 1, Random.constant '-' )
+            , ( 1, Random.constant '_' )
+            , ( 1, Random.constant '.' )
+            , ( 1, Random.constant '/' )
+        ]
 
+curieString : Generator String
+curieString =
+    RandString.rangeLengthString 1 20 alphaNumChar
+
+pathString : Generator String
+pathString =
+    Random.pair 
+    (RandString.rangeLengthString 1 1 alphaNumChar)
+    (RandString.rangeLengthString 1 200 pathChar)
+    |> Random.map (\p -> Tuple.first p ++ Tuple.second p)
+ 
 identifierString : Generator String
 identifierString =
     Random.pair 
@@ -62,6 +83,14 @@ identifier : Fuzzer String
 identifier =
     custom identifierString Shrink.noShrink
 
+curie : Fuzzer String
+curie =
+    custom curieString Shrink.noShrink
+
+path : Fuzzer String
+path =
+    custom pathString Shrink.noShrink
+
 
 corruptString: Int -> String -> String -> String
 corruptString pos bad good =
@@ -73,3 +102,11 @@ corruptString pos bad good =
 corruptedIdentifier : Fuzzer String
 corruptedIdentifier =
     Fuzz.map3 corruptString (intRange 0 10) (custom unwantedString Shrink.string) identifier
+
+corruptedCurie : Fuzzer String
+corruptedCurie =
+    Fuzz.map3 corruptString (intRange 0 10) (custom unwantedString Shrink.string) curie
+
+corruptedPath : Fuzzer String
+corruptedPath =
+    Fuzz.map3 corruptString (intRange 0 10) (custom unwantedString Shrink.string) path

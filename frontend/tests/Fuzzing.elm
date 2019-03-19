@@ -96,17 +96,18 @@ corruptString: Int -> String -> String -> String
 corruptString pos bad good =
     let 
         pivot = remainderBy (good |> String.length) pos
+        safePivot = if pivot == 0 then 1 else pivot
     in
-        String.left pivot good ++ bad ++ String.right pivot good
+        String.left safePivot good ++ bad ++ String.right safePivot good
 
 corruptedIdentifier : Fuzzer String
 corruptedIdentifier =
-    Fuzz.map3 corruptString (intRange 0 10) (custom unwantedString Shrink.string) identifier
+    Fuzz.map3 corruptString (intRange 3 15) (custom unwantedString Shrink.string) identifier
 
 corruptedCurie : Fuzzer String
 corruptedCurie =
-    Fuzz.map3 corruptString (intRange 0 10) (custom unwantedString Shrink.string) curie
+    Fuzz.map3 corruptString (intRange 3 15) (custom unwantedString Shrink.string) curie
 
 corruptedPath : Fuzzer String
 corruptedPath =
-    Fuzz.map3 corruptString (intRange 0 10) (custom unwantedString Shrink.string) path
+    Fuzz.map3 corruptString (intRange 3 15) (custom unwantedString Shrink.string) path

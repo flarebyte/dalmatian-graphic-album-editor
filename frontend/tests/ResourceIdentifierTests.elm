@@ -35,9 +35,9 @@ suite =
                     ResourceIdentifier.fromString (ResourceIdentifier.toString (ResId c p))
                         |>ResourceIdentifier.getInvalidResourceId |> Maybe.map .kind |> Expect.equal (Just InvalidFormatFailure)
             
-            -- , fuzz2 curie path "should reject very long curie" <|
-            --     \c p ->
-            --         ResourceIdentifier.fromString (ResourceIdentifier.toString ( ResId (longPrefix ++ c) p))
-            --             |>ResourceIdentifier.isInvalid |> Expect.equal True
+            , fuzz2 curie path "should reject very long curie" <|
+                \c p ->
+                    ResourceIdentifier.fromString (ResourceIdentifier.toString ( ResId (longPrefix ++ c) p))
+                       |>ResourceIdentifier.getInvalidResourceId |> Maybe.map .kind |> Expect.equal (Just InvalidLengthFailure)
         ]
     ]

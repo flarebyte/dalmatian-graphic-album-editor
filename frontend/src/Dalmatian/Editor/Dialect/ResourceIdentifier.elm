@@ -66,7 +66,7 @@ parser : Parser ResourceId
 parser =
   oneOf
     [succeed ResId
-        |= extractCurie
+        |= (extractCurie |> andThen checkCurie)
         |. symbol ":"
         |= (extractPath |> andThen checkPath)
         |. Separator.space

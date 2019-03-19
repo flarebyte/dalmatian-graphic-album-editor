@@ -1,4 +1,4 @@
-module Fuzzing exposing (identifier, corruptedIdentifier, curie, path, corruptedCurie, corruptedPath)
+module Fuzzing exposing (identifier, corruptedIdentifier, curie, path, corruptedCurie, corruptedPath, url, corruptedUrl)
 
 import Fuzz as Fuzz exposing (Fuzzer, custom, intRange)
 import Random as Random exposing (Generator)
@@ -74,7 +74,12 @@ identifierString =
     (RandString.rangeLengthString 1 1 alphaNumChar)
     (RandString.rangeLengthString 1 50 coreIdentifierChar)
     |> Random.map (\p -> Tuple.first p ++ Tuple.second p)
-    
+
+urlString : Generator String
+urlString =
+    pathString
+    |> Random.map (\p -> "https://" ++ p)
+
 unwantedString: Generator String
 unwantedString =
     RandString.rangeLengthString 1 3 unwantedChar
@@ -91,6 +96,9 @@ path : Fuzzer String
 path =
     custom pathString Shrink.noShrink
 
+url : Fuzzer String
+url =
+    custom urlString Shrink.noShrink
 
 corruptString: Int -> String -> String -> String
 corruptString pos bad good =
@@ -111,3 +119,7 @@ corruptedCurie =
 corruptedPath : Fuzzer String
 corruptedPath =
     Fuzz.map3 corruptString (intRange 3 15) (custom unwantedString Shrink.string) path
+
+corruptedUrl : Fuzzer String
+corruptedUrl =
+    Fuzz.map3 corruptString (intRange 8 20) (custom unwantedString Shrink.string) url

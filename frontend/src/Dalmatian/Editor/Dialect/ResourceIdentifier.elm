@@ -38,8 +38,8 @@ extractCurie = variable { start = Char.isAlphaNum
         , reserved = Set.fromList ["http", "https", "id", "iid"]
         }
 
-urlish = variable { start = Char.isAlphaNum
-        , inner = \c -> Char.isAlphaNum c || c == '_' || c == '-' || c == '/' || c == '.'
+extractUrl = variable { start = Char.isAlphaNum
+        , inner = \c -> Char.isAlphaNum c || c == '_' || c == '-' || c == '/' || c == '.' || c == ':'
         , reserved = Set.empty
         }
 
@@ -62,6 +62,15 @@ checkCurie value =
       else
         Failing.createMessage InvalidLengthFailure "The curie should be less than 30 characters long" |> problem
 
+checkUrl : String -> Parser String
+checkUrl value =
+      if String.length value > 300 then
+        Failing.createMessage InvalidLengthFailure "The url should be less than 300 characters long" |> problem
+      else if not (String.startsWith "http://" value || String.startsWith "https://" value) then
+        Failing.createMessage  InvalidFormatFailure "An url must start by http:// or https://" |> problem
+      else
+        succeed value
+
 parser : Parser ResourceId
 parser =
   oneOf
@@ -72,7 +81,7 @@ parser =
         |. Separator.space
     , succeed FullResId
         |. symbol "<"
-        |= urlish  
+        |= (extractUrl|> andThen checkUrl)  
         |. symbol ">"
     ]
 

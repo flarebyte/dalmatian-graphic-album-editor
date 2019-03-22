@@ -1,6 +1,6 @@
 module Dalmatian.Editor.Speech exposing (Interlocutor, Transcript, fromStringInterlocutor)
 
-import Dalmatian.Editor.Dialect.Identifier exposing (Id(..))
+import Dalmatian.Editor.Dialect.Identifier as Identifier exposing (Id)
 
 
 type Interlocutor
@@ -23,4 +23,4 @@ type Transcript
 
 fromStringInterlocutor : String -> Interlocutor
 fromStringInterlocutor text =
-    Narrator (StringId "")
+    Narrator (Identifier.create  "abc")

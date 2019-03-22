@@ -3,8 +3,9 @@ module IdentifierTests exposing (..)
 import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer, int, intRange, list, string, constant, oneOf)
 import Test exposing (..)
-import Dalmatian.Editor.Dialect.Identifier as Identifier exposing (Id(..))
-import Fuzzing exposing (identifier, corruptedIdentifier)
+import Dalmatian.Editor.Dialect.Identifier as Identifier exposing (Id)
+import Fuzzing exposing (identifier, corruptedIdentifier, positiveNumber)
+import Dalmatian.Editor.Dialect.Failing as Failing exposing (FailureKind(..), Failure)
 
 longPrefix = String.repeat 100 "a"
 
@@ -14,34 +15,34 @@ suite =
     [
         describe "fromString"
         [
-            fuzz (intRange 0 10000 ) "should support IntId" <|
+            fuzz positiveNumber "should support IntId" <|
                 \a ->
-                    Identifier.fromString (Identifier.toString (IntId a))
-                        |> Expect.equal (IntId a)
-            , fuzz (intRange -1000 -1 ) "should reject negative number" <|
+                    Identifier.fromString (Identifier.toString (Identifier.createInt a))
+                        |> Expect.equal (Identifier.createInt a)
+            , fuzz positiveNumber "should reject negative number" <|
                 \a ->
-                    Identifier.fromString (Identifier.toString (IntId a))
-                        |> Expect.equal (InvalidId ("iid:" ++ (String.fromInt a)))
+                    Identifier.fromString ("iid:-" ++ String.fromInt a)
+                        |>Identifier.getInvalidId |> Maybe.map .kind |> Expect.equal (Just InvalidFormatFailure)
         
             , fuzz identifier "should support StringId" <|
                 \str ->
-                    Identifier.fromString (Identifier.toString (StringId str))
-                        |> Expect.equal (StringId str)
+                    Identifier.fromString (Identifier.toString (Identifier.create str))
+                        |> Expect.equal (Identifier.create str)
 
             , fuzz corruptedIdentifier "should reject corrupted identifier" <|
                 \str ->
-                    Identifier.fromString (Identifier.toString (StringId str))
-                        |> Expect.equal (InvalidId ("id:" ++ str))
+                    Identifier.fromString ("id:" ++ str)
+                        |>Identifier.getInvalidId |> Maybe.map .kind |> Expect.equal (Just InvalidFormatFailure)
             
             , fuzz identifier "should reject very long identifier" <|
                 \str ->
-                    Identifier.fromString (Identifier.toString (longPrefix ++ str |> StringId))
-                        |> Expect.equal (InvalidId ("id:" ++ longPrefix ++ str))
+                    Identifier.fromString ("id:" ++ longPrefix ++ str)
+                        |>Identifier.getInvalidId |> Maybe.map .kind |> Expect.equal (Just InvalidFormatFailure)
 
             , test "should reject empty string" <|
                 \_ ->
-                    Identifier.fromString (Identifier.toString (StringId ""))
-                        |> Expect.equal (InvalidId ("id:"))
+                    Identifier.fromString "id:"
+                        |>Identifier.getInvalidId |> Maybe.map .kind |> Expect.equal (Just InvalidFormatFailure)
                     ]
 
     ]

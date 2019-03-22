@@ -1,4 +1,4 @@
-module Dalmatian.Editor.Dialect.ResourceIdentifier exposing (ResourceId(..), toString, fromString, parser, getInvalidResourceId)
+module Dalmatian.Editor.Dialect.ResourceIdentifier exposing (ResourceId, toString, fromString, parser, getInvalidResourceId, create, createByUrl)
 
 import Parser exposing ((|.), (|=), Parser, andThen, oneOf, chompWhile, getChompedString, int, variable, map, run, spaces, succeed, symbol, problem)
 import Set
@@ -9,6 +9,26 @@ type ResourceId
     = ResId String String -- curie path
     | FullResId String
     | InvalidResourceId Failure
+
+createByUrl: String ->  ResourceId
+createByUrl value =
+    if String.length value > 300 then
+        Failing.create value InvalidLengthFailure "The url should be less than 300 characters long" |> InvalidResourceId
+    else if not (String.startsWith "http://" value || String.startsWith "https://" value) then
+        Failing.create value InvalidFormatFailure "An url must start by http:// or https://" |> InvalidResourceId
+    else if value |> String.dropLeft 7 |> String.contains ":" then
+        Failing.create value InvalidFormatFailure "The url must not contain any colon " |> InvalidResourceId
+    else
+        FullResId value
+
+create: String -> String ->  ResourceId
+create curie path =
+    if String.length curie > 30 then
+        Failing.create curie InvalidLengthFailure "The curie should be less than 30 characters long" |> InvalidResourceId
+    else if String.length path > 300 then
+        Failing.create path InvalidLengthFailure "The path should be less than 300 characters long" |> InvalidResourceId
+    else
+        ResId curie path
 
 toString : ResourceId -> String
 toString id =

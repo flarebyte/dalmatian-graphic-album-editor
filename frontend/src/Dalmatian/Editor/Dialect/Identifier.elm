@@ -1,14 +1,38 @@
-module Dalmatian.Editor.Dialect.Identifier exposing (Id(..), fromString, toString, parser)
+module Dalmatian.Editor.Dialect.Identifier exposing (Id, create, createInt, getInvalidId, fromString, toString, parser)
 
 import Parser exposing ((|.), (|=), Parser, oneOf, andThen, chompWhile, getChompedString, int, variable, map, run, spaces, succeed, symbol, keyword, chompUntilEndOr, problem)
 import Set
 import Dalmatian.Editor.Dialect.Separator as Separator
+import Dalmatian.Editor.Dialect.Failing as Failing exposing (FailureKind(..), Failure)
 
 type Id
     = StringId String
     | IntId Int
-    | InvalidId String
+    | InvalidId Failure
 
+createInt: Int -> Id
+createInt value =
+    if value >= 0 then
+        IntId value
+    else
+        Failing.create (String.fromInt value) InvalidFormatFailure "Id should not be a negative number" |> InvalidId
+
+create: String ->  Id
+create value =
+    if String.isEmpty value then
+        Failing.create value InvalidFormatFailure "Id should not be a empty" |> InvalidId
+    else if String.length value > 70 then
+        Failing.create value InvalidLengthFailure "The id should be less than 70 characters long" |> InvalidId
+    else
+        StringId value
+
+getInvalidId: Id -> Maybe Failure
+getInvalidId id =
+    case id of
+        InvalidId failure ->
+            Just failure
+        otherwise ->
+            Nothing
 
 toString : Id -> String
 toString id =
@@ -19,8 +43,8 @@ toString id =
         IntId n ->
             "iid:" ++ String.fromInt n
         
-        InvalidId str->
-            "The Identifier is invalid: " ++ str
+        InvalidId failure ->
+            failure.message
 
 extractId: Parser String
 extractId = variable
@@ -60,5 +84,5 @@ fromString str =
             id
 
         Err msg ->
-           InvalidId str
+           InvalidId (Failing.fromDeadEndList msg str)
 

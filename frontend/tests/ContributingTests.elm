@@ -5,19 +5,19 @@ import Fuzz exposing (Fuzzer, int, intRange, list, string, constant, oneOf)
 import Test exposing (..)
 import Parser exposing (run)
 import Dalmatian.Editor.Contributing as Contributing exposing (Contribution(..))
-import Dalmatian.Editor.Dialect.ResourceIdentifier as ResourceIdentifier exposing (ResourceId(..))
+import Dalmatian.Editor.Dialect.ResourceIdentifier as ResourceIdentifier exposing (ResourceId)
 import Dalmatian.Editor.Dialect.LanguageIdentifier as LanguageIdentifier exposing (LanguageId)
-import Dalmatian.Editor.Dialect.Identifier as Identifier exposing (Id(..))
+import Dalmatian.Editor.Dialect.Identifier as Identifier exposing (Id)
 import Dalmatian.Editor.Token as Token exposing (TokenValue)
 import Dalmatian.Editor.Dialect.Stringy as Stringy
 
 fuzzyContribution: Fuzzer Contribution
 fuzzyContribution =
     [
-        ContributionHeader (ResId "contribution" "main") "Main contributor"
+        ContributionHeader (ResourceIdentifier.create "contribution" "main") "Main contributor"
         , ContributionLanguage (LanguageIdentifier.createLanguage "en")
-        , ContributionFooter (ResId "contribution" "main") "Contributors with more than two contributions"
-        , Contributor (StringId "a/b/c") (ResId "contribution" "colorist") "Pencil colored the drawings"
+        , ContributionFooter (ResourceIdentifier.create "contribution" "main") "Contributors with more than two contributions"
+        , Contributor (Identifier.create "a/b/c") (ResourceIdentifier.create "contribution" "colorist") "Pencil colored the drawings"
     ] |> List.map constant |> oneOf
 
 

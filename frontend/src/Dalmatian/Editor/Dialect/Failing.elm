@@ -1,4 +1,4 @@
-module Dalmatian.Editor.Dialect.Failing exposing (FailureKind(..), Failure, fromDeadEndList, createMessage)
+module Dalmatian.Editor.Dialect.Failing exposing (FailureKind(..), Failure, fromDeadEndList, create, createMessage)
 
 import Parser exposing(DeadEnd, Problem(..), (|.), (|=), Parser, oneOf, andThen, chompWhile, getChompedString, int, variable, map, run, spaces, succeed, symbol, keyword, chompUntilEndOr, problem)
 
@@ -59,6 +59,14 @@ createMessage failureKind message =
     case failureKind of
         InvalidFormatFailure -> "(753c7eba) " ++ message
         InvalidLengthFailure -> "(a799245c) " ++ message
+
+create: String -> FailureKind -> String -> Failure
+create source failureKind message =
+    {
+    kind = failureKind
+    , source = source
+    , message = createMessage failureKind message
+    }
 
 parseFailureKind : String -> FailureKind
 parseFailureKind str =

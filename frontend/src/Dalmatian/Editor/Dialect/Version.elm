@@ -1,6 +1,6 @@
-module Dalmatian.Editor.Dialect.Version exposing (SemanticVersion, parse)
+module Dalmatian.Editor.Dialect.Version exposing (SemanticVersion, parser, toString)
 
-import Parser exposing ((|.), (|=), Parser, chompWhile, getChompedString, int, map, run, spaces, succeed, symbol)
+import Parser exposing ((|.), (|=), Parser, chompWhile, getChompedString, int, map, run, spaces, succeed, symbol, keyword)
 
 
 type alias SemanticVersion =
@@ -25,11 +25,6 @@ parser =
         |= (map toIntOrZero <| getChompedString <| chompWhile Char.isDigit)
 
 
-parse : String -> Result String SemanticVersion
-parse str =
-    case run parser str of
-        Ok foundVersion ->
-            Ok foundVersion
-
-        Err msg ->
-            Err "The format for version should be like 1.0.0"
+toString: SemanticVersion -> String
+toString v =
+    (String.fromInt v.major) ++ "." ++ (String.fromInt v.minor ) ++ "." ++ (String.fromInt v.patch)

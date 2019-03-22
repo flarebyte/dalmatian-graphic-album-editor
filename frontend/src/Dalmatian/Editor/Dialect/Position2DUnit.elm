@@ -13,11 +13,9 @@ type alias Position2D =
 parser : Parser Position2D
 parser =
     succeed Position2D
-        |. spaces
         |= FractionUnit.parser
         |. symbol ","
         |= FractionUnit.parser
-        |. spaces
 
 parse : String -> Result String Position2D
 parse str =

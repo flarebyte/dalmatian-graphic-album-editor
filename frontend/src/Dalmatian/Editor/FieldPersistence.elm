@@ -4,7 +4,7 @@ module Dalmatian.Editor.FieldPersistence exposing (FieldValue(..),
     isValidFieldValue, 
     toStringFieldValue,
     updateRank)
-
+import Parser exposing(run)
 import Dalmatian.Editor.Dialect.Coloring as Coloring exposing (Chroma)
 import Dalmatian.Editor.Compositing exposing (BinaryData(..), Composition)
 import Dalmatian.Editor.Contributing as Contributing exposing (Contribution)
@@ -158,23 +158,23 @@ toStringFieldValue fieldType language tokenId value old =
             DateTimeValue value
 
         VersionType ->
-            case Version.parse value of
+            case run Version.parser value of
                 Ok version ->
                     VersionValue version
 
                 Err msg ->
-                    WarningMessage msg
+                    WarningMessage "The format for version is invalid"
 
         LanguageType ->
             LanguageValue value
 
         Dimension2DIntType ->
-           case Dimension2DIntUnit.parse value of
+           case run Dimension2DIntUnit.parser value of
                 Ok dim ->
                     Dimension2DIntValue dim
 
                 Err msg ->
-                    WarningMessage msg
+                    WarningMessage "The format for dimension is invalid"
 
         ListBoxType any ->
             ListBoxValue value

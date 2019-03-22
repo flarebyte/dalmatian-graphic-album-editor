@@ -7,7 +7,6 @@ type alias Fraction =
     , denominator : Int
     }
 
-
 parser : Parser Fraction
 parser =
     succeed Fraction

@@ -43,7 +43,8 @@ parser =
     [succeed IntId
         |. keyword "iid"
         |. symbol ":"
-        |= int    
+        |= int
+        |. Separator.space    
     ,succeed StringId
         |. keyword "id"
         |. symbol ":"

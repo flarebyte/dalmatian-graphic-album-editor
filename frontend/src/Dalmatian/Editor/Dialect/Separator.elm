@@ -19,7 +19,7 @@ newline =
     [succeed ()
         |. symbol "\n"
      , succeed ()
-        |. symbol "\r"
+        |. symbol "\r\n"
     , succeed ()
         |. end
     ]

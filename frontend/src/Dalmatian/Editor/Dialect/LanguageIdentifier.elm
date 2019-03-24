@@ -1,9 +1,10 @@
-module Dalmatian.Editor.Dialect.LanguageIdentifier exposing (LanguageId, toString, fromString, parser, getInvalidLanguageId, createLanguage, createLanguageAndCountry)
+module Dalmatian.Editor.Dialect.LanguageIdentifier exposing (LanguageId, toString, fromString, parser, sequenceParser, getInvalidLanguageId, createLanguage, createLanguageAndCountry)
 
-import Parser exposing ((|.), (|=), Parser, oneOf, chompWhile, getChompedString, int, variable, map, run, spaces, succeed, symbol, keyword, problem, andThen)
+import Parser exposing ((|.), (|=), Parser, oneOf, chompWhile, getChompedString, int, variable, map, run, spaces, succeed, symbol, keyword, problem, andThen, sequence, Step(..), Trailing(..), loop)
 import Set
 import Dalmatian.Editor.Dialect.Failing as Failing exposing (FailureKind(..), Failure)
 import Dalmatian.Editor.Dialect.Separator as Separator
+import Dalmatian.Editor.Dialect.Stringy as Stringy
 
 type LanguageId
     = LangId String -- language
@@ -88,3 +89,25 @@ fromString str =
         Err msg ->
             InvalidLanguageId (Failing.fromDeadEndList msg str)
 
+type alias LabelledLanguageId = { value: LanguageId, label: String}
+
+labelledParser : Parser LabelledLanguageId
+labelledParser =
+    succeed LabelledLanguageId
+     |= parser
+     |= Stringy.parser
+
+sequenceParser : Parser (List LabelledLanguageId)
+sequenceParser=
+    loop [] sequenceHelp
+
+sequenceHelp : List LabelledLanguageId -> Parser (Step (List LabelledLanguageId) (List LabelledLanguageId))
+sequenceHelp revStmts =
+      oneOf
+        [ succeed (\stmt -> Loop (stmt :: revStmts))
+            |. spaces
+            |= labelledParser
+            |. Separator.newline
+        , succeed ()
+            |> map (\_ -> Done (List.reverse revStmts))
+        ]

@@ -17,6 +17,7 @@ import Dalmatian.Editor.Tokens.Token as Token exposing (TokenValue)
 import Parser exposing ((|.), (|=), Parser, oneOf, chompWhile, getChompedString, int, variable, map, run, spaces, succeed, symbol)
 import Set
 import Dalmatian.Editor.Dialect.Stringy as Stringy
+import Dalmatian.Editor.Dialect.Separator as Separator
 
 type Contribution
     = ContributionHeader ResourceId String -- ex: main, minor
@@ -135,7 +136,7 @@ contributionParser =
         |= ResourceIdentifier.parser
         |. spaces
         |= Stringy.parser
-        |. spaces
+        |. Separator.space
     ]
 
 toString: Contribution -> String

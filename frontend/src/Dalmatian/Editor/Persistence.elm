@@ -12,10 +12,10 @@ module Dalmatian.Editor.Persistence exposing
     , updateStoreKeyValue
     )
 
-import Dalmatian.Editor.Contributing as Contributing
+import Dalmatian.Editor.Tokens.Contributing as Contributing
 import Dalmatian.Editor.FieldPersistence as FieldPersistence exposing (FieldValue(..))
 import Dalmatian.Editor.Schema exposing (FieldKey, FieldType(..), PanelKey, PredicateKey, ScreenZone, appUI)
-import Dalmatian.Editor.Token as Token exposing (TokenValue)
+import Dalmatian.Editor.Tokens.Token as Token exposing (TokenValue)
 
 
 type alias StoreValue =

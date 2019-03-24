@@ -1,4 +1,4 @@
-module Dalmatian.Editor.Tiling exposing (TileInstruction)
+module Dalmatian.Editor.Tokens.Tiling exposing (TileInstruction)
 
 import Dalmatian.Editor.Dialect.Identifier exposing (Id)
 import Dalmatian.Editor.Dialect.Position2DUnit exposing (Position2D)

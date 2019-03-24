@@ -1,4 +1,4 @@
-module Dalmatian.Editor.Speech exposing (Interlocutor, Transcript, fromStringInterlocutor)
+module Dalmatian.Editor.Tokens.Speech exposing (Interlocutor, Transcript, fromStringInterlocutor)
 
 import Dalmatian.Editor.Dialect.Identifier as Identifier exposing (Id)
 

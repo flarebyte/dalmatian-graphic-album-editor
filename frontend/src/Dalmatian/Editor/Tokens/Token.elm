@@ -1,4 +1,4 @@
-module Dalmatian.Editor.Token exposing (TokenValue, delete, find, getNextRank, getPreviousRank, update, updateRank)
+module Dalmatian.Editor.Tokens.Token exposing (TokenValue, delete, find, getNextRank, getPreviousRank, update, updateRank)
 
 
 type alias TokenValue v =

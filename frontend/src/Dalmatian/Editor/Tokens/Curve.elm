@@ -1,4 +1,4 @@
-module Dalmatian.Editor.Curve exposing (ArcFlag, Draw)
+module Dalmatian.Editor.Tokens.Curve exposing (ArcFlag, Draw)
 
 import Dalmatian.Editor.Dialect.Position2DIntUnit exposing (Position2DInt)
 

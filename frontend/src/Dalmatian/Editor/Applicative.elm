@@ -15,7 +15,7 @@ import Dalmatian.Editor.Persistence
         , updateStoreKeyValue
         )
 import Dalmatian.Editor.Schema exposing (FieldKey, PanelKey, PanelZone, ScreenZone, UIEvent(..))
-import Dalmatian.Editor.Token exposing (TokenValue)
+import Dalmatian.Editor.Tokens.Token exposing (TokenValue)
 
 
 type alias Model =

@@ -3,7 +3,7 @@ module TokenTests exposing (..)
 import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer, intRange, list, string, constant, oneOf)
 import Test exposing (..)
-import Dalmatian.Editor.Token as Token exposing (TokenValue)
+import Dalmatian.Editor.Tokens.Token as Token exposing (TokenValue)
 
 tokens = [
     TokenValue 1 1 1000

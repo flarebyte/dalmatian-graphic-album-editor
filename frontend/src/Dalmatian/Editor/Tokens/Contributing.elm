@@ -1,4 +1,4 @@
-module Dalmatian.Editor.Contributing exposing (Contribution(..)
+module Dalmatian.Editor.Tokens.Contributing exposing (Contribution(..)
     , fromStringList
     , fromStringListToken
     , toStringList
@@ -13,7 +13,7 @@ import Dalmatian.Editor.Dialog exposing (DialogBox, DialogBoxOption, DialogBoxTy
 import Dalmatian.Editor.Dialect.Identifier as Identifier exposing (Id)
 import Dalmatian.Editor.Dialect.ResourceIdentifier as ResourceIdentifier exposing (ResourceId)
 import Dalmatian.Editor.Dialect.LanguageIdentifier as LanguageIdentifier exposing (LanguageId)
-import Dalmatian.Editor.Token as Token exposing (TokenValue)
+import Dalmatian.Editor.Tokens.Token as Token exposing (TokenValue)
 import Parser exposing ((|.), (|=), Parser, oneOf, chompWhile, getChompedString, int, variable, map, run, spaces, succeed, symbol)
 import Set
 import Dalmatian.Editor.Dialect.Stringy as Stringy

@@ -4,11 +4,11 @@ import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer, int, intRange, list, string, constant, oneOf)
 import Test exposing (..)
 import Parser exposing (run)
-import Dalmatian.Editor.Contributing as Contributing exposing (Contribution(..))
+import Dalmatian.Editor.Tokens.Contributing as Contributing exposing (Contribution(..))
 import Dalmatian.Editor.Dialect.ResourceIdentifier as ResourceIdentifier exposing (ResourceId)
 import Dalmatian.Editor.Dialect.LanguageIdentifier as LanguageIdentifier exposing (LanguageId)
 import Dalmatian.Editor.Dialect.Identifier as Identifier exposing (Id)
-import Dalmatian.Editor.Token as Token exposing (TokenValue)
+import Dalmatian.Editor.Tokens.Token as Token exposing (TokenValue)
 import Dalmatian.Editor.Dialect.Stringy as Stringy
 
 fuzzyContribution: Fuzzer Contribution

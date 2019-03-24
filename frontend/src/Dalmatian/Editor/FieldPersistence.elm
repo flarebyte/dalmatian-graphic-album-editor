@@ -192,12 +192,12 @@ toStringFieldValue fieldType language tokenId value old =
             BinaryDataValue (ProxyImage value)
 
         ChromaType ->
-            case Coloring.parse value of
+            case run Coloring.parser value of
                 Ok chroma ->
                     ChromaValue chroma
 
                 Err msg ->
-                    WarningMessage msg
+                    WarningMessage "The format for color is invalid"
                     
         UrlListType ->
             getFieldValueAsStringList old |> (::) value |> UrlListValue

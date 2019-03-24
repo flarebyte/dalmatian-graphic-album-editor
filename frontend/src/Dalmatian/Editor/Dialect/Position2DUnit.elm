@@ -1,7 +1,7 @@
 module Dalmatian.Editor.Dialect.Position2DUnit exposing (
  Position2D, parser, toString)
 
-import Parser exposing ((|.), (|=), Parser, chompWhile, getChompedString, int, map, run, spaces, succeed, symbol)
+import Parser exposing ((|.), (|=), Parser, chompWhile, getChompedString, int, map, run, spaces, succeed, symbol, keyword)
 import Dalmatian.Editor.Dialect.FractionUnit as FractionUnit exposing (Fraction)
 
 type alias Position2D =
@@ -13,6 +13,8 @@ type alias Position2D =
 parser : Parser Position2D
 parser =
     succeed Position2D
+        |. keyword "P"
+        |. symbol "="
         |= FractionUnit.parser
         |. symbol ","
         |= FractionUnit.parser
@@ -28,4 +30,4 @@ parse str =
 
 toString: Position2D -> String
 toString value =
-    (FractionUnit.toString value.width) ++ "," ++ (FractionUnit.toString value.height)
+   "P=" ++  (FractionUnit.toString value.width) ++ "," ++ (FractionUnit.toString value.height)

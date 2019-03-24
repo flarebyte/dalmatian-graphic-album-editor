@@ -1,38 +1,62 @@
-module Dalmatian.Editor.Dialect.Coloring exposing (Chroma, parser, parse, toString)
+module Dalmatian.Editor.Dialect.Coloring exposing (Chroma, parser, fromString, toString, createRGBA, createHSLA, createCMYK, create)
 
-import Parser exposing ((|.), (|=), Parser, oneOf, chompWhile, getChompedString, int, variable, map, run, spaces, succeed, symbol)
+import Parser exposing ((|.), (|=), Parser, oneOf, chompWhile, getChompedString, int, variable, map, run, spaces, succeed, symbol, keyword)
 import Set
 import Dalmatian.Editor.Dialect.FractionUnit as FractionUnit exposing (Fraction)
-import Dalmatian.Editor.Dialect.Stringy as Stringy
+import Dalmatian.Editor.Dialect.ResourceIdentifier as ResourceIdentifier exposing(ResourceId)
+import Dalmatian.Editor.Dialect.Failing as Failing exposing (FailureKind(..), Failure)
 
 type Chroma
-    = RGBA Int Int Int Int
-    | HSLA Fraction Fraction Fraction Fraction
+    = RedGreenBlueAlpha Int Int Int Int
+    | HueSLA Fraction Fraction Fraction Fraction
     | CMYK Fraction Fraction Fraction Fraction
-    | ColorName String
+    | ColorId ResourceId
+    | InvalidChroma Failure
 
+
+createRGBA: Int -> Int -> Int -> Int -> Chroma
+createRGBA r g b a =
+    RedGreenBlueAlpha r g b a
+
+createHSLA: Fraction -> Fraction -> Fraction -> Fraction -> Chroma
+createHSLA h s l a =
+    HueSLA h s l a
+
+createCMYK: Fraction -> Fraction -> Fraction -> Fraction -> Chroma
+createCMYK c m y k =
+    CMYK c m y k
+
+create: ResourceId -> Chroma
+create resId =
+    ColorId resId
 
 toString : Chroma -> String
 toString chroma =
         case chroma of
-        RGBA r g b a ->
-            "RGBA"
+        RedGreenBlueAlpha r g b a ->
+            "RGBA=" ++ (String.fromInt r) ++ " " ++  (String.fromInt g) ++ " " 
+            ++ (String.fromInt b) ++ " " ++ (String.fromInt a)
 
-        HSLA h s l a ->
-            "HSLA"
+        HueSLA h s l a ->
+            "HSLA=" ++ (FractionUnit.toString h) ++ " " ++  (FractionUnit.toString s) ++ " " 
+            ++ (FractionUnit.toString l) ++ " " ++ (FractionUnit.toString a)
         
         CMYK c m y k ->
-            "CMYK"
+            "CMYK=" ++ (FractionUnit.toString c) ++ " " ++  (FractionUnit.toString m) ++ " " 
+            ++ (FractionUnit.toString y) ++ " " ++ (FractionUnit.toString k)
         
-        ColorName name ->
-            "ColorName"
+        ColorId id ->
+            "COLOR=" ++ (ResourceIdentifier.toString id)
+        
+        InvalidChroma failure ->
+            failure.message
 
 parser : Parser Chroma
 parser =
   oneOf
-    [succeed RGBA
-        |. symbol "RGBA"
-        |.spaces
+    [succeed RedGreenBlueAlpha
+        |. keyword "RGBA"
+        |. symbol "="
         |= int
         |.spaces
         |= int
@@ -40,10 +64,9 @@ parser =
         |= int
         |.spaces
         |= int
-        |.spaces
-    , succeed HSLA
-        |. symbol "HSLA"
-        |.spaces
+    , succeed HueSLA
+        |. keyword "HSLA"
+        |. symbol "="
         |= FractionUnit.parser   
         |.spaces
         |= FractionUnit.parser   
@@ -51,10 +74,9 @@ parser =
         |= FractionUnit.parser   
         |.spaces
         |= FractionUnit.parser   
-        |.spaces
     , succeed CMYK
-        |. symbol "CMYK"
-        |.spaces
+        |. keyword "CMYK"
+        |. symbol "="
         |= FractionUnit.parser   
         |.spaces
         |= FractionUnit.parser   
@@ -62,19 +84,17 @@ parser =
         |= FractionUnit.parser   
         |.spaces
         |= FractionUnit.parser   
-        |.spaces
-    , succeed ColorName
-        |. symbol "ColorName"
-        |.spaces
-        |= Stringy.parser   
-        |.spaces
-    ]
+    , succeed ColorId
+        |. keyword "COLOR"
+        |. symbol "="
+        |= ResourceIdentifier.parser   
+   ]
 
-parse : String -> Result String Chroma
-parse str =
+fromString : String -> Chroma
+fromString str =
     case run parser str of
-        Ok ab ->
-            Ok ab
+        Ok id ->
+            id
 
         Err msg ->
-            Err "The format for chroma is invalid"
+           InvalidChroma (Failing.fromDeadEndList msg str)

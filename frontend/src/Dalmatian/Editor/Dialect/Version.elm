@@ -1,4 +1,4 @@
-module Dalmatian.Editor.Dialect.Version exposing (SemanticVersion, parser, toString)
+module Dalmatian.Editor.Dialect.Version exposing (SemanticVersion, parser, toString, create)
 
 import Parser exposing ((|.), (|=), Parser, chompWhile, getChompedString, int, map, run, spaces, succeed, symbol, keyword)
 
@@ -9,6 +9,13 @@ type alias SemanticVersion =
     , patch : Int
     }
 
+create: Int -> Int -> Int -> SemanticVersion
+create major minor patch =
+    {
+        major = major
+        , minor = minor
+        , patch = patch
+    }
 
 toIntOrZero : String -> Int
 toIntOrZero str =

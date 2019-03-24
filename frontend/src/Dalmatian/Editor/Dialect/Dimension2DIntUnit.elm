@@ -11,7 +11,7 @@ type alias Dimension2DInt =
 parser : Parser Dimension2DInt
 parser =
     succeed Dimension2DInt
-        |. keyword "D"
+        |. keyword "d"
         |. symbol "="
         |= int
         |. symbol ","
@@ -19,4 +19,4 @@ parser =
 
 toString: Dimension2DInt -> String
 toString value =
-    "D=" ++ (String.fromInt value.width) ++ "," ++ (String.fromInt value.height)
+    "d=" ++ (String.fromInt value.width) ++ "," ++ (String.fromInt value.height)

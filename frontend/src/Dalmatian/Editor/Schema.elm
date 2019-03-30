@@ -1,33 +1,6 @@
-module Dalmatian.Editor.Schema exposing (FieldKey, FieldType(..), ListBoxItem, PanelKey, PanelZone(..), PredicateKey(..), SchemaUI(..), ScreenZone(..), UIEvent(..), appUI, formatList, mediumList)
+module Dalmatian.Editor.Schema exposing (FieldKey, FieldType(..), PanelKey, PanelZone(..), PredicateKey(..), SchemaUI(..), ScreenZone(..), UIEvent(..), DataId(..), appUI)
 
-
-type alias ListBoxItem =
-    { value : String
-    , display : String
-    }
-
-
-mediumList =
-    [ ListBoxItem "dlm:medium/monochrome/brochure" "Monochrome brochure"
-    , ListBoxItem "dlm:medium/polychrome/brochure" "Polychrome brochure"
-    , ListBoxItem "dlm:medium/monochrome/screen" "Monochrome screen"
-    , ListBoxItem "dlm:medium/polychrome/screen" "Polychrome screen"
-    ]
-
-
-formatList =
-    [ ListBoxItem "dlm:format/a5" "A5"
-    , ListBoxItem "dlm:format/a4" "A4"
-    , ListBoxItem "dlm:format/a3" "A3"
-    , ListBoxItem "dlm:format/comic-book" "Comic Book (6.63 x 10.25 inch)"
-    , ListBoxItem "dlm:format/us-trade" "US Trade ( 6 x 9 inch)"
-    , ListBoxItem "dlm:format/us-letter" "US Letter (8.5 x 11 inch)"
-    , ListBoxItem "dlm:format/square-8.5" "Square (8.5 x 8.5 inch)"
-    , ListBoxItem "dlm:format/japanese-b6" "Japanese B6"
-    , ListBoxItem "dlm:format/screen/landscape" "Screen Landscape"
-    , ListBoxItem "dlm:format/screen/portrait" "Screen Portrait"
-    ]
-
+type DataId = MediumId | FormatId
 
 type FieldType
     = ShortLocalizedListType
@@ -42,7 +15,7 @@ type FieldType
     | BinaryDataType
     | Dimension2DIntType
     | ContributionType
-    | ListBoxType (List ListBoxItem)
+    | ListBoxType DataId
     | LayoutType
     | InterlocutorType
     | TranscriptType
@@ -209,8 +182,8 @@ appUI =
     , SchemaField TitleKey "Title if different than album" MediumLocalizedType
     , SchemaField DescriptionKey "Description if different than album" TextAreaLocalizedType
     , SchemaField LanguageKey "The language of the published work" LanguageType
-    , SchemaField MediumKey "Material or physical carrier" (ListBoxType mediumList)
-    , SchemaField FormatKey "File format, physical medium, or dimensions" (ListBoxType formatList)
+    , SchemaField MediumKey "Material or physical carrier" (ListBoxType MediumId)
+    , SchemaField FormatKey "File format, physical medium, or dimensions" (ListBoxType FormatId)
     , SchemaField LayoutKey "Layout of the album" LayoutType
     ]
 

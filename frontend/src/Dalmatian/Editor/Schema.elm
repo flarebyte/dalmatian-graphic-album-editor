@@ -33,7 +33,6 @@ type FieldType
     = ShortLocalizedListType
     | MediumLocalizedType
     | TextAreaLocalizedType
-    | IdType
     | UrlListType
     | DateTimeType
     | VersionType
@@ -86,8 +85,7 @@ type PanelZone
 
 
 type PredicateKey
-    = IdKey
-    | VersionKey
+    = VersionKey
     | CreatedKey
     | ModifiedKey
     | TitleKey

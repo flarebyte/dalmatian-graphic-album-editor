@@ -10,8 +10,8 @@ import Dalmatian.Editor.FieldPersistence exposing (FieldValue(..), isValidFieldV
 screenZones = [GraphicAlbumScreen, RightsScreen, ContributionScreen, ContributorScreen, ColorScreen, FontScreen, IllustrationScreen]
 panelZones = [CopyrightsPanel, DefaultPanel, LicensePanel, ContributorListPanel, ContributorEditPanel, AttributionPanel, StencilListPanel, StencilEditPanel]
 languages = ["en-GB", "fr-FR", "en-US", "zh", "cs", "ja", "ko"]
-predicateKeys = [IdKey, VersionKey, CreatedKey, ModifiedKey, TitleKey, DescriptionKey, LanguageKey, KeywordKey]    
-fieldTypes = [ShortLocalizedListType, MediumLocalizedType, TextAreaLocalizedType, IdType, UrlListType, DateTimeType, VersionType]
+predicateKeys = [VersionKey, CreatedKey, ModifiedKey, TitleKey, DescriptionKey, LanguageKey, KeywordKey]    
+fieldTypes = [ShortLocalizedListType, MediumLocalizedType, TextAreaLocalizedType, UrlListType, DateTimeType, VersionType]
 panelKeys = [
     PanelKey GraphicAlbumScreen CopyrightsPanel "en-GB" 1
     , PanelKey RightsScreen DefaultPanel "en-US" 2
@@ -19,7 +19,6 @@ panelKeys = [
     , PanelKey ContributionScreen CopyrightsPanel "en" 4
     , PanelKey ContributorScreen DefaultPanel "ja" 5
     , PanelKey GraphicAlbumScreen LicensePanel "ko" 6
-    , PanelKey ColorScreen CopyrightsPanel "en-GB" 7
     ]
 
 fieldKeys:  List FieldKey

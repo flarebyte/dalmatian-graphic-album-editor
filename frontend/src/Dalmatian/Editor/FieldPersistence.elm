@@ -7,7 +7,6 @@ module Dalmatian.Editor.FieldPersistence exposing (FieldValue(..),
 import Parser exposing(run)
 import Dalmatian.Editor.Dialect.Coloring as Coloring exposing (Chroma)
 import Dalmatian.Editor.Tokens.Compositing exposing (BinaryData(..), Composition)
-import Dalmatian.Editor.Dialect.Identifier exposing (Id(..))
 import Dalmatian.Editor.LocalizedString as LocalizedString exposing (Model)
 import Dalmatian.Editor.Schema exposing (FieldType(..))
 import Dalmatian.Editor.Tokens.Speech exposing (Interlocutor, Transcript, fromStringInterlocutor)
@@ -19,7 +18,6 @@ import Dalmatian.Editor.Dialect.Version as Version exposing (SemanticVersion)
 
 type FieldValue
     = LocalizedListValue (List LocalizedString.Model)
-    | IdValue Id
     | VersionValue SemanticVersion
     | UrlListValue (List String)
     | DateTimeValue String
@@ -192,9 +190,6 @@ toStringFieldValue fieldType language tokenId value old =
             getFieldValueAsStringList old |> (::) value |> UrlListValue
 
         InterlocutorType ->
-            TodoField
-
-        IdType ->
             TodoField
 
         CompositionType ->

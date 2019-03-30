@@ -1,13 +1,13 @@
 module Dalmatian.Editor.Tokens.Speech exposing (Interlocutor, Transcript, fromStringInterlocutor)
 
-import Dalmatian.Editor.Dialect.Identifier as Identifier exposing (Id)
+import Dalmatian.Editor.Dialect.ResourceIdentifier as ResourceIdentifier exposing (ResourceId)
 
 
 type Interlocutor
-    = SpeakingCharacter Id
-    | ThinkingCharacter Id
-    | ListeningCharacter Id
-    | Narrator Id
+    = SpeakingCharacter ResourceId
+    | ThinkingCharacter ResourceId
+    | ListeningCharacter ResourceId
+    | Narrator ResourceId
 
 
 type Transcript
@@ -23,4 +23,4 @@ type Transcript
 
 fromStringInterlocutor : String -> Interlocutor
 fromStringInterlocutor text =
-    Narrator (Identifier.create  "abc")
+    Narrator (ResourceIdentifier.create "inter" "abc")

@@ -12,7 +12,6 @@ module Dalmatian.Editor.Persistence exposing
     , updateStoreKeyValue
     )
 
-import Dalmatian.Editor.Tokens.Contributing as Contributing
 import Dalmatian.Editor.FieldPersistence as FieldPersistence exposing (FieldValue(..))
 import Dalmatian.Editor.Schema exposing (FieldKey, FieldType(..), PanelKey, PredicateKey, ScreenZone, appUI)
 import Dalmatian.Editor.Tokens.Token as Token exposing (TokenValue)
@@ -72,9 +71,6 @@ selectToken maybeFkey tokenId list =
     case maybeFkey of
         Just fkey ->
             case findOneValueByFieldKey fkey list of
-                ContributionValue tokens ->
-                    Token.find tokenId tokens |> Maybe.map Contributing.toStringListToken
-
                 anythingElse ->
                     Nothing
 
@@ -90,8 +86,6 @@ getNextRank fieldKey tokenValue list =
 deleteToken : FieldKey -> TokenValue (List ( Int, String )) -> List StoreValue -> List StoreValue
 deleteToken fkey tokenValue panelValues =
     case findOneValueByFieldKey fkey panelValues of
-        ContributionValue tokens ->
-            deleteByFieldKey fkey panelValues |> (::) { key = fkey, value = Token.delete tokenValue.uid tokens |> ContributionValue }
 
         anythingElse ->
             panelValues
@@ -100,12 +94,6 @@ deleteToken fkey tokenValue panelValues =
 saveToken : FieldKey -> TokenValue (List ( Int, String )) -> List StoreValue -> List StoreValue
 saveToken fkey tokenValue panelValues =
     case findOneValueByFieldKey fkey panelValues of
-        ContributionValue tokens ->
-            panelValues
-
-        -- Contributing.fromStringList dialogValues
-        -- |> Maybe.map (updateValueToken fkey tokenId tokens panelValues)
-        -- |> Maybe.withDefault panelValues
         anythingElse ->
             panelValues
 

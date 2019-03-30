@@ -7,7 +7,6 @@ module Dalmatian.Editor.FieldPersistence exposing (FieldValue(..),
 import Parser exposing(run)
 import Dalmatian.Editor.Dialect.Coloring as Coloring exposing (Chroma)
 import Dalmatian.Editor.Tokens.Compositing exposing (BinaryData(..), Composition)
-import Dalmatian.Editor.Tokens.Contributing as Contributing exposing (Contribution)
 import Dalmatian.Editor.Dialect.Identifier exposing (Id(..))
 import Dalmatian.Editor.LocalizedString as LocalizedString exposing (Model)
 import Dalmatian.Editor.Schema exposing (FieldType(..))
@@ -30,7 +29,6 @@ type FieldValue
     | Dimension2DIntValue Dimension2DInt
     | ListBoxValue String
     | CompositionValue (List (TokenValue Composition))
-    | ContributionValue (List (TokenValue Contribution))
     | LayoutValue (List (TokenValue TileInstruction))
     | InterlocutorValue (List (TokenValue Interlocutor))
     | TranscriptValue (List (TokenValue Transcript))
@@ -91,9 +89,6 @@ getNextRank start fieldValue =
         CompositionValue tokens ->
             Token.getNextRank start tokens
 
-        ContributionValue tokens ->
-            Token.getNextRank start tokens
-
         LayoutValue tokens ->
             Token.getNextRank start tokens
 
@@ -111,9 +106,6 @@ getPreviousRank : Int -> FieldValue -> Int
 getPreviousRank start fieldValue =
     case fieldValue of
         CompositionValue tokens ->
-            Token.getPreviousRank start tokens
-
-        ContributionValue tokens ->
             Token.getPreviousRank start tokens
 
         LayoutValue tokens ->
@@ -134,9 +126,6 @@ updateRank tokenId rank fieldValue =
     case fieldValue of
         CompositionValue tokens ->
             Token.updateRank tokens tokenId rank |> CompositionValue
-
-        ContributionValue tokens ->
-            Token.updateRank tokens tokenId rank |> ContributionValue
 
         LayoutValue tokens ->
             Token.updateRank tokens tokenId rank |> LayoutValue

@@ -41,24 +41,6 @@ suite =
                     LanguageIdentifier.fromString (LanguageIdentifier.toString (createLanguage ""))
                         |>LanguageIdentifier.getInvalidLanguageId |> Maybe.map .kind |> Expect.equal (Just InvalidFormatFailure)
             
-            , test "should parse LanguageId tabular data" <|
-                \_ ->
-                    run LanguageIdentifier.sequenceParser languageTabData
-                        |> Expect.equal (Ok languageSequence)
-                    ]
+                   ]
 
     ]
-
-languageTabData = """
-    L=en ❘English❘
-    LC=en-GB ❘English (GB)❘
-    L=fr ❘French❘
-    LC=fr-FR ❘French (FR)❘
-    """ |> String.trim
-
-languageSequence = [
-    { value = createLanguage "en", label = "English" }
-    , { value = createLanguageAndCountry "en" "GB", label = "English (GB)" }
-    , { value = createLanguage "fr", label = "French" }
-    , { value = createLanguageAndCountry "fr" "FR", label = "French (FR)" }    
- ]

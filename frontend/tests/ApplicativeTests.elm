@@ -8,46 +8,50 @@ import Dalmatian.Editor.Schema exposing (FieldKey, FieldType(..), PanelKey, Pred
 import Dalmatian.Editor.Persistence exposing (StoreValue)
 import Dalmatian.Editor.FieldPersistence exposing (FieldValue(..))
 import Dalmatian.Editor.LocalizedString as LocalizedString
+import Dalmatian.Editor.Dialect.LanguageIdentifier as LanguageIdentifier exposing (LanguageId)
+
+enGB = LanguageIdentifier.createLanguageAndCountry "en" "gb"
+frFR = LanguageIdentifier.createLanguageAndCountry "fr" "fr"
 
 defaultPanelKey: PanelKey
-defaultPanelKey =  { screen = GraphicAlbumScreen, panel = DefaultPanel, uid = 0, language = "en-gb" }
+defaultPanelKey =  { screen = GraphicAlbumScreen, panel = DefaultPanel, uid = 0, language = enGB }
 
 defaultFrPanelKey: PanelKey
-defaultFrPanelKey =  { screen = GraphicAlbumScreen, panel = DefaultPanel, uid = 0, language = "fr-fr" }
+defaultFrPanelKey =  { screen = GraphicAlbumScreen, panel = DefaultPanel, uid = 0, language = frFR }
 
 contributorPanelKey: PanelKey
-contributorPanelKey =  { screen = ContributorScreen, panel = DefaultPanel, uid = 1, language = "en-gb" }
+contributorPanelKey =  { screen = ContributorScreen, panel = DefaultPanel, uid = 1, language = enGB }
 
 defaultPanelValues: List StoreValue
 defaultPanelValues =
     [ 
-        StoreValue (FieldKey defaultPanelKey TitleKey MediumLocalizedType) (LocalizedListValue [LocalizedString.Model "en-gb" "title 0" ])
-        , StoreValue (FieldKey defaultPanelKey DescriptionKey TextAreaLocalizedType) (LocalizedListValue [LocalizedString.Model "en-gb" "description 0" ])
-        , StoreValue (FieldKey defaultPanelKey LanguageKey LanguageType) (LanguageValue "en-gb")
+        StoreValue (FieldKey defaultPanelKey TitleKey MediumLocalizedType) (LocalizedListValue [LocalizedString.Model enGB "title 0" ])
+        , StoreValue (FieldKey defaultPanelKey DescriptionKey TextAreaLocalizedType) (LocalizedListValue [LocalizedString.Model enGB "description 0" ])
+        , StoreValue (FieldKey defaultPanelKey LanguageKey LanguageType) (LanguageValue enGB)
     ]
 
 modifiedDefaultPanelValues: List StoreValue
 modifiedDefaultPanelValues =
     [ 
-        StoreValue (FieldKey defaultPanelKey TitleKey MediumLocalizedType) (LocalizedListValue [LocalizedString.Model "en-gb" "title 00" ])
-        , StoreValue (FieldKey defaultPanelKey DescriptionKey TextAreaLocalizedType) (LocalizedListValue [LocalizedString.Model "en-gb" "description 00" ])
-        , StoreValue (FieldKey defaultPanelKey LanguageKey LanguageType) (LanguageValue "en-gb")
+        StoreValue (FieldKey defaultPanelKey TitleKey MediumLocalizedType) (LocalizedListValue [LocalizedString.Model enGB "title 00" ])
+        , StoreValue (FieldKey defaultPanelKey DescriptionKey TextAreaLocalizedType) (LocalizedListValue [LocalizedString.Model enGB "description 00" ])
+        , StoreValue (FieldKey defaultPanelKey LanguageKey LanguageType) (LanguageValue enGB)
     ]
 
 defaultFrPanelValues: List StoreValue
 defaultFrPanelValues =
     [ 
-        StoreValue (FieldKey defaultFrPanelKey TitleKey MediumLocalizedType) (LocalizedListValue [LocalizedString.Model "en-fr" "titre 0" ])
-        , StoreValue (FieldKey defaultFrPanelKey DescriptionKey TextAreaLocalizedType) (LocalizedListValue [LocalizedString.Model "en-fr" "commentaire 0" ])
-        , StoreValue (FieldKey defaultFrPanelKey LanguageKey LanguageType) (LanguageValue "fr-fr")
+        StoreValue (FieldKey defaultFrPanelKey TitleKey MediumLocalizedType) (LocalizedListValue [LocalizedString.Model (LanguageIdentifier.createLanguageAndCountry "en" "fr") "titre 0" ])
+        , StoreValue (FieldKey defaultFrPanelKey DescriptionKey TextAreaLocalizedType) (LocalizedListValue [LocalizedString.Model (LanguageIdentifier.createLanguageAndCountry "en" "fr") "commentaire 0" ])
+        , StoreValue (FieldKey defaultFrPanelKey LanguageKey LanguageType) (LanguageValue frFR)
     ]
 
 contributorPanelValues: List StoreValue
 contributorPanelValues =
     [ 
-        StoreValue (FieldKey contributorPanelKey TitleKey MediumLocalizedType) (LocalizedListValue [LocalizedString.Model "en-gb" "title 1" ])
-        , StoreValue (FieldKey contributorPanelKey DescriptionKey TextAreaLocalizedType) (LocalizedListValue [LocalizedString.Model "en-gb" "description 1" ])
-        , StoreValue (FieldKey contributorPanelKey LanguageKey LanguageType) (LanguageValue "en-gb")
+        StoreValue (FieldKey contributorPanelKey TitleKey MediumLocalizedType) (LocalizedListValue [LocalizedString.Model enGB "title 1" ])
+        , StoreValue (FieldKey contributorPanelKey DescriptionKey TextAreaLocalizedType) (LocalizedListValue [LocalizedString.Model enGB "description 1" ])
+        , StoreValue (FieldKey contributorPanelKey LanguageKey LanguageType) (LanguageValue enGB)
     ]
 
 guessPanelKey: List StoreValue -> Maybe PanelKey
@@ -66,7 +70,7 @@ fuzzyPanelKey = [defaultPanelKey, defaultFrPanelKey, contributorPanelKey] |> Lis
 model: Applicative.Model
 model =
     {   counter = 100
-        , languages = [ "en-gb" ]
+        , languages = [ enGB ]
         , panelKey = defaultPanelKey
         , panelValues = []
         , deletedPanelKey = []
@@ -84,7 +88,7 @@ suite =
         [
             fuzz (intRange 0 1000) "OnNewPanelUI should create a panel" <|
                 \uid ->
-                    processUIEvent (OnNewPanelUI { screen = GraphicAlbumScreen, panel = DefaultPanel, uid = uid, language = "en-gb" }) model
+                    processUIEvent (OnNewPanelUI { screen = GraphicAlbumScreen, panel = DefaultPanel, uid = uid, language = enGB }) model
                         |> Expect.equal { model | counter = 101 , panelKey = { defaultPanelKey | uid =100 }}
             
             , fuzz fuzzyPanelKey "OnLoadPanelUI should open an existing panel" <|

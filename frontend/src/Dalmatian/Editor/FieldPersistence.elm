@@ -14,14 +14,14 @@ import Dalmatian.Editor.Tokens.Tiling exposing (TileInstruction)
 import Dalmatian.Editor.Tokens.Token as Token exposing (TokenValue)
 import Dalmatian.Editor.Dialect.Dimension2DIntUnit as Dimension2DIntUnit exposing (Dimension2DInt)
 import Dalmatian.Editor.Dialect.Version as Version exposing (SemanticVersion)
-
+import Dalmatian.Editor.Dialect.LanguageIdentifier as LanguageIdentifier exposing (LanguageId)
 
 type FieldValue
     = LocalizedListValue (List LocalizedString.Model)
     | VersionValue SemanticVersion
     | UrlListValue (List String)
     | DateTimeValue String
-    | LanguageValue String
+    | LanguageValue LanguageId
     | ChromaValue Chroma
     | BinaryDataValue BinaryData
     | Dimension2DIntValue Dimension2DInt
@@ -58,7 +58,7 @@ getFieldValueAsStringList value =
             []
 
 
-updateLocalizedString : String -> String -> FieldValue -> FieldValue
+updateLocalizedString : LanguageId -> String -> FieldValue -> FieldValue
 updateLocalizedString language value old =
     case old of
         LocalizedListValue oldValue ->
@@ -138,7 +138,7 @@ updateRank tokenId rank fieldValue =
             WarningMessage "Something went wrong (updateRank)"
 
 
-toStringFieldValue : FieldType -> String -> Int -> String -> FieldValue -> FieldValue
+toStringFieldValue : FieldType -> LanguageId -> Int -> String -> FieldValue -> FieldValue
 toStringFieldValue fieldType language tokenId value old =
     case fieldType of
         DateTimeType ->
@@ -153,7 +153,12 @@ toStringFieldValue fieldType language tokenId value old =
                     WarningMessage "The format for version is invalid"
 
         LanguageType ->
-            LanguageValue value
+            case run LanguageIdentifier.parser value of
+                Ok lang ->
+                    LanguageValue lang
+
+                Err msg ->
+                    WarningMessage "The format for language is invalid"
 
         Dimension2DIntType ->
            case run Dimension2DIntUnit.parser value of

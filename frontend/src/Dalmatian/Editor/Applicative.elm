@@ -16,11 +16,11 @@ import Dalmatian.Editor.Persistence
         )
 import Dalmatian.Editor.Schema exposing (FieldKey, PanelKey, PanelZone, ScreenZone, UIEvent(..))
 import Dalmatian.Editor.Tokens.Token exposing (TokenValue)
-
+import Dalmatian.Editor.Dialect.LanguageIdentifier exposing (LanguageId)
 
 type alias Model =
     { counter : Int
-    , languages : List String
+    , languages : List LanguageId
     , panelKey : PanelKey
     , album : List StoreValue
     , albumDiff : List StoreValue

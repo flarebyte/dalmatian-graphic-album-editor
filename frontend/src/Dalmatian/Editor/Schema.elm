@@ -1,5 +1,7 @@
 module Dalmatian.Editor.Schema exposing (FieldKey, FieldType(..), PanelKey, PanelZone(..), PredicateKey(..), SchemaUI(..), ScreenZone(..), UIEvent(..), DataId(..), appUI)
 
+import Dalmatian.Editor.Dialect.LanguageIdentifier exposing (LanguageId)
+
 type DataId = MediumId | FormatId
 
 type FieldType
@@ -107,7 +109,7 @@ type UIEvent
 type alias PanelKey =
     { screen : ScreenZone
     , panel : PanelZone
-    , language : String
+    , language : LanguageId
     , uid : Int
     }
 

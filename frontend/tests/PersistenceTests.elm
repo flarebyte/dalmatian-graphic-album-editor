@@ -6,19 +6,30 @@ import Test exposing (..)
 import Dalmatian.Editor.Schema exposing (FieldKey, FieldType(..), PanelKey, PredicateKey(..), ScreenZone(..), PanelZone(..))
 import Dalmatian.Editor.Persistence exposing (StoreValue, findByPanelKey, deleteByPanelKey, savePanelKey)
 import Dalmatian.Editor.FieldPersistence exposing (FieldValue(..), isValidFieldValue)
+import Dalmatian.Editor.Dialect.LanguageIdentifier as LanguageIdentifier exposing (LanguageId)
+
+enGB= LanguageIdentifier.createLanguageAndCountry "en" "GB"
+frFR= LanguageIdentifier.createLanguageAndCountry "fr" "FR"
+enUS= LanguageIdentifier.createLanguageAndCountry "en" "US"
+zh= LanguageIdentifier.createLanguage "zh"
+cs= LanguageIdentifier.createLanguage "cs"
+ja= LanguageIdentifier.createLanguage "ja"
+ko= LanguageIdentifier.createLanguage "ko"
+en= LanguageIdentifier.createLanguage "en"
+fr= LanguageIdentifier.createLanguage "fr"
 
 screenZones = [GraphicAlbumScreen, RightsScreen, ContributionScreen, ContributorScreen, ColorScreen, FontScreen, IllustrationScreen]
 panelZones = [CopyrightsPanel, DefaultPanel, LicensePanel, ContributorListPanel, ContributorEditPanel, AttributionPanel, StencilListPanel, StencilEditPanel]
-languages = ["en-GB", "fr-FR", "en-US", "zh", "cs", "ja", "ko"]
+languages = [enGB, frFR, enUS, zh, cs, ja, ko]
 predicateKeys = [VersionKey, CreatedKey, ModifiedKey, TitleKey, DescriptionKey, LanguageKey, KeywordKey]    
 fieldTypes = [ShortLocalizedListType, MediumLocalizedType, TextAreaLocalizedType, UrlListType, DateTimeType, VersionType]
 panelKeys = [
-    PanelKey GraphicAlbumScreen CopyrightsPanel "en-GB" 1
-    , PanelKey RightsScreen DefaultPanel "en-US" 2
-    , PanelKey GraphicAlbumScreen LicensePanel "fr" 3
-    , PanelKey ContributionScreen CopyrightsPanel "en" 4
-    , PanelKey ContributorScreen DefaultPanel "ja" 5
-    , PanelKey GraphicAlbumScreen LicensePanel "ko" 6
+    PanelKey GraphicAlbumScreen CopyrightsPanel enGB 1
+    , PanelKey RightsScreen DefaultPanel enUS 2
+    , PanelKey GraphicAlbumScreen LicensePanel fr 3
+    , PanelKey ContributionScreen CopyrightsPanel en 4
+    , PanelKey ContributorScreen DefaultPanel ja 5
+    , PanelKey GraphicAlbumScreen LicensePanel ko 6
     ]
 
 fieldKeys:  List FieldKey

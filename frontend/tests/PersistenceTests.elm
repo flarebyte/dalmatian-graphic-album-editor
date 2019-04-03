@@ -5,7 +5,7 @@ import Fuzz exposing (Fuzzer, intRange, list, string, constant, oneOf)
 import Test exposing (..)
 import Dalmatian.Editor.Schema exposing (FieldKey, FieldType(..), PanelKey, PredicateKey(..), ScreenZone(..), PanelZone(..))
 import Dalmatian.Editor.Persistence exposing (StoreValue, findByPanelKey, deleteByPanelKey, savePanelKey)
-import Dalmatian.Editor.FieldPersistence exposing (FieldValue(..), isValidFieldValue)
+import Dalmatian.Editor.FieldPersistence exposing (FieldValue(..))
 import Dalmatian.Editor.Dialect.LanguageIdentifier as LanguageIdentifier exposing (LanguageId)
 
 enGB= LanguageIdentifier.createLanguageAndCountry "en" "GB"

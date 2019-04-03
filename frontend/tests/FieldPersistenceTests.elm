@@ -4,7 +4,7 @@ import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer, intRange, list, string, constant, oneOf)
 import Test exposing (..)
 import Dalmatian.Editor.Schema exposing (FieldKey, FieldType(..))
-import Dalmatian.Editor.FieldPersistence exposing (FieldValue(..), isValidFieldValue, toStringFieldValue)
+import Dalmatian.Editor.FieldPersistence exposing (FieldValue(..), toStringFieldValue)
 import Dalmatian.Editor.Dialect.LanguageIdentifier as LanguageIdentifier exposing (LanguageId)
 
 en = LanguageIdentifier.createLanguage "en"

@@ -1,7 +1,6 @@
 module Dalmatian.Editor.FieldPersistence exposing (FieldValue(..), 
     getNextRank, 
     getPreviousRank, 
-    isValidFieldValue, 
     toStringFieldValue,
     updateRank)
 import Parser exposing(run)
@@ -33,20 +32,6 @@ type FieldValue
     | WarningMessage String
     | TodoField
     | NoValue
-
-
-isValidFieldValue : FieldValue -> Bool
-isValidFieldValue value =
-    case value of
-        TodoField ->
-            False
-
-        WarningMessage msg ->
-            False
-
-        anyOther ->
-            True
-
 
 getFieldValueAsStringList : FieldValue -> List String
 getFieldValueAsStringList value =

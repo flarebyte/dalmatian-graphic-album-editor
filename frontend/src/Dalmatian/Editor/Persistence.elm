@@ -22,10 +22,7 @@ type alias StoreValue =
     , value : FieldValue
     }
 
-
-
 -- General purpose helpers
-
 
 findOneValueByFieldKey : FieldKey -> List StoreValue -> FieldValue
 findOneValueByFieldKey fkey list =

@@ -1,14 +1,21 @@
-module Dalmatian.Editor.FieldPersistence exposing (FieldValue(..), 
-    getNextRank, 
-    getPreviousRank, 
-    isValidFieldValue, 
-    toStringFieldValue,
-    updateRank)
+module Dalmatian.Editor.FieldPersistence exposing (FieldValue(..)
+    , updateFieldValue, reshapeFieldValue)
+
+{-| Manage operations on a field.
+
+    Possible operations:
+    * set a field value
+    * add an item to field
+    * remove an item to field
+    * clear all items
+    * insert an item at a specific position
+    * swap two items
+
+-}
+
 import Parser exposing(run)
 import Dalmatian.Editor.Dialect.Coloring as Coloring exposing (Chroma)
 import Dalmatian.Editor.Tokens.Compositing exposing (BinaryData(..), Composition)
-import Dalmatian.Editor.Tokens.Contributing as Contributing exposing (Contribution)
-import Dalmatian.Editor.Dialect.Identifier exposing (Id(..))
 import Dalmatian.Editor.LocalizedString as LocalizedString exposing (Model)
 import Dalmatian.Editor.Schema exposing (FieldType(..))
 import Dalmatian.Editor.Tokens.Speech exposing (Interlocutor, Transcript, fromStringInterlocutor)
@@ -16,41 +23,27 @@ import Dalmatian.Editor.Tokens.Tiling exposing (TileInstruction)
 import Dalmatian.Editor.Tokens.Token as Token exposing (TokenValue)
 import Dalmatian.Editor.Dialect.Dimension2DIntUnit as Dimension2DIntUnit exposing (Dimension2DInt)
 import Dalmatian.Editor.Dialect.Version as Version exposing (SemanticVersion)
-
+import Dalmatian.Editor.Dialect.LanguageIdentifier as LanguageIdentifier exposing (LanguageId)
+import Dalmatian.Editor.AppContext as AppContext
+import Dalmatian.Editor.Selecting as Selecting exposing (UISelector(..))
 
 type FieldValue
     = LocalizedListValue (List LocalizedString.Model)
-    | IdValue Id
     | VersionValue SemanticVersion
     | UrlListValue (List String)
     | DateTimeValue String
-    | LanguageValue String
+    | LanguageValue LanguageId
     | ChromaValue Chroma
     | BinaryDataValue BinaryData
     | Dimension2DIntValue Dimension2DInt
     | ListBoxValue String
     | CompositionValue (List (TokenValue Composition))
-    | ContributionValue (List (TokenValue Contribution))
     | LayoutValue (List (TokenValue TileInstruction))
     | InterlocutorValue (List (TokenValue Interlocutor))
     | TranscriptValue (List (TokenValue Transcript))
     | WarningMessage String
     | TodoField
     | NoValue
-
-
-isValidFieldValue : FieldValue -> Bool
-isValidFieldValue value =
-    case value of
-        TodoField ->
-            False
-
-        WarningMessage msg ->
-            False
-
-        anyOther ->
-            True
-
 
 getFieldValueAsStringList : FieldValue -> List String
 getFieldValueAsStringList value =
@@ -62,7 +55,7 @@ getFieldValueAsStringList value =
             []
 
 
-updateLocalizedString : String -> String -> FieldValue -> FieldValue
+updateLocalizedString : LanguageId -> String -> FieldValue -> FieldValue
 updateLocalizedString language value old =
     case old of
         LocalizedListValue oldValue ->
@@ -91,9 +84,6 @@ getNextRank start fieldValue =
         CompositionValue tokens ->
             Token.getNextRank start tokens
 
-        ContributionValue tokens ->
-            Token.getNextRank start tokens
-
         LayoutValue tokens ->
             Token.getNextRank start tokens
 
@@ -111,9 +101,6 @@ getPreviousRank : Int -> FieldValue -> Int
 getPreviousRank start fieldValue =
     case fieldValue of
         CompositionValue tokens ->
-            Token.getPreviousRank start tokens
-
-        ContributionValue tokens ->
             Token.getPreviousRank start tokens
 
         LayoutValue tokens ->
@@ -135,9 +122,6 @@ updateRank tokenId rank fieldValue =
         CompositionValue tokens ->
             Token.updateRank tokens tokenId rank |> CompositionValue
 
-        ContributionValue tokens ->
-            Token.updateRank tokens tokenId rank |> ContributionValue
-
         LayoutValue tokens ->
             Token.updateRank tokens tokenId rank |> LayoutValue
 
@@ -150,14 +134,13 @@ updateRank tokenId rank fieldValue =
         otherwise ->
             WarningMessage "Something went wrong (updateRank)"
 
-
-toStringFieldValue : FieldType -> String -> Int -> String -> FieldValue -> FieldValue
-toStringFieldValue fieldType language tokenId value old =
-    case fieldType of
-        DateTimeType ->
+updateFieldValue : AppContext.Model -> UISelector -> String -> FieldValue -> FieldValue
+updateFieldValue appContext selector value old =
+    case (Selecting.toFieldType selector) of
+        Just DateTimeType ->
             DateTimeValue value
 
-        VersionType ->
+        Just  VersionType ->
             case run Version.parser value of
                 Ok version ->
                     VersionValue version
@@ -165,10 +148,15 @@ toStringFieldValue fieldType language tokenId value old =
                 Err msg ->
                     WarningMessage "The format for version is invalid"
 
-        LanguageType ->
-            LanguageValue value
+        Just LanguageType ->
+            case run LanguageIdentifier.parser value of
+                Ok lang ->
+                    LanguageValue lang
 
-        Dimension2DIntType ->
+                Err msg ->
+                    WarningMessage "The format for language is invalid"
+
+        Just Dimension2DIntType ->
            case run Dimension2DIntUnit.parser value of
                 Ok dim ->
                     Dimension2DIntValue dim
@@ -176,22 +164,22 @@ toStringFieldValue fieldType language tokenId value old =
                 Err msg ->
                     WarningMessage "The format for dimension is invalid"
 
-        ListBoxType any ->
+        Just (ListBoxType any) ->
             ListBoxValue value
 
-        ShortLocalizedListType ->
-            updateLocalizedString language value old
+        Just  ShortLocalizedListType ->
+            updateLocalizedString (selector |> Selecting.toLanguage) value old
 
-        MediumLocalizedType ->
-            updateLocalizedString language value old
+        Just  MediumLocalizedType ->
+            updateLocalizedString (selector |> Selecting.toLanguage) value old
 
-        TextAreaLocalizedType ->
-            updateLocalizedString language value old
+        Just TextAreaLocalizedType ->
+            updateLocalizedString (selector |> Selecting.toLanguage) value old
 
-        BinaryDataType ->
+        Just  BinaryDataType ->
             BinaryDataValue (ProxyImage value)
 
-        ChromaType ->
+        Just  ChromaType ->
             case run Coloring.parser value of
                 Ok chroma ->
                     ChromaValue chroma
@@ -199,23 +187,48 @@ toStringFieldValue fieldType language tokenId value old =
                 Err msg ->
                     WarningMessage "The format for color is invalid"
                     
-        UrlListType ->
+        Just UrlListType ->
             getFieldValueAsStringList old |> (::) value |> UrlListValue
 
-        InterlocutorType ->
+        Just  InterlocutorType ->
             TodoField
 
-        IdType ->
+        Just CompositionType ->
             TodoField
 
-        CompositionType ->
+        Just ContributionType ->
             TodoField
 
-        ContributionType ->
+        Just LayoutType ->
             TodoField
 
-        LayoutType ->
+        Just TranscriptType ->
+            TodoField
+        
+        Nothing ->
+            WarningMessage "Could not infer the field type"
+
+reshapeFieldValue : AppContext.Model -> UISelector -> FieldValue -> FieldValue
+reshapeFieldValue appContext selector old =
+    case (Selecting.toFieldType selector) of
+ 
+        Just  InterlocutorType ->
             TodoField
 
-        TranscriptType ->
+        Just CompositionType ->
             TodoField
+
+        Just ContributionType ->
+            TodoField
+
+        Just LayoutType ->
+            TodoField
+
+        Just TranscriptType ->
+            TodoField
+
+        Just otherwise ->
+            WarningMessage "Reshape is not applicable"
+        
+        Nothing ->
+            WarningMessage "Could not infer the field type"

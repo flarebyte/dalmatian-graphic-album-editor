@@ -4,7 +4,6 @@ import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer, int, intRange, list, tuple, string, constant, oneOf)
 import Test exposing (..)
 import Dalmatian.Editor.Widget.ListBox as ListBox
-import Parser exposing(run)
 import Fuzzing exposing (alpha, corruptedAlpha)
 
 listToTabular: List (String, String) -> String
@@ -20,9 +19,9 @@ suite =
             fuzz (list (tuple (string, string))) "should parse tabular data" <|
                 \li ->
                     listToTabular li
-                        |> run ListBox.sequenceParser
-                        |> Result.map (\rli -> List.length rli)
-                        |> Expect.equal (Ok (List.length li))
+                        |> ListBox.parse
+                        |> List.length
+                        |> Expect.equal (List.length li)
         ]
 
     ]

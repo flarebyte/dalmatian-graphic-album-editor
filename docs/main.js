@@ -4310,8 +4310,9 @@ function _Browser_load(url)
 		}
 	}));
 }
-var author$project$Dalmatian$Editor$Schema$DefaultPanel = {$: 'DefaultPanel'};
-var author$project$Dalmatian$Editor$Schema$GraphicAlbumScreen = {$: 'GraphicAlbumScreen'};
+var author$project$Dalmatian$Editor$Selecting$UnknownSelector = {$: 'UnknownSelector'};
+var author$project$Dalmatian$Editor$AppContext$reset = {counter: 1, selector: author$project$Dalmatian$Editor$Selecting$UnknownSelector};
+var elm$core$Maybe$Nothing = {$: 'Nothing'};
 var elm$core$Basics$EQ = {$: 'EQ'};
 var elm$core$Basics$LT = {$: 'LT'};
 var elm$core$Elm$JsArray$foldr = _JsArray_foldr;
@@ -4392,19 +4393,8 @@ var elm$core$Set$toList = function (_n0) {
 	var dict = _n0.a;
 	return elm$core$Dict$keys(dict);
 };
-var author$project$Main$defaultModel = {
-	applicative: {
-		album: _List_Nil,
-		albumDiff: _List_Nil,
-		counter: 0,
-		deletedPanelKey: _List_Nil,
-		languages: _List_fromArray(
-			['en-gb']),
-		panelKey: {language: 'en-gb', panel: author$project$Dalmatian$Editor$Schema$DefaultPanel, screen: author$project$Dalmatian$Editor$Schema$GraphicAlbumScreen, uid: 0},
-		panelValues: _List_Nil
-	},
-	greeting: 'Hello Goodbye'
-};
+var author$project$Dalmatian$Editor$Applicative$reset = {album: _List_Nil, appContext: author$project$Dalmatian$Editor$AppContext$reset, languages: _List_Nil, panelValues: _List_Nil, tokenValue: elm$core$Maybe$Nothing};
+var author$project$Main$defaultModel = {applicative: author$project$Dalmatian$Editor$Applicative$reset, greeting: 'Hello Goodbye'};
 var elm$core$Basics$False = {$: 'False'};
 var elm$core$Basics$True = {$: 'True'};
 var elm$core$Result$isOk = function (result) {
@@ -4588,7 +4578,6 @@ var elm$core$Array$initialize = F2(
 var elm$core$Maybe$Just = function (a) {
 	return {$: 'Just', a: a};
 };
-var elm$core$Maybe$Nothing = {$: 'Nothing'};
 var elm$core$Result$Err = function (a) {
 	return {$: 'Err', a: a};
 };

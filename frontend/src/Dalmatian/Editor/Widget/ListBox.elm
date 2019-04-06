@@ -1,7 +1,8 @@
-module Dalmatian.Editor.Widget.ListBox exposing (ListBoxItem, create, toString, toTabularString, sequenceParser)
+module Dalmatian.Editor.Widget.ListBox exposing (ListBoxItem, create, toString, toTabularString, parse)
 
-import Parser exposing ((|.), (|=), Parser, chompWhile, chompUntil, chompUntilEndOr, oneOf, getChompedString, int, map, run, spaces, succeed, symbol, sequence, Step(..), Trailing(..), loop)
 import Dalmatian.Editor.Dialect.Separator as Separator
+
+separator = "--->"
 
 type alias ListBoxItem =
     { value : String
@@ -14,32 +15,27 @@ create value display =
     , display = display
     }
 
-parser : Parser ListBoxItem
-parser =
-    succeed ListBoxItem
-        |= getChompedString (chompUntil "-->")
-        |. symbol "--->"
-        |= getChompedString (chompUntilEndOr "\n")
 
 toString: ListBoxItem -> String
 toString value =
-    value.value ++ "--->" ++ value.display
+    value.value ++ separator ++ value.display
 
 toTabularString: List ListBoxItem -> String
 toTabularString list =
     list |> List.map toString |> String.join "\n"
 
-sequenceParser : Parser (List ListBoxItem)
-sequenceParser=
-    loop [] sequenceHelp
 
-sequenceHelp : List ListBoxItem -> Parser (Step (List ListBoxItem) (List ListBoxItem))
-sequenceHelp revStmts =
-      oneOf
-        [ succeed (\stmt -> Loop (stmt :: revStmts))
-            |. spaces
-            |= parser
-            |. Separator.newline
-        , succeed ()
-            |> map (\_ -> Done (List.reverse revStmts))
-        ]
+parseListBoxItem: String -> Maybe ListBoxItem
+parseListBoxItem line =
+    let
+        splits = String.split separator line
+    in
+        case splits of
+            [value, display] ->
+                create (value |> String.trim) (display |> String.trim) |> Just
+            otherwise ->
+                Nothing
+
+parse: String -> List ListBoxItem
+parse text =
+    String.lines text |> List.filterMap parseListBoxItem

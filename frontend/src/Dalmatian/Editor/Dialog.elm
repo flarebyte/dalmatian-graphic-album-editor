@@ -1,12 +1,6 @@
 module Dalmatian.Editor.Dialog exposing (DialogBox, DialogBoxOption, DialogBoxType(..), DialogField, InputType(..))
 
 
-type alias ListBoxItem =
-    { value : String
-    , display : String
-    }
-
-
 type InputType
     = LineTextInputType
     | RefEnumInputType String -- referenced

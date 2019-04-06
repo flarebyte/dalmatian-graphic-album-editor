@@ -1,126 +1,112 @@
-module Dalmatian.Editor.Applicative exposing (Model, processUIEvent)
+module Dalmatian.Editor.Applicative exposing (Model, reset, processUIEvent,
+    setAppContext
+    , asAppContextIn
+    , setAlbum
+    , asAlbumIn
+    , setPanelValues
+    , asPanelValuesIn
+    )
 
 import Dalmatian.Editor.Persistence
     exposing
         ( StoreValue
-        , deleteByPanelKey
-        , deleteToken
-        , findByPanelKey
-        , getNextRank
-        , moveTokenDown
-        , moveTokenUp
-        , savePanelKey
-        , saveToken
-        , selectToken
-        , updateStoreKeyValue
         )
-import Dalmatian.Editor.Schema exposing (FieldKey, PanelKey, PanelZone, ScreenZone, UIEvent(..))
 import Dalmatian.Editor.Tokens.Token exposing (TokenValue)
-
+import Dalmatian.Editor.Dialect.LanguageIdentifier exposing (LanguageId)
+import Dalmatian.Editor.AppContext as AppContext
+import Dalmatian.Editor.AppEvent exposing (UIEvent(..))
 
 type alias Model =
-    { counter : Int
-    , languages : List String
-    , panelKey : PanelKey
+    { appContext : AppContext.Model
+    , languages : List LanguageId
     , album : List StoreValue
-    , albumDiff : List StoreValue
-    , deletedPanelKey : List PanelKey
     , panelValues : List StoreValue
-    , fieldKey : Maybe FieldKey
     , tokenValue : Maybe (TokenValue (List ( Int, String )))
     }
 
+reset: Model
+reset = { 
+    appContext = AppContext.reset
+    , languages = []
+    , album = []
+    , panelValues = []
+    , tokenValue= Nothing
+    }
+
+-- set methods
+
+setAppContext: AppContext.Model -> Model -> Model
+setAppContext appContext model =
+    { model | appContext = appContext }
+
+asAppContextIn: Model -> AppContext.Model -> Model
+asAppContextIn model appContext =
+    { model | appContext = appContext }
+
+setAlbum: List StoreValue -> Model -> Model
+setAlbum album model =
+    { model | album = album }
+
+asAlbumIn:  Model -> List StoreValue -> Model
+asAlbumIn model album =
+    { model | album = album }
+
+setPanelValues: List StoreValue -> Model -> Model
+setPanelValues panelValues model =
+    { model | panelValues = panelValues }
+
+asPanelValuesIn:  Model -> List StoreValue -> Model
+asPanelValuesIn model panelValues =
+     { model | panelValues = panelValues }
 
 processUIEvent : UIEvent -> Model -> Model
 processUIEvent event model =
     case event of
-        OnNewPanelUI key ->
-            { model
-                | counter = model.counter + 1
-                , panelKey = { key | uid = model.counter }
-                , panelValues = []
-                , fieldKey = Nothing
-                , tokenValue = Nothing
-            }
+        OnNewUI selector ->
+            onNewUI selector model 
 
-        OnLoadPanelUI key ->
-            { model
-                | panelKey = key
-                , panelValues = findByPanelKey key model.album
-                , fieldKey = Nothing
-                , tokenValue = Nothing
-            }
+        OnLoadUI selector ->
+           onLoadUI selector model 
 
-        OnDeletePanelKey key ->
-            { model
-                | deletedPanelKey = key :: model.deletedPanelKey
-                , album = deleteByPanelKey key model.album
-                , albumDiff = deleteByPanelKey key model.albumDiff
-            }
+        OnDeleteUI selector ->
+           onDeleteUI selector model 
 
-        OnSavePanelKey ->
-            { model
-                | album = savePanelKey model.panelKey model.panelValues model.album
-                , albumDiff = savePanelKey model.panelKey model.panelValues model.albumDiff
-            }
+        OnSaveUI ->
+            onSaveUI model
+            
+        OnUpdateCurrentField fieldOp str ->
+            onUpdateCurrentField fieldOp str model
 
-        OnChangeField fkey str ->
-            { model
-                | panelValues = updateStoreKeyValue fkey str model.panelValues
-            }
+        OnUpdateField selector fieldOp str ->
+            onUpdateField fieldOp str model
 
-        OnSelectComplexField fkey ->
-            { model
-                | fieldKey = Just fkey
-                , tokenValue = Nothing
-            }
+        OnReshapeCurrentField fieldOp ->
+            onReshapeCurrentField fieldOp model
 
-        OnSelectToken tokenId ->
-            { model
-                | tokenValue = selectToken model.fieldKey tokenId model.panelValues
-            }
+        OnReshapeField selector fieldOp ->
+            onReshapeField selector fieldOp model           
 
-        OnNewToken ->
-            { model
-                | tokenValue =
-                    Maybe.map2
-                        (\fkey tokenValue ->
-                            TokenValue model.counter [] (getNextRank fkey tokenValue model.panelValues)
-                        )
-                        model.fieldKey
-                        model.tokenValue
-                        |> Maybe.withDefault (TokenValue model.counter [] 1000)
-                        |> Just
-                , counter = model.counter + 1
-            }
 
-        OnDeleteToken ->
-            { model
-                | panelValues =
-                    Maybe.map2 (\fkey tokenValue -> deleteToken fkey tokenValue model.panelValues) model.fieldKey model.tokenValue
-                        |> Maybe.withDefault model.panelValues
-                , tokenValue = Nothing
-            }
+onNewUI selector model
+    = model
 
-        OnSaveToken ->
-            { model
-                | panelValues =
-                    Maybe.map2 (\fkey tokenValue -> saveToken fkey tokenValue model.panelValues) model.fieldKey model.tokenValue
-                        |> Maybe.withDefault model.panelValues
-                , tokenValue = Nothing
-            }
+onLoadUI selector model
+    = model
 
-        OnMoveTokenUp ->
-            { model
-                | panelValues =
-                    Maybe.map2 (\fkey tokenValue -> moveTokenUp fkey tokenValue model.panelValues) model.fieldKey model.tokenValue
-                        |> Maybe.withDefault model.panelValues
-            }
+onDeleteUI selector model
+    = model
 
-        OnMoveTokenDown ->
-            { model
-                | panelValues =
-                    Maybe.map2 (\fkey tokenValue -> moveTokenDown fkey tokenValue model.panelValues) model.fieldKey model.tokenValue
-                        |> Maybe.withDefault model.panelValues
-                , tokenValue = Nothing
-            }
+onSaveUI model
+    = model
+
+onUpdateCurrentField fieldOp str model
+    = model
+
+onUpdateField fieldOp str model
+    = model
+
+onReshapeCurrentField fieldOp model
+    = model
+
+onReshapeField selector fieldOp model
+    = model

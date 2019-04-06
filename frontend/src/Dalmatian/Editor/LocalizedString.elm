@@ -1,7 +1,8 @@
 module Dalmatian.Editor.LocalizedString exposing (Model)
 
+import Dalmatian.Editor.Dialect.LanguageIdentifier exposing (LanguageId)
 
 type alias Model =
-    { language : String
+    { language : LanguageId
     , text : String
     }

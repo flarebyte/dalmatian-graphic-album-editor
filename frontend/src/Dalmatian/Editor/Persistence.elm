@@ -26,6 +26,8 @@ createNone: FieldKey -> StoreValue
 createNone key =
     { key = key, value = NoValue }
 
+-- setter methods
+
 setValue: FieldValue -> StoreValue -> StoreValue
 setValue value storeValue =
     { storeValue | value = value }
@@ -37,3 +39,13 @@ asValueIn storeValue value =
 isMatching: UISelector -> StoreValue -> Bool
 isMatching selector storeValue =
     Selecting.isMatching selector storeValue.key
+ 
+update: UISelector -> (FieldValue -> FieldValue) -> List StoreValue -> List StoreValue
+update selector transf list =
+    List.map
+        (\storeValue ->
+            if isMatching selector storeValue then
+                transf storeValue.value |> asValueIn storeValue
+            else
+                storeValue
+        ) list

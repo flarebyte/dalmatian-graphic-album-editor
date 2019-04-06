@@ -1,5 +1,9 @@
 module Dalmatian.Editor.Persistence exposing
     ( StoreValue
+      , create
+      , createNone
+      , setValue
+      , asValueIn
     )
 
 import Dalmatian.Editor.FieldPersistence as FieldPersistence exposing (FieldValue(..))
@@ -12,11 +16,23 @@ type alias StoreValue =
     , value : FieldValue
     }
 
--- General purpose helpers
+-- Factory methods
 
 create: FieldKey -> FieldValue -> StoreValue
 create key value =
     { key = key, value = value }
+
+createNone: FieldKey -> StoreValue
+createNone key =
+    { key = key, value = NoValue }
+
+setValue: FieldValue -> StoreValue -> StoreValue
+setValue value storeValue =
+    { storeValue | value = value }
+
+asValueIn: StoreValue -> FieldValue -> StoreValue
+asValueIn storeValue value =
+    { storeValue | value = value }
 
 isMatching: UISelector -> StoreValue -> Bool
 isMatching selector storeValue =

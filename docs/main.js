@@ -4310,8 +4310,8 @@ function _Browser_load(url)
 		}
 	}));
 }
-var author$project$Dalmatian$Editor$Selecting$NoSelector = {$: 'NoSelector'};
-var author$project$Dalmatian$Editor$AppContext$reset = {counter: 1, selector: author$project$Dalmatian$Editor$Selecting$NoSelector};
+var author$project$Dalmatian$Editor$Selecting$UnknownSelector = {$: 'UnknownSelector'};
+var author$project$Dalmatian$Editor$AppContext$reset = {counter: 1, selector: author$project$Dalmatian$Editor$Selecting$UnknownSelector};
 var elm$core$Maybe$Nothing = {$: 'Nothing'};
 var elm$core$Basics$EQ = {$: 'EQ'};
 var elm$core$Basics$LT = {$: 'LT'};

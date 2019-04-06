@@ -1,4 +1,11 @@
-module Dalmatian.Editor.Applicative exposing (Model, reset, processUIEvent)
+module Dalmatian.Editor.Applicative exposing (Model, reset, processUIEvent,
+    setAppContext
+    , asAppContextIn
+    , setAlbum
+    , asAlbumIn
+    , setPanelValues
+    , asPanelValuesIn
+    )
 
 import Dalmatian.Editor.Persistence
     exposing
@@ -25,6 +32,32 @@ reset = {
     , panelValues = []
     , tokenValue= Nothing
     }
+
+-- set methods
+
+setAppContext: AppContext.Model -> Model -> Model
+setAppContext appContext model =
+    { model | appContext = appContext }
+
+asAppContextIn: Model -> AppContext.Model -> Model
+asAppContextIn model appContext =
+    { model | appContext = appContext }
+
+setAlbum: List StoreValue -> Model -> Model
+setAlbum album model =
+    { model | album = album }
+
+asAlbumIn:  Model -> List StoreValue -> Model
+asAlbumIn model album =
+    { model | album = album }
+
+setPanelValues: List StoreValue -> Model -> Model
+setPanelValues panelValues model =
+    { model | panelValues = panelValues }
+
+asPanelValuesIn:  Model -> List StoreValue -> Model
+asPanelValuesIn model panelValues =
+     { model | panelValues = panelValues }
 
 processUIEvent : UIEvent -> Model -> Model
 processUIEvent event model =

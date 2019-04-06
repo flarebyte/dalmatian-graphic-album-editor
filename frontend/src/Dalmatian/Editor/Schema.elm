@@ -1,4 +1,7 @@
-module Dalmatian.Editor.Schema exposing (FieldKey, FieldType(..), PanelKey, PanelZone(..), PredicateKey(..), SchemaUI(..), ScreenZone(..), UIEvent(..), DataId(..), appUI)
+module Dalmatian.Editor.Schema exposing (FieldType(..), PanelZone(..),
+    PredicateKey(..), SchemaUI(..),
+    ScreenZone(..), DataId(..), appUI,
+    predicateKeyToFieldType)
 
 import Dalmatian.Editor.Dialect.LanguageIdentifier exposing (LanguageId)
 
@@ -80,120 +83,117 @@ type PredicateKey
     | MediumKey
     | FormatKey
     | LayoutKey
-    | CompositingKey
 
 
 type SchemaUI
-    = FieldUI PredicateKey String FieldType -- name description
+    = FieldUI PredicateKey String -- name description
     | ScreenUI ScreenZone String
     | PanelUI PanelZone String
     | ExclusivePanelUI PanelZone String
     | ListManagerUI
     | SaveAsTemplateUI
 
+getParentScreenZone: PanelZone -> ScreenZone
+getParentScreenZone panelZone =
+    GraphicAlbumScreen --TODO
 
-type UIEvent
-    = OnNewPanelUI PanelKey
-    | OnLoadPanelUI PanelKey
-    | OnDeletePanelKey PanelKey
-    | OnSavePanelKey
-    | OnChangeField FieldKey String
-    | OnSelectComplexField FieldKey
-    | OnNewToken
-    | OnSelectToken Int
-    | OnDeleteToken
-    | OnSaveToken
-    | OnMoveTokenUp
-    | OnMoveTokenDown
-
-type alias PanelKey =
-    { screen : ScreenZone
-    , panel : PanelZone
-    , language : LanguageId
-    , uid : Int
-    }
-
-
-type alias FieldKey =
-    { panelKey : PanelKey
-    , key : PredicateKey
-    , fieldType : FieldType
-    }
-
+predicateKeyToFieldType: PredicateKey -> FieldType
+predicateKeyToFieldType predicateKey =
+    case predicateKey of
+        VersionKey -> VersionType
+        CreatedKey -> DateTimeType
+        ModifiedKey -> DateTimeType
+        TitleKey -> MediumLocalizedType
+        DescriptionKey -> TextAreaLocalizedType
+        LanguageKey -> LanguageType
+        KeywordKey -> ShortLocalizedListType
+        HomepageKey -> UrlListType
+        ContributionKey -> ContributionType
+        DimensionKey -> Dimension2DIntType
+        NameKey -> MediumLocalizedType
+        DataKey -> BinaryDataType
+        SameAsKey -> UrlListType
+        PrintColorKey -> ChromaType
+        ScreenColorKey -> ChromaType
+        InterlocutorKey -> InterlocutorType
+        TranscriptKey -> TranscriptType
+        MediumKey -> (ListBoxType MediumId)
+        FormatKey -> (ListBoxType FormatId)
+        LayoutKey -> LayoutType
 
 appUI =
     [ ScreenUI GraphicAlbumScreen "Graphic Album" --
-    , FieldUI VersionKey "Version of the album" VersionType
-    , FieldUI CreatedKey "Date the album was first created" DateTimeType
-    , FieldUI ModifiedKey "Date the album was officially modified" DateTimeType
-    , FieldUI TitleKey "Official title of the album" MediumLocalizedType
-    , FieldUI DescriptionKey "Official description of the album" TextAreaLocalizedType
-    , FieldUI KeywordKey "Keywords that describe the nature of the content" ShortLocalizedListType
+    , FieldUI VersionKey "Version of the album"
+    , FieldUI CreatedKey "Date the album was first created"
+    , FieldUI ModifiedKey "Date the album was officially modified"
+    , FieldUI TitleKey "Official title of the album"
+    , FieldUI DescriptionKey "Official description of the album"
+    , FieldUI KeywordKey "Keywords that describe the nature of the content"
     , ScreenUI RightsScreen "Rights and License" --
     , PanelUI LicensePanel "License"
     , SaveAsTemplateUI
-    , FieldUI NameKey "Common name for the license" MediumLocalizedType
-    , FieldUI DescriptionKey "Details of the license" TextAreaLocalizedType
-    , FieldUI HomepageKey "Webpages linking to the license" UrlListType
+    , FieldUI NameKey "Common name for the license"
+    , FieldUI DescriptionKey "Details of the license"
+    , FieldUI HomepageKey "Webpages linking to the license"
     , PanelUI CopyrightsPanel "Rights"
     , SaveAsTemplateUI
-    , FieldUI NameKey "Copyright name" MediumLocalizedType
-    , FieldUI DescriptionKey "Copyrights detailed description" TextAreaLocalizedType
-    , FieldUI HomepageKey "Webpages linking to the copyrights" UrlListType
+    , FieldUI NameKey "Copyright name"
+    , FieldUI DescriptionKey "Copyrights detailed description"
+    , FieldUI HomepageKey "Webpages linking to the copyrights"
     , PanelUI AttributionPanel "Attribution"
-    , FieldUI NameKey "Short attribution" MediumLocalizedType
-    , FieldUI DescriptionKey "Detailed attribution" TextAreaLocalizedType
-    , FieldUI HomepageKey "Webpages linking to the attributions" UrlListType
+    , FieldUI NameKey "Short attribution"
+    , FieldUI DescriptionKey "Detailed attribution"
+    , FieldUI HomepageKey "Webpages linking to the attributions"
     , ScreenUI ContributionScreen "Contribution" --
-    , FieldUI ContributionKey "Credits" ContributionType
+    , FieldUI ContributionKey "Credits"
     , ScreenUI IllustrationScreen "Illustration"
-    , FieldUI DimensionKey "Dimension of the image" Dimension2DIntType
-    , FieldUI DataKey "Reference image" BinaryDataType
+    , FieldUI DimensionKey "Dimension of the image"
+    , FieldUI DataKey "Reference image"
     , ScreenUI ContributorScreen "Contributor" --
     , ExclusivePanelUI ContributorListPanel "List of contributors"
     , ListManagerUI
     , ExclusivePanelUI ContributorEditPanel "Edit Contributor"
-    , FieldUI NameKey "Name of the contributor" MediumLocalizedType
-    , FieldUI DescriptionKey "Description of the contributor" TextAreaLocalizedType
-    , FieldUI HomepageKey "Links to webpages about the contributor" UrlListType
+    , FieldUI NameKey "Name of the contributor"
+    , FieldUI DescriptionKey "Description of the contributor"
+    , FieldUI HomepageKey "Links to webpages about the contributor"
     , ScreenUI FontScreen "Font" --
     , ExclusivePanelUI FontListPanel "List of fonts"
     , ListManagerUI
     , ExclusivePanelUI FontEditPanel "Edit font"
-    , FieldUI NameKey "Common name for the font" MediumLocalizedType
-    , FieldUI DescriptionKey "Description of the font" TextAreaLocalizedType
-    , FieldUI HomepageKey "Links to font" UrlListType
+    , FieldUI NameKey "Common name for the font"
+    , FieldUI DescriptionKey "Description of the font"
+    , FieldUI HomepageKey "Links to font"
     , ScreenUI ColorScreen "Color" --
     , ExclusivePanelUI ColorListPanel "List of colors"
     , ListManagerUI
     , ExclusivePanelUI ColorEditPanel "Edit color"
-    , FieldUI NameKey "Common name for the color" MediumLocalizedType
-    , FieldUI DescriptionKey "Description of the color" TextAreaLocalizedType
-    , FieldUI SameAsKey "Links to that font on encyclopedy sites" UrlListType
-    , FieldUI PrintColorKey "The best color used for print" ChromaType
-    , FieldUI ScreenColorKey "The best color used for screen" ChromaType
+    , FieldUI NameKey "Common name for the color"
+    , FieldUI DescriptionKey "Description of the color"
+    , FieldUI SameAsKey "Links to that font on encyclopedy sites"
+    , FieldUI PrintColorKey "The best color used for print"
+    , FieldUI ScreenColorKey "The best color used for screen"
     , ScreenUI CharacterScreen "Character" --
     , ExclusivePanelUI CharacterListPanel "List of characters"
     , ListManagerUI
     , ExclusivePanelUI CharacterEditPanel "Edit character"
-    , FieldUI NameKey "Name of the character" MediumLocalizedType
-    , FieldUI DescriptionKey "Description of the character" TextAreaLocalizedType
-    , FieldUI HomepageKey "Links to webpages about this character" UrlListType
+    , FieldUI NameKey "Name of the character"
+    , FieldUI DescriptionKey "Description of the character"
+    , FieldUI HomepageKey "Links to webpages about this character"
     , ScreenUI SpeechScreen "Speech" --
     , ExclusivePanelUI SpeechListPanel "List of speech"
     , ListManagerUI
     , ExclusivePanelUI SpeechEditPanel "Edit speech"
-    , FieldUI InterlocutorKey "The different interlocutors in the speech bubble" InterlocutorType
-    , FieldUI TranscriptKey "The transcript of the speech bubble with formatting" TranscriptType
+    , FieldUI InterlocutorKey "The different interlocutors in the speech bubble"
+    , FieldUI TranscriptKey "The transcript of the speech bubble with formatting"
     , ScreenUI PublishedWorkScreen "Published Work" --
     , ExclusivePanelUI PublishedListPanel "List of published works"
     , ListManagerUI
     , ExclusivePanelUI PublishedEditPanel "Edit published work"
-    , FieldUI VersionKey "Version of the published work" VersionType
-    , FieldUI TitleKey "Title if different than album" MediumLocalizedType
-    , FieldUI DescriptionKey "Description if different than album" TextAreaLocalizedType
-    , FieldUI LanguageKey "The language of the published work" LanguageType
-    , FieldUI MediumKey "Material or physical carrier" (ListBoxType MediumId)
-    , FieldUI FormatKey "File format, physical medium, or dimensions" (ListBoxType FormatId)
-    , FieldUI LayoutKey "Layout of the album" LayoutType
+    , FieldUI VersionKey "Version of the published work"
+    , FieldUI TitleKey "Title if different than album"
+    , FieldUI DescriptionKey "Description if different than album"
+    , FieldUI LanguageKey "The language of the published work"
+    , FieldUI MediumKey "Material or physical carrier" 
+    , FieldUI FormatKey "File format, physical medium, or dimensions"
+    , FieldUI LayoutKey "Layout of the album"
     ]

@@ -2,7 +2,8 @@ module Main exposing (Document, Model, Msg(..), init, main, subscriptions, updat
 
 import Browser
 import Dalmatian.Editor.Applicative as Applicative exposing (Model)
-import Dalmatian.Editor.Schema exposing (PanelZone(..), ScreenZone(..), UIEvent(..))
+import Dalmatian.Editor.Schema exposing (PanelZone(..), ScreenZone(..))
+import Dalmatian.Editor.AppEvent exposing (UIEvent(..))
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -30,15 +31,7 @@ type alias Model =
 defaultModel : Model
 defaultModel =
     { greeting = "Hello Goodbye"
-    , applicative =
-        { counter = 0
-        , languages = [ "en-gb" ]
-        , panelKey = { screen = GraphicAlbumScreen, panel = DefaultPanel, uid = 0, language = "en-gb" }
-        , panelValues = []
-        , deletedPanelKey = []
-        , album = []
-        , albumDiff = []
-        }
+    , applicative = Applicative.reset
     }
 
 

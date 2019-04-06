@@ -39,7 +39,11 @@ asValueIn storeValue value =
 isMatching: UISelector -> StoreValue -> Bool
 isMatching selector storeValue =
     Selecting.isMatching selector storeValue.key
- 
+
+isNotMatching: UISelector -> StoreValue -> Bool
+isNotMatching selector storeValue =
+    isMatching selector storeValue |> not
+
 update: UISelector -> (FieldValue -> FieldValue) -> List StoreValue -> List StoreValue
 update selector transf list =
     List.map
@@ -49,3 +53,7 @@ update selector transf list =
             else
                 storeValue
         ) list
+
+delete: UISelector -> List StoreValue -> List StoreValue
+delete selector list =
+    List.filter (isNotMatching selector) list

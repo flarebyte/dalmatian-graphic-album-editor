@@ -24,7 +24,6 @@ import Dalmatian.Editor.Tokens.Token as Token exposing (TokenValue)
 import Dalmatian.Editor.Dialect.Dimension2DIntUnit as Dimension2DIntUnit exposing (Dimension2DInt)
 import Dalmatian.Editor.Dialect.Version as Version exposing (SemanticVersion)
 import Dalmatian.Editor.Dialect.LanguageIdentifier as LanguageIdentifier exposing (LanguageId)
-import Dalmatian.Editor.AppContext as AppContext
 import Dalmatian.Editor.Selecting as Selecting exposing (UISelector(..))
 
 type FieldValue
@@ -37,10 +36,10 @@ type FieldValue
     | BinaryDataValue BinaryData
     | Dimension2DIntValue Dimension2DInt
     | ListBoxValue String
-    | CompositionValue (List (TokenValue Composition))
-    | LayoutValue (List (TokenValue TileInstruction))
-    | InterlocutorValue (List (TokenValue Interlocutor))
-    | TranscriptValue (List (TokenValue Transcript))
+    | CompositionValue Int (List (TokenValue Composition))
+    | LayoutValue Int (List (TokenValue TileInstruction))
+    | InterlocutorValue Int (List (TokenValue Interlocutor))
+    | TranscriptValue Int (List (TokenValue Transcript))
     | WarningMessage String
     | TodoField
     | NoValue
@@ -81,16 +80,16 @@ updateLocalizedString language value old =
 getNextRank : Int -> FieldValue -> Int
 getNextRank start fieldValue =
     case fieldValue of
-        CompositionValue tokens ->
+        CompositionValue counter tokens ->
             Token.getNextRank start tokens
 
-        LayoutValue tokens ->
+        LayoutValue counter tokens ->
             Token.getNextRank start tokens
 
-        InterlocutorValue tokens ->
+        InterlocutorValue counter tokens ->
             Token.getNextRank start tokens
 
-        TranscriptValue tokens ->
+        TranscriptValue counter tokens ->
             Token.getNextRank start tokens
 
         otherwise ->
@@ -100,16 +99,16 @@ getNextRank start fieldValue =
 getPreviousRank : Int -> FieldValue -> Int
 getPreviousRank start fieldValue =
     case fieldValue of
-        CompositionValue tokens ->
+        CompositionValue counter tokens ->
             Token.getPreviousRank start tokens
 
-        LayoutValue tokens ->
+        LayoutValue counter tokens ->
             Token.getPreviousRank start tokens
 
-        InterlocutorValue tokens ->
+        InterlocutorValue counter tokens ->
             Token.getPreviousRank start tokens
 
-        TranscriptValue tokens ->
+        TranscriptValue counter tokens ->
             Token.getPreviousRank start tokens
 
         otherwise ->
@@ -119,23 +118,23 @@ getPreviousRank start fieldValue =
 updateRank : Int -> Int -> FieldValue -> FieldValue
 updateRank tokenId rank fieldValue =
     case fieldValue of
-        CompositionValue tokens ->
-            Token.updateRank tokens tokenId rank |> CompositionValue
+        CompositionValue counter tokens ->
+            Token.updateRank tokens tokenId rank |> CompositionValue counter
 
-        LayoutValue tokens ->
-            Token.updateRank tokens tokenId rank |> LayoutValue
+        LayoutValue counter tokens ->
+            Token.updateRank tokens tokenId rank |> LayoutValue counter
 
-        InterlocutorValue tokens ->
-            Token.updateRank tokens tokenId rank |> InterlocutorValue
+        InterlocutorValue counter tokens ->
+            Token.updateRank tokens tokenId rank |> InterlocutorValue counter
 
-        TranscriptValue tokens ->
-            Token.updateRank tokens tokenId rank |> TranscriptValue
+        TranscriptValue counter tokens ->
+            Token.updateRank tokens tokenId rank |> TranscriptValue counter
 
         otherwise ->
             WarningMessage "Something went wrong (updateRank)"
 
-updateFieldValue : AppContext.Model -> UISelector -> String -> FieldValue -> FieldValue
-updateFieldValue appContext selector value old =
+updateFieldValue : UISelector -> String -> FieldValue -> FieldValue
+updateFieldValue selector value old =
     case (Selecting.toFieldType selector) of
         Just DateTimeType ->
             DateTimeValue value
@@ -208,8 +207,8 @@ updateFieldValue appContext selector value old =
         Nothing ->
             WarningMessage "Could not infer the field type"
 
-reshapeFieldValue : AppContext.Model -> UISelector -> FieldValue -> FieldValue
-reshapeFieldValue appContext selector old =
+reshapeFieldValue : UISelector -> FieldValue -> FieldValue
+reshapeFieldValue selector old =
     case (Selecting.toFieldType selector) of
  
         Just  InterlocutorType ->

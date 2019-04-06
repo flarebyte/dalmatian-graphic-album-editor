@@ -1,6 +1,6 @@
 module Dalmatian.Editor.Applicative exposing (Model, reset, processUIEvent,
-    setAppContext
-    , asAppContextIn
+    setSelector
+    , asSelectorIn
     , setAlbum
     , asAlbumIn
     , setPanelValues
@@ -13,11 +13,11 @@ import Dalmatian.Editor.Persistence
         )
 import Dalmatian.Editor.Tokens.Token exposing (TokenValue)
 import Dalmatian.Editor.Dialect.LanguageIdentifier exposing (LanguageId)
-import Dalmatian.Editor.AppContext as AppContext
 import Dalmatian.Editor.AppEvent exposing (UIEvent(..))
+import Dalmatian.Editor.Selecting exposing (UISelector(..))
 
 type alias Model =
-    { appContext : AppContext.Model
+    { selector : UISelector
     , languages : List LanguageId
     , album : List StoreValue
     , panelValues : List StoreValue
@@ -26,7 +26,7 @@ type alias Model =
 
 reset: Model
 reset = { 
-    appContext = AppContext.reset
+    selector = UnknownSelector
     , languages = []
     , album = []
     , panelValues = []
@@ -35,13 +35,13 @@ reset = {
 
 -- set methods
 
-setAppContext: AppContext.Model -> Model -> Model
-setAppContext appContext model =
-    { model | appContext = appContext }
+setSelector: UISelector -> Model -> Model
+setSelector selector model =
+    { model | selector = selector }
 
-asAppContextIn: Model -> AppContext.Model -> Model
-asAppContextIn model appContext =
-    { model | appContext = appContext }
+asSelectorIn: Model -> UISelector -> Model
+asSelectorIn model selector =
+    { model | selector = selector }
 
 setAlbum: List StoreValue -> Model -> Model
 setAlbum album model =

@@ -158,19 +158,19 @@ warnUnsupportedOp fieldOp value =
     "Unsupported operation " ++ (FieldOperating.toString fieldOp) ++ "for " ++ (toInfoString value) |> WarningMessage
 
 updateFieldValue : UISelector -> FieldOperation -> String -> FieldValue -> FieldValue
-updateFieldValue selector fieldOp value old =
+updateFieldValue selector fieldOp str old =
     case (Selecting.toFieldType selector) of
         Just DateTimeType ->
             case fieldOp of
                     SetValueOp ->
-                        DateTimeValue value
+                        DateTimeValue str
                     otherwise ->
                         warnUnsupportedOp fieldOp old
  
         Just  VersionType ->
             case fieldOp of
                 SetValueOp ->
-                    case run Version.parser value of
+                    case run Version.parser str of
                         Ok version ->
                             VersionValue version
 
@@ -182,7 +182,7 @@ updateFieldValue selector fieldOp value old =
         Just LanguageType ->
             case fieldOp of
                 SetValueOp ->
-                    case run LanguageIdentifier.parser value of
+                    case run LanguageIdentifier.parser str of
                         Ok lang ->
                             LanguageValue lang
 
@@ -195,7 +195,7 @@ updateFieldValue selector fieldOp value old =
         Just Dimension2DIntType ->
             case fieldOp of
                 SetValueOp ->
-                    case run Dimension2DIntUnit.parser value of
+                    case run Dimension2DIntUnit.parser str of
                             Ok dim ->
                                 Dimension2DIntValue dim
 
@@ -207,42 +207,42 @@ updateFieldValue selector fieldOp value old =
         Just (ListBoxType any) ->
             case fieldOp of
                 SetValueOp ->
-                    ListBoxValue value
+                    ListBoxValue str
                 otherwise ->
                         warnUnsupportedOp fieldOp old
 
         Just  ShortLocalizedListType ->
             case fieldOp of
                 SetValueOp ->
-                    updateLocalizedString (selector |> Selecting.toLanguage) value old
+                    updateLocalizedString (selector |> Selecting.toLanguage) str old
                 otherwise ->
                         warnUnsupportedOp fieldOp old
 
         Just  MediumLocalizedType ->
             case fieldOp of
                 SetValueOp ->
-                    updateLocalizedString (selector |> Selecting.toLanguage) value old
+                    updateLocalizedString (selector |> Selecting.toLanguage) str old
                 otherwise ->
                         warnUnsupportedOp fieldOp old
 
         Just TextAreaLocalizedType ->
             case fieldOp of
                 SetValueOp ->
-                    updateLocalizedString (selector |> Selecting.toLanguage) value old
+                    updateLocalizedString (selector |> Selecting.toLanguage) str old
                 otherwise ->
                         warnUnsupportedOp fieldOp old
 
         Just  BinaryDataType ->
             case fieldOp of
                 SetValueOp ->
-                    BinaryDataValue (ProxyImage value)
+                    BinaryDataValue (ProxyImage str)
                 otherwise ->
                         warnUnsupportedOp fieldOp old
 
         Just  ChromaType ->
             case fieldOp of
                 SetValueOp ->
-                    case run Coloring.parser value of
+                    case run Coloring.parser str of
                         Ok chroma ->
                             ChromaValue chroma
 
@@ -254,9 +254,9 @@ updateFieldValue selector fieldOp value old =
         Just UrlListType ->
             case fieldOp of
                     AddValueOp ->
-                        getFieldValueAsStringList old |> (::) value |> UrlListValue
+                        getFieldValueAsStringList old |> (::) str |> UrlListValue
                     RemoveValueOp ->
-                        getFieldValueAsStringList old |> List.filter (\v -> v /= value) |> UrlListValue
+                        getFieldValueAsStringList old |> List.filter (\v -> v /= str) |> UrlListValue
                     otherwise ->
                         warnUnsupportedOp fieldOp old
 

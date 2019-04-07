@@ -1,4 +1,4 @@
-module Dalmatian.Editor.FieldPersistence exposing (FieldValue(..))
+module Dalmatian.Editor.FieldPersistence exposing (FieldValue(..), isValid)
 
 {-| Manage operations on a field.
 
@@ -63,6 +63,14 @@ toInfoString fieldValue =
         WarningMessage a -> "WarningMessage"
         TodoField -> "TodoField"
         NoValue -> "NoValue"
+
+isValid: FieldValue -> Bool
+isValid fieldValue =
+    case fieldValue of
+        WarningMessage a -> False
+        TodoField -> False
+        NoValue -> False
+        otherwise -> True
 
 getFieldValueAsStringList : FieldValue -> List String
 getFieldValueAsStringList value =

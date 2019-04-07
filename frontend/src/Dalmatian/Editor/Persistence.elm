@@ -5,6 +5,10 @@ module Dalmatian.Editor.Persistence exposing
       , setValue
       , asValueIn
       , update
+      , delete
+      , isMatching
+      , isValid
+      , replaceWith
     )
 
 import Dalmatian.Editor.FieldPersistence as FieldPersistence exposing (FieldValue(..))
@@ -72,3 +76,12 @@ update selector fieldOp str list =
             list
         otherwise ->
             list
+
+isValid: StoreValue -> Bool
+isValid storeValue =
+    FieldPersistence.isValid storeValue.value
+
+
+replaceWith: UISelector -> List StoreValue -> List StoreValue -> List StoreValue
+replaceWith selector source destination =
+    (delete selector destination) ++ source

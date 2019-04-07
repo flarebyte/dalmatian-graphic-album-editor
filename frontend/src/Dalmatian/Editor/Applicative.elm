@@ -60,6 +60,10 @@ asPanelValuesIn:  Model -> List StoreValue -> Model
 asPanelValuesIn model panelValues =
      { model | panelValues = panelValues }
 
+isPanelValid: Model -> Bool
+isPanelValid model =
+    model.panelValues |> List.all Persistence.isValid
+
 processUIEvent : UIEvent -> Model -> Model
 processUIEvent event model =
     case event of
@@ -91,14 +95,14 @@ processUIEvent event model =
 onNewUI selector model
     = model
 
-onLoadUI selector model
-    = model
+onLoadUI selector model = 
+    { model | panelValues = model.album |> List.filter (Persistence.isMatching selector)}
 
-onDeleteUI selector model
-    = model
+onDeleteUI selector model =
+    Persistence.delete selector model.panelValues |> asPanelValuesIn model
 
-onSaveUI model
-    = model
+onSaveUI model =
+   Persistence.replaceWith model.selector model.panelValues model.album |> asAlbumIn model
 
 onUpdateField selector fieldOp str model = 
     Persistence.update selector fieldOp str model.panelValues |> asPanelValuesIn model

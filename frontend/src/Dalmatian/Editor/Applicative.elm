@@ -15,6 +15,7 @@ import Dalmatian.Editor.Tokens.Token exposing (TokenValue)
 import Dalmatian.Editor.Dialect.LanguageIdentifier exposing (LanguageId)
 import Dalmatian.Editor.AppEvent exposing (UIEvent(..))
 import Dalmatian.Editor.Selecting exposing (UISelector(..))
+import Dalmatian.Editor.Persistence as Persistence
 
 type alias Model =
     { selector : UISelector
@@ -75,13 +76,13 @@ processUIEvent event model =
             onSaveUI model
             
         OnUpdateCurrentField fieldOp str ->
-            onUpdateCurrentField fieldOp str model
+            onUpdateField model.selector fieldOp str model
 
         OnUpdateField selector fieldOp str ->
-            onUpdateField fieldOp str model
+            onUpdateField selector fieldOp str model
 
         OnReshapeCurrentField fieldOp ->
-            onReshapeCurrentField fieldOp model
+            onReshapeField model.selector fieldOp model
 
         OnReshapeField selector fieldOp ->
             onReshapeField selector fieldOp model           
@@ -99,14 +100,8 @@ onDeleteUI selector model
 onSaveUI model
     = model
 
-onUpdateCurrentField fieldOp str model
-    = model
+onUpdateField selector fieldOp str model = 
+    Persistence.update selector fieldOp str model.panelValues |> asPanelValuesIn model
 
-onUpdateField fieldOp str model
-    = model
-
-onReshapeCurrentField fieldOp model
-    = model
-
-onReshapeField selector fieldOp model
-    = model
+onReshapeField selector fieldOp model =
+    model

@@ -4,12 +4,13 @@ module Dalmatian.Editor.Persistence exposing
       , createNone
       , setValue
       , asValueIn
+      , update
     )
 
 import Dalmatian.Editor.FieldPersistence as FieldPersistence exposing (FieldValue(..))
 import Dalmatian.Editor.Tokens.Token as Token exposing (TokenValue)
 import Dalmatian.Editor.Selecting as Selecting exposing (UISelector(..), FieldKey)
-
+import Dalmatian.Editor.FieldOperating exposing (FieldOperation(..))
 
 type alias StoreValue =
     { key : FieldKey
@@ -44,8 +45,8 @@ isNotMatching: UISelector -> StoreValue -> Bool
 isNotMatching selector storeValue =
     isMatching selector storeValue |> not
 
-update: UISelector -> (FieldValue -> FieldValue) -> List StoreValue -> List StoreValue
-update selector transf list =
+updateFieldValue: UISelector -> (FieldValue -> FieldValue) -> List StoreValue -> List StoreValue
+updateFieldValue selector transf list =
     List.map
         (\storeValue ->
             if isMatching selector storeValue then
@@ -57,3 +58,17 @@ update selector transf list =
 delete: UISelector -> List StoreValue -> List StoreValue
 delete selector list =
     List.filter (isNotMatching selector) list
+
+update: UISelector -> FieldOperation -> String -> List StoreValue -> List StoreValue
+update selector fieldOp str list =
+    case fieldOp of
+        SetValueOp ->
+            list
+        AddValueOp ->
+            list
+        InsertAfterOp ->
+            list
+        InsertBeforeOp ->
+            list
+        otherwise ->
+            list

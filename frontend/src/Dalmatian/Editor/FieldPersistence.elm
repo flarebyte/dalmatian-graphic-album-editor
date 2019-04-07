@@ -1,5 +1,4 @@
-module Dalmatian.Editor.FieldPersistence exposing (FieldValue(..)
-    , updateFieldValue, reshapeFieldValue)
+module Dalmatian.Editor.FieldPersistence exposing (FieldValue(..))
 
 {-| Manage operations on a field.
 
@@ -25,6 +24,7 @@ import Dalmatian.Editor.Dialect.Dimension2DIntUnit as Dimension2DIntUnit exposin
 import Dalmatian.Editor.Dialect.Version as Version exposing (SemanticVersion)
 import Dalmatian.Editor.Dialect.LanguageIdentifier as LanguageIdentifier exposing (LanguageId)
 import Dalmatian.Editor.Selecting as Selecting exposing (UISelector(..))
+import Dalmatian.Editor.FieldOperating as FieldOperating exposing (FieldOperation(..))
 
 type FieldValue
     = LocalizedListValue (List LocalizedString.Model)
@@ -43,6 +43,26 @@ type FieldValue
     | WarningMessage String
     | TodoField
     | NoValue
+
+toInfoString: FieldValue -> String
+toInfoString fieldValue =
+    case fieldValue of
+        LocalizedListValue a -> "LocalizedListValue"
+        VersionValue a -> "VersionValue"
+        UrlListValue a -> "UrlListValue"
+        DateTimeValue a -> "DateTimeValue"
+        LanguageValue a -> "LanguageValue"
+        ChromaValue a -> "ChromaValue"
+        BinaryDataValue a -> "BinaryDataValue"
+        Dimension2DIntValue a -> "Dimension2DIntValue"
+        ListBoxValue a -> "ListBoxValue"
+        CompositionValue a b -> "CompositionValue"
+        LayoutValue a b -> "LayoutValue"
+        InterlocutorValue a b -> "InterlocutorValue"
+        TranscriptValue a b -> "TranscriptValue"
+        WarningMessage a -> "WarningMessage"
+        TodoField -> "TodoField"
+        NoValue -> "NoValue"
 
 getFieldValueAsStringList : FieldValue -> List String
 getFieldValueAsStringList value =
@@ -133,61 +153,112 @@ updateRank tokenId rank fieldValue =
         otherwise ->
             WarningMessage "Something went wrong (updateRank)"
 
-updateFieldValue : UISelector -> String -> FieldValue -> FieldValue
-updateFieldValue selector value old =
+warnUnsupportedOp: FieldOperation -> FieldValue -> FieldValue
+warnUnsupportedOp fieldOp value =
+    "Unsupported operation " ++ (FieldOperating.toString fieldOp) ++ "for " ++ (toInfoString value) |> WarningMessage
+
+updateFieldValue : UISelector -> FieldOperation -> String -> FieldValue -> FieldValue
+updateFieldValue selector fieldOp value old =
     case (Selecting.toFieldType selector) of
         Just DateTimeType ->
-            DateTimeValue value
-
+            case fieldOp of
+                    SetValueOp ->
+                        DateTimeValue value
+                    otherwise ->
+                        warnUnsupportedOp fieldOp old
+ 
         Just  VersionType ->
-            case run Version.parser value of
-                Ok version ->
-                    VersionValue version
+            case fieldOp of
+                SetValueOp ->
+                    case run Version.parser value of
+                        Ok version ->
+                            VersionValue version
 
-                Err msg ->
-                    WarningMessage "The format for version is invalid"
+                        Err msg ->
+                            WarningMessage "The format for version is invalid"
+                otherwise ->
+                    warnUnsupportedOp fieldOp old
 
         Just LanguageType ->
-            case run LanguageIdentifier.parser value of
-                Ok lang ->
-                    LanguageValue lang
+            case fieldOp of
+                SetValueOp ->
+                    case run LanguageIdentifier.parser value of
+                        Ok lang ->
+                            LanguageValue lang
 
-                Err msg ->
-                    WarningMessage "The format for language is invalid"
+                        Err msg ->
+                            WarningMessage "The format for language is invalid"
+
+                otherwise ->
+                    warnUnsupportedOp fieldOp old
 
         Just Dimension2DIntType ->
-           case run Dimension2DIntUnit.parser value of
-                Ok dim ->
-                    Dimension2DIntValue dim
+            case fieldOp of
+                SetValueOp ->
+                    case run Dimension2DIntUnit.parser value of
+                            Ok dim ->
+                                Dimension2DIntValue dim
 
-                Err msg ->
-                    WarningMessage "The format for dimension is invalid"
+                            Err msg ->
+                                WarningMessage "The format for dimension is invalid"
+                otherwise ->
+                    warnUnsupportedOp fieldOp old
 
         Just (ListBoxType any) ->
-            ListBoxValue value
+            case fieldOp of
+                SetValueOp ->
+                    ListBoxValue value
+                otherwise ->
+                        warnUnsupportedOp fieldOp old
 
         Just  ShortLocalizedListType ->
-            updateLocalizedString (selector |> Selecting.toLanguage) value old
+            case fieldOp of
+                SetValueOp ->
+                    updateLocalizedString (selector |> Selecting.toLanguage) value old
+                otherwise ->
+                        warnUnsupportedOp fieldOp old
 
         Just  MediumLocalizedType ->
-            updateLocalizedString (selector |> Selecting.toLanguage) value old
+            case fieldOp of
+                SetValueOp ->
+                    updateLocalizedString (selector |> Selecting.toLanguage) value old
+                otherwise ->
+                        warnUnsupportedOp fieldOp old
 
         Just TextAreaLocalizedType ->
-            updateLocalizedString (selector |> Selecting.toLanguage) value old
+            case fieldOp of
+                SetValueOp ->
+                    updateLocalizedString (selector |> Selecting.toLanguage) value old
+                otherwise ->
+                        warnUnsupportedOp fieldOp old
 
         Just  BinaryDataType ->
-            BinaryDataValue (ProxyImage value)
+            case fieldOp of
+                SetValueOp ->
+                    BinaryDataValue (ProxyImage value)
+                otherwise ->
+                        warnUnsupportedOp fieldOp old
 
         Just  ChromaType ->
-            case run Coloring.parser value of
-                Ok chroma ->
-                    ChromaValue chroma
+            case fieldOp of
+                SetValueOp ->
+                    case run Coloring.parser value of
+                        Ok chroma ->
+                            ChromaValue chroma
 
-                Err msg ->
-                    WarningMessage "The format for color is invalid"
+                        Err msg ->
+                            WarningMessage "The format for color is invalid"
+                otherwise ->
+                   warnUnsupportedOp fieldOp old
                     
         Just UrlListType ->
-            getFieldValueAsStringList old |> (::) value |> UrlListValue
+            case fieldOp of
+                    AddValueOp ->
+                        getFieldValueAsStringList old |> (::) value |> UrlListValue
+                    RemoveValueOp ->
+                        getFieldValueAsStringList old |> List.filter (\v -> v /= value) |> UrlListValue
+                    otherwise ->
+                        warnUnsupportedOp fieldOp old
 
         Just  InterlocutorType ->
             TodoField
@@ -207,9 +278,49 @@ updateFieldValue selector value old =
         Nothing ->
             WarningMessage "Could not infer the field type"
 
-reshapeFieldValue : UISelector -> FieldValue -> FieldValue
-reshapeFieldValue selector old =
+clearOrWarn: FieldOperation -> FieldValue -> FieldValue
+clearOrWarn fieldOp old =
+    case fieldOp of
+        ClearOp ->
+            TodoField
+        otherwise ->
+            warnUnsupportedOp fieldOp old
+
+reshapeFieldValue : UISelector -> FieldOperation -> FieldValue -> FieldValue
+reshapeFieldValue selector fieldOp old =
     case (Selecting.toFieldType selector) of
+        Just DateTimeType ->
+           clearOrWarn fieldOp old
+
+        Just  VersionType ->
+            clearOrWarn fieldOp old
+
+        Just LanguageType ->
+           clearOrWarn fieldOp old
+
+        Just Dimension2DIntType ->
+            clearOrWarn fieldOp old
+
+        Just (ListBoxType any) ->
+            clearOrWarn fieldOp old
+
+        Just  ShortLocalizedListType ->
+            clearOrWarn fieldOp old
+
+        Just  MediumLocalizedType ->
+            clearOrWarn fieldOp old
+
+        Just TextAreaLocalizedType ->
+           clearOrWarn fieldOp old
+
+        Just  BinaryDataType ->
+            clearOrWarn fieldOp old
+
+        Just  ChromaType ->
+            clearOrWarn fieldOp old
+                    
+        Just UrlListType ->
+            clearOrWarn fieldOp old
  
         Just  InterlocutorType ->
             TodoField
@@ -226,8 +337,6 @@ reshapeFieldValue selector old =
         Just TranscriptType ->
             TodoField
 
-        Just otherwise ->
-            WarningMessage "Reshape is not applicable"
-        
         Nothing ->
             WarningMessage "Could not infer the field type"
+

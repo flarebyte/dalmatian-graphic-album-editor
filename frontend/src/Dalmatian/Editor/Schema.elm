@@ -17,7 +17,6 @@ type FieldType
     | LanguageType
     | ChromaType
     | CompositionType
-    | BinaryDataType
     | Dimension2DIntType
     | ContributionType
     | ListBoxType DataId
@@ -74,7 +73,6 @@ type PredicateKey
     | ContributionKey
     | DimensionKey
     | NameKey
-    | DataKey
     | SameAsKey
     | PrintColorKey
     | ScreenColorKey
@@ -111,7 +109,6 @@ predicateKeyToFieldType predicateKey =
         ContributionKey -> ContributionType
         DimensionKey -> Dimension2DIntType
         NameKey -> MediumLocalizedType
-        DataKey -> BinaryDataType
         SameAsKey -> UrlListType
         PrintColorKey -> ChromaType
         ScreenColorKey -> ChromaType
@@ -148,7 +145,6 @@ appUI =
     , FieldUI ContributionKey "Credits"
     , ScreenUI IllustrationScreen "Illustration"
     , FieldUI DimensionKey "Dimension of the image"
-    , FieldUI DataKey "Reference image"
     , ScreenUI ContributorScreen "Contributor" --
     , ExclusivePanelUI ContributorListPanel "List of contributors"
     , ListManagerUI

@@ -14,11 +14,11 @@ module Dalmatian.Editor.FieldPersistence exposing (FieldValue(..), isValid)
 
 import Parser exposing(run)
 import Dalmatian.Editor.Dialect.Coloring as Coloring exposing (Chroma)
-import Dalmatian.Editor.Tokens.Compositing exposing (BinaryData(..), Composition)
+import Dalmatian.Editor.Tokens.Compositing exposing (Composition)
 import Dalmatian.Editor.LocalizedString as LocalizedString exposing (Model)
 import Dalmatian.Editor.Schema exposing (FieldType(..))
-import Dalmatian.Editor.Tokens.Speech exposing (Interlocutor, Transcript, fromStringInterlocutor)
-import Dalmatian.Editor.Tokens.Tiling exposing (TileInstruction)
+import Dalmatian.Editor.Tokens.Speech exposing (Transcript)
+import Dalmatian.Editor.Tokens.Tiling exposing (TileAssembling)
 import Dalmatian.Editor.Tokens.Token as Token exposing (TokenValue)
 import Dalmatian.Editor.Dialect.Dimension2DIntUnit as Dimension2DIntUnit exposing (Dimension2DInt)
 import Dalmatian.Editor.Dialect.Version as Version exposing (SemanticVersion)
@@ -33,12 +33,10 @@ type FieldValue
     | DateTimeValue String
     | LanguageValue LanguageId
     | ChromaValue Chroma
-    | BinaryDataValue BinaryData
     | Dimension2DIntValue Dimension2DInt
     | ListBoxValue String
     | CompositionValue Int (List (TokenValue Composition))
-    | LayoutValue Int (List (TokenValue TileInstruction))
-    | InterlocutorValue Int (List (TokenValue Interlocutor))
+    | LayoutValue Int (List (TokenValue TileAssembling))
     | TranscriptValue Int (List (TokenValue Transcript))
     | WarningMessage String
     | TodoField
@@ -53,12 +51,10 @@ toInfoString fieldValue =
         DateTimeValue a -> "DateTimeValue"
         LanguageValue a -> "LanguageValue"
         ChromaValue a -> "ChromaValue"
-        BinaryDataValue a -> "BinaryDataValue"
         Dimension2DIntValue a -> "Dimension2DIntValue"
         ListBoxValue a -> "ListBoxValue"
         CompositionValue a b -> "CompositionValue"
         LayoutValue a b -> "LayoutValue"
-        InterlocutorValue a b -> "InterlocutorValue"
         TranscriptValue a b -> "TranscriptValue"
         WarningMessage a -> "WarningMessage"
         TodoField -> "TodoField"
@@ -114,9 +110,6 @@ getNextRank start fieldValue =
         LayoutValue counter tokens ->
             Token.getNextRank start tokens
 
-        InterlocutorValue counter tokens ->
-            Token.getNextRank start tokens
-
         TranscriptValue counter tokens ->
             Token.getNextRank start tokens
 
@@ -131,9 +124,6 @@ getPreviousRank start fieldValue =
             Token.getPreviousRank start tokens
 
         LayoutValue counter tokens ->
-            Token.getPreviousRank start tokens
-
-        InterlocutorValue counter tokens ->
             Token.getPreviousRank start tokens
 
         TranscriptValue counter tokens ->
@@ -151,9 +141,6 @@ updateRank tokenId rank fieldValue =
 
         LayoutValue counter tokens ->
             Token.updateRank tokens tokenId rank |> LayoutValue counter
-
-        InterlocutorValue counter tokens ->
-            Token.updateRank tokens tokenId rank |> InterlocutorValue counter
 
         TranscriptValue counter tokens ->
             Token.updateRank tokens tokenId rank |> TranscriptValue counter
@@ -240,13 +227,6 @@ updateFieldValue selector fieldOp str old =
                 otherwise ->
                         warnUnsupportedOp fieldOp old
 
-        Just  BinaryDataType ->
-            case fieldOp of
-                SetValueOp ->
-                    BinaryDataValue (ProxyImage str)
-                otherwise ->
-                        warnUnsupportedOp fieldOp old
-
         Just  ChromaType ->
             case fieldOp of
                 SetValueOp ->
@@ -320,9 +300,6 @@ reshapeFieldValue selector fieldOp old =
 
         Just TextAreaLocalizedType ->
            clearOrWarn fieldOp old
-
-        Just  BinaryDataType ->
-            clearOrWarn fieldOp old
 
         Just  ChromaType ->
             clearOrWarn fieldOp old

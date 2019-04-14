@@ -1,26 +1,15 @@
-module Dalmatian.Editor.Tokens.Speech exposing (Interlocutor, Transcript, fromStringInterlocutor)
+module Dalmatian.Editor.Tokens.Speech exposing (Transcript, fromString)
 
 import Dalmatian.Editor.Dialect.ResourceIdentifier as ResourceIdentifier exposing (ResourceId)
-
-
-type Interlocutor
-    = SpeakingCharacter ResourceId
-    | ThinkingCharacter ResourceId
-    | ListeningCharacter ResourceId
-    | Narrator ResourceId
-
+import Dalmatian.Editor.Dialect.Ranging exposing (SelectionRange(..))
 
 type Transcript
-    = TranscriptLanguage String
-    | SpeechText String
-    | StrongText
-    | EmphasizedText
-    | DeletedText
-    | SubscriptText
-    | SuperscriptText
-    | MarkedText Int Int -- fontId, size
+    = TranscriptFont ResourceId SelectionRange -- fontId range
+    | Interlocutor ResourceId ResourceId -- character id, activity id (speaking, thinking, listening, narrating)
+    | TranscriptSemantic ResourceId SelectionRange -- (strong, emphasized, deleted, Subscript, Superscript, rtl) list range
+    | TranscriptExtra ResourceId ResourceId SelectionRange -- ex: fictional-language goblin
 
 
-fromStringInterlocutor : String -> Interlocutor
-fromStringInterlocutor text =
-    Narrator (ResourceIdentifier.create "inter" "abc")
+fromString : String -> Transcript
+fromString text =
+    TranscriptFont (ResourceIdentifier.create "font" "arial") SelectAll

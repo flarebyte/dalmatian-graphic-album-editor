@@ -11,18 +11,18 @@ import Dalmatian.Editor.Persistence
     exposing
         ( StoreValue
         )
-import Dalmatian.Editor.Tokens.Token exposing (TokenValue)
 import Dalmatian.Editor.Dialect.LanguageIdentifier exposing (LanguageId)
 import Dalmatian.Editor.AppEvent exposing (UIEvent(..))
 import Dalmatian.Editor.Selecting exposing (UISelector(..))
 import Dalmatian.Editor.Persistence as Persistence
+import Dalmatian.Editor.Snatching exposing (Snatch)
 
 type alias Model =
     { selector : UISelector
     , languages : List LanguageId
     , album : List StoreValue
     , panelValues : List StoreValue
-    , tokenValue : Maybe (TokenValue (List ( Int, String )))
+    , snatch : Maybe Snatch
     }
 
 reset: Model
@@ -31,7 +31,7 @@ reset = {
     , languages = []
     , album = []
     , panelValues = []
-    , tokenValue= Nothing
+    , snatch= Nothing
     }
 
 -- set methods

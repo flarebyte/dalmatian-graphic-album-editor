@@ -1,23 +1,15 @@
-module Dalmatian.Editor.Tokens.Universal exposing (..)
+module Dalmatian.Editor.Dialect.Polymorphic exposing (PolymorphicData)
 
-import Dalmatian.Editor.Tokens.Pathway exposing (TokenPath)
 import Dalmatian.Editor.Dialect.ResourceIdentifier exposing (ResourceId)
+import Dalmatian.Editor.Dialect.Ranging exposing (SelectionRange)
 import Dalmatian.Editor.Dialect.Position2DUnit exposing (Position2D)
 import Dalmatian.Editor.Dialect.Dimension2DUnit exposing (Dimension2D)
 import Dalmatian.Editor.Dialect.FractionUnit exposing (Fraction)
+import Dalmatian.Editor.Dialect.Compositing exposing (CompositeData)
 
-type OperationFlag =
-    NoFlag
-    | IntFlag
+import Parser exposing ((|.), (|=), Parser, chompWhile, getChompedString, int, map, run, spaces, succeed, symbol, keyword)
 
-
-type RecursiveData =
-    RecursiveAbout TokenPath
-    | RecursiveUnaryOp ResourceId OperationFlag RecursiveData
-    | RecursiveBinaryOp ResourceId OperationFlag RecursiveData RecursiveData
-
-
-type TokenData = 
+type PolymorphicData = 
     RangeData ResourceId ResourceId SelectionRange -- font fontId range
     | ResourceIdData ResourceId ResourceId -- predicate entity-id
     | ResourceIdListData ResourceId (List ResourceId) -- predicate entity-id
@@ -27,8 +19,4 @@ type TokenData =
     | Position2DData ResourceId Position2D
     | Dimension2DData ResourceId Dimension2D
     | IntData ResourceId Int
-
-type alias UniversalToken = {
-    path: TokenPath
-    , value: TokenData
-}
+    | NestedData CompositeData

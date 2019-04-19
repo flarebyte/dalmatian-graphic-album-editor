@@ -12,7 +12,6 @@ module Dalmatian.Editor.Persistence exposing
     )
 
 import Dalmatian.Editor.FieldPersistence as FieldPersistence exposing (FieldValue(..))
-import Dalmatian.Editor.Tokens.Token as Token exposing (TokenValue)
 import Dalmatian.Editor.Selecting as Selecting exposing (UISelector(..), FieldKey)
 import Dalmatian.Editor.FieldOperating exposing (FieldOperation(..))
 

@@ -1,8 +1,8 @@
-module Dalmatian.Editor.Tokens.Path exposing (..)
+module Dalmatian.Editor.Pathway exposing (SnatchPath, Pathway)
 
 type Pathway = SpeechPath | CompositionPath | TilingPath | PropsPath | PanelPath
 
-type TokenPath =
+type SnatchPath =
     RootPath Pathway Int
     | Path2 Pathway Int Pathway Int
     | Path3 Pathway Int Pathway Int Pathway Int Pathway Int

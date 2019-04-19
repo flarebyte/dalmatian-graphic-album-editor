@@ -19,12 +19,12 @@ import Dalmatian.Editor.LocalizedString as LocalizedString exposing (Model)
 import Dalmatian.Editor.Schema exposing (FieldType(..))
 import Dalmatian.Editor.Tokens.Speech exposing (Transcript)
 import Dalmatian.Editor.Tokens.Tiling exposing (TileAssembling)
-import Dalmatian.Editor.Tokens.Token as Token exposing (TokenValue)
 import Dalmatian.Editor.Dialect.Dimension2DIntUnit as Dimension2DIntUnit exposing (Dimension2DInt)
 import Dalmatian.Editor.Dialect.Version as Version exposing (SemanticVersion)
 import Dalmatian.Editor.Dialect.LanguageIdentifier as LanguageIdentifier exposing (LanguageId)
 import Dalmatian.Editor.Selecting as Selecting exposing (UISelector(..))
 import Dalmatian.Editor.FieldOperating as FieldOperating exposing (FieldOperation(..))
+import Dalmatian.Editor.Snatching exposing (Snatch)
 
 type FieldValue
     = LocalizedListValue (List LocalizedString.Model)
@@ -35,9 +35,7 @@ type FieldValue
     | ChromaValue Chroma
     | Dimension2DIntValue Dimension2DInt
     | ListBoxValue String
-    | CompositionValue Int (List (TokenValue Composition))
-    | LayoutValue Int (List (TokenValue TileAssembling))
-    | TranscriptValue Int (List (TokenValue Transcript))
+    | SnatchValue Int (List Snatch)
     | WarningMessage String
     | TodoField
     | NoValue
@@ -53,9 +51,7 @@ toInfoString fieldValue =
         ChromaValue a -> "ChromaValue"
         Dimension2DIntValue a -> "Dimension2DIntValue"
         ListBoxValue a -> "ListBoxValue"
-        CompositionValue a b -> "CompositionValue"
-        LayoutValue a b -> "LayoutValue"
-        TranscriptValue a b -> "TranscriptValue"
+        SnatchValue a b -> "SnatchValue"
         WarningMessage a -> "WarningMessage"
         TodoField -> "TodoField"
         NoValue -> "NoValue"
@@ -77,7 +73,6 @@ getFieldValueAsStringList value =
         _ ->
             []
 
-
 updateLocalizedString : LanguageId -> String -> FieldValue -> FieldValue
 updateLocalizedString language value old =
     case old of
@@ -89,64 +84,6 @@ updateLocalizedString language value old =
 
         _ ->
             old
-
-
--- upsertContributionValue : FieldValue -> TokenValue Contribution -> FieldValue
--- upsertContributionValue oldValue tokenContribution =
---     case oldValue of
---         ContributionValue tokens ->
---             Token.upsert tokenContribution tokens |> ContributionValue
-
---         otherwise ->
---             WarningMessage "Something went wrong (upsertContributionValue)"
-
-
-getNextRank : Int -> FieldValue -> Int
-getNextRank start fieldValue =
-    case fieldValue of
-        CompositionValue counter tokens ->
-            Token.getNextRank start tokens
-
-        LayoutValue counter tokens ->
-            Token.getNextRank start tokens
-
-        TranscriptValue counter tokens ->
-            Token.getNextRank start tokens
-
-        otherwise ->
-            1000
-
-
-getPreviousRank : Int -> FieldValue -> Int
-getPreviousRank start fieldValue =
-    case fieldValue of
-        CompositionValue counter tokens ->
-            Token.getPreviousRank start tokens
-
-        LayoutValue counter tokens ->
-            Token.getPreviousRank start tokens
-
-        TranscriptValue counter tokens ->
-            Token.getPreviousRank start tokens
-
-        otherwise ->
-            1000
-
-
-updateRank : Int -> Int -> FieldValue -> FieldValue
-updateRank tokenId rank fieldValue =
-    case fieldValue of
-        CompositionValue counter tokens ->
-            Token.updateRank tokens tokenId rank |> CompositionValue counter
-
-        LayoutValue counter tokens ->
-            Token.updateRank tokens tokenId rank |> LayoutValue counter
-
-        TranscriptValue counter tokens ->
-            Token.updateRank tokens tokenId rank |> TranscriptValue counter
-
-        otherwise ->
-            WarningMessage "Something went wrong (updateRank)"
 
 warnUnsupportedOp: FieldOperation -> FieldValue -> FieldValue
 warnUnsupportedOp fieldOp value =
@@ -187,7 +124,7 @@ updateFieldValue selector fieldOp str old =
                 otherwise ->
                     warnUnsupportedOp fieldOp old
 
-        Just Dimension2DIntType ->
+        Just ImageMetadataType ->
             case fieldOp of
                 SetValueOp ->
                     case run Dimension2DIntUnit.parser str of
@@ -286,7 +223,7 @@ reshapeFieldValue selector fieldOp old =
         Just LanguageType ->
            clearOrWarn fieldOp old
 
-        Just Dimension2DIntType ->
+        Just ImageMetadataType ->
             clearOrWarn fieldOp old
 
         Just (ListBoxType any) ->

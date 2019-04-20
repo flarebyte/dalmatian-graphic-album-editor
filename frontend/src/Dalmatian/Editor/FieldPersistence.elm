@@ -22,20 +22,21 @@ import Dalmatian.Editor.Tokens.Tiling exposing (TileAssembling)
 import Dalmatian.Editor.Dialect.Dimension2DIntUnit as Dimension2DIntUnit exposing (Dimension2DInt)
 import Dalmatian.Editor.Dialect.Version as Version exposing (SemanticVersion)
 import Dalmatian.Editor.Dialect.LanguageIdentifier as LanguageIdentifier exposing (LanguageId)
+import Dalmatian.Editor.Dialect.ResourceIdentifier as ResourceIdentifier exposing(ResourceId)
 import Dalmatian.Editor.Selecting as Selecting exposing (UISelector(..))
 import Dalmatian.Editor.FieldOperating as FieldOperating exposing (FieldOperation(..))
-import Dalmatian.Editor.Snatching exposing (Snatch)
+import Dalmatian.Editor.Snatching exposing (Snatch, LocalizedSnatches)
 
 type FieldValue
     = LocalizedListValue (List LocalizedString.Model)
     | VersionValue SemanticVersion
     | UrlListValue (List String)
+    | ResourceIdListValue (List ResourceId)
     | DateTimeValue String
     | LanguageValue LanguageId
-    | ChromaValue Chroma
-    | Dimension2DIntValue Dimension2DInt
     | ListBoxValue String
     | SnatchValue Int (List Snatch)
+    | LocalizedSnatchesValue Int (List LocalizedSnatches)
     | WarningMessage String
     | TodoField
     | NoValue
@@ -46,12 +47,12 @@ toInfoString fieldValue =
         LocalizedListValue a -> "LocalizedListValue"
         VersionValue a -> "VersionValue"
         UrlListValue a -> "UrlListValue"
+        ResourceIdListValue a -> "ResourceIdListValue"
         DateTimeValue a -> "DateTimeValue"
         LanguageValue a -> "LanguageValue"
-        ChromaValue a -> "ChromaValue"
-        Dimension2DIntValue a -> "Dimension2DIntValue"
         ListBoxValue a -> "ListBoxValue"
         SnatchValue a b -> "SnatchValue"
+        LocalizedSnatchesValue a b -> "LocalizedSnatchesValue"
         WarningMessage a -> "WarningMessage"
         TodoField -> "TodoField"
         NoValue -> "NoValue"
@@ -68,6 +69,15 @@ getFieldValueAsStringList : FieldValue -> List String
 getFieldValueAsStringList value =
     case value of
         UrlListValue list ->
+            list
+
+        _ ->
+            []
+
+getFieldValueAsResourceIdList : FieldValue -> List ResourceId
+getFieldValueAsResourceIdList value =
+    case value of
+        ResourceIdListValue list ->
             list
 
         _ ->
@@ -124,18 +134,6 @@ updateFieldValue selector fieldOp str old =
                 otherwise ->
                     warnUnsupportedOp fieldOp old
 
-        Just ImageMetadataType ->
-            case fieldOp of
-                SetValueOp ->
-                    case run Dimension2DIntUnit.parser str of
-                            Ok dim ->
-                                Dimension2DIntValue dim
-
-                            Err msg ->
-                                WarningMessage "The format for dimension is invalid"
-                otherwise ->
-                    warnUnsupportedOp fieldOp old
-
         Just (ListBoxType any) ->
             case fieldOp of
                 SetValueOp ->
@@ -163,19 +161,7 @@ updateFieldValue selector fieldOp str old =
                     updateLocalizedString (selector |> Selecting.toLanguage) str old
                 otherwise ->
                         warnUnsupportedOp fieldOp old
-
-        Just  ChromaType ->
-            case fieldOp of
-                SetValueOp ->
-                    case run Coloring.parser str of
-                        Ok chroma ->
-                            ChromaValue chroma
-
-                        Err msg ->
-                            WarningMessage "The format for color is invalid"
-                otherwise ->
-                   warnUnsupportedOp fieldOp old
-                    
+                   
         Just UrlListType ->
             case fieldOp of
                     AddValueOp ->
@@ -184,22 +170,18 @@ updateFieldValue selector fieldOp str old =
                         getFieldValueAsStringList old |> List.filter (\v -> v /= str) |> UrlListValue
                     otherwise ->
                         warnUnsupportedOp fieldOp old
-
-        Just  InterlocutorType ->
+       
+        Just ResourceIdListType ->
+            case fieldOp of
+                    AddValueOp ->
+                        getFieldValueAsResourceIdList old |> (::) (ResourceIdentifier.fromString str) |> ResourceIdListValue
+                    RemoveValueOp ->
+                        getFieldValueAsResourceIdList old |> List.filter (\v -> v /= (ResourceIdentifier.fromString str)) |> ResourceIdListValue
+                    otherwise ->
+                        warnUnsupportedOp fieldOp old
+        Just (SnatchType a) ->
             TodoField
 
-        Just CompositionType ->
-            TodoField
-
-        Just ContributionType ->
-            TodoField
-
-        Just LayoutType ->
-            TodoField
-
-        Just TranscriptType ->
-            TodoField
-        
         Nothing ->
             WarningMessage "Could not infer the field type"
 
@@ -223,9 +205,6 @@ reshapeFieldValue selector fieldOp old =
         Just LanguageType ->
            clearOrWarn fieldOp old
 
-        Just ImageMetadataType ->
-            clearOrWarn fieldOp old
-
         Just (ListBoxType any) ->
             clearOrWarn fieldOp old
 
@@ -237,28 +216,16 @@ reshapeFieldValue selector fieldOp old =
 
         Just TextAreaLocalizedType ->
            clearOrWarn fieldOp old
-
-        Just  ChromaType ->
-            clearOrWarn fieldOp old
                     
         Just UrlListType ->
             clearOrWarn fieldOp old
- 
-        Just  InterlocutorType ->
-            TodoField
 
-        Just CompositionType ->
-            TodoField
+        Just ResourceIdListType ->
+            clearOrWarn fieldOp old
 
-        Just ContributionType ->
-            TodoField
-
-        Just LayoutType ->
-            TodoField
-
-        Just TranscriptType ->
-            TodoField
-
+        Just (SnatchType a) ->
+            clearOrWarn fieldOp old
+  
         Nothing ->
             WarningMessage "Could not infer the field type"
 

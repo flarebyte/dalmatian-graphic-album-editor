@@ -16,22 +16,24 @@ type DataId
     | FormatId
 
 
+type SnatchId
+    = CompositionId
+    | LayoutId
+    | TranscriptId
+    | ChromaId
+
+
 type FieldType
     = ShortLocalizedListType
     | MediumLocalizedType
     | TextAreaLocalizedType
     | UrlListType
+    | ResourceIdListType
     | DateTimeType
     | VersionType
     | LanguageType
-    | ChromaType
-    | CompositionType
-    | ImageMetadataType
-    | ContributionType
     | ListBoxType DataId
-    | LayoutType
-    | InterlocutorType
-    | TranscriptType
+    | SnatchType SnatchId
 
 
 type ScreenZone
@@ -53,6 +55,8 @@ type PanelZone
     = CopyrightsPanel
     | LicensePanel
     | ContributorPanel
+    | ContributionPanel
+    | IllustrationPanel
     | AttributionPanel
     | StencilPanel
     | FontPanel
@@ -71,17 +75,18 @@ type PredicateKey
     | LanguageKey
     | KeywordKey
     | HomepageKey
-    | ContributionKey
-    | ImageMetadataKey
+    | ContributorKey
     | NameKey
     | SameAsKey
     | PrintColorKey
     | ScreenColorKey
-    | InterlocutorKey
     | TranscriptKey
     | MediumKey
-    | FormatKey
+    | AlbumFormatKey
+    | MediaFormatKey
     | LayoutKey
+    | CompositionKey
+    | CommentKey
 
 
 type FieldUI
@@ -134,12 +139,6 @@ predicateKeyToFieldType predicateKey =
         HomepageKey ->
             UrlListType
 
-        ContributionKey ->
-            ContributionType
-
-        ImageMetadataKey ->
-            ImageMetadataType
-
         NameKey ->
             MediumLocalizedType
 
@@ -147,25 +146,34 @@ predicateKeyToFieldType predicateKey =
             UrlListType
 
         PrintColorKey ->
-            ChromaType
+            SnatchType ChromaId
 
         ScreenColorKey ->
-            ChromaType
-
-        InterlocutorKey ->
-            InterlocutorType
+            SnatchType ChromaId
 
         TranscriptKey ->
-            TranscriptType
+            SnatchType TranscriptId
+
+        CompositionKey ->
+            SnatchType CompositionId
 
         MediumKey ->
             ListBoxType MediumId
 
-        FormatKey ->
+        MediaFormatKey ->
+            ListBoxType FormatId
+
+        AlbumFormatKey ->
             ListBoxType FormatId
 
         LayoutKey ->
-            LayoutType
+            SnatchType LayoutId
+
+        ContributorKey ->
+            ResourceIdListType
+
+        CommentKey ->
+            TextAreaLocalizedType
 
 
 appUI : List ScreenUI
@@ -204,14 +212,24 @@ appUI =
         ]
     , ScreenUI ContributionScreen
         "Contribution"
-        [ DefaultPanel
-            [ FieldUI ContributionKey "Credits"
+        [ ListPanelUI ContributionPanel "List of contributions"
+        , PanelUI ContributionPanel
+            "Edit contribution"
+            [ FieldUI NameKey "Name of the contribution"
+            , FieldUI DescriptionKey "Description of the contribution"
+            , FieldUI ContributorKey "List of contributors"
             ]
         ]
     , ScreenUI IllustrationScreen
         "Illustration"
-        [ DefaultPanel
-            [ FieldUI ImageMetadataKey "Metadata about the image"
+        [ ListPanelUI IllustrationPanel "List of illustrations"
+        , PanelUI IllustrationPanel
+            "Edit illustration"
+            [ FieldUI NameKey "Name of the illustration"
+            , FieldUI DescriptionKey "Description of the illustration"
+            , FieldUI MediaFormatKey "Dimension of the illustration"
+            , FieldUI CompositionKey "Composition of the illustration"
+            , FieldUI CommentKey "Writers' comments for the illustration"
             ]
         ]
     , ScreenUI ContributorScreen
@@ -241,7 +259,7 @@ appUI =
             "Edit color"
             [ FieldUI NameKey "Common name for the color"
             , FieldUI DescriptionKey "Description of the color"
-            , FieldUI SameAsKey "Links to that font on encyclopedy sites"
+            , FieldUI SameAsKey "Links to that font on encyclopedia sites"
             , FieldUI PrintColorKey "The best color used for print"
             , FieldUI ScreenColorKey "The best color used for screen"
             ]
@@ -254,6 +272,7 @@ appUI =
             [ FieldUI NameKey "Name of the character"
             , FieldUI DescriptionKey "Description of the character"
             , FieldUI HomepageKey "Links to webpages about this character"
+            , FieldUI CommentKey "Writers' comments about this character"
             ]
         ]
     , ScreenUI SpeechScreen
@@ -261,8 +280,9 @@ appUI =
         [ ListPanelUI SpeechPanel "List of speech"
         , PanelUI SpeechPanel
             "Edit speech"
-            [ FieldUI InterlocutorKey "The different interlocutors in the speech bubble"
+            [ FieldUI DescriptionKey "Speech in plain text"
             , FieldUI TranscriptKey "The transcript of the speech bubble with formatting"
+            , FieldUI CommentKey "Writers' comments about the speech"
             ]
         ]
     , ScreenUI PublishedWorkScreen
@@ -275,7 +295,7 @@ appUI =
             , FieldUI DescriptionKey "Description if different than album"
             , FieldUI LanguageKey "The language of the published work"
             , FieldUI MediumKey "Material or physical carrier"
-            , FieldUI FormatKey "File format, physical medium, or dimensions"
+            , FieldUI AlbumFormatKey "File format, physical medium, or dimensions"
             , FieldUI LayoutKey "Layout of the album"
             ]
         ]

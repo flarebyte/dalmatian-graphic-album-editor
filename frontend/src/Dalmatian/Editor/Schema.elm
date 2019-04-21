@@ -21,6 +21,12 @@ type SnatchId
     | LayoutId
     | TranscriptId
     | ChromaId
+    | InterlocutorId
+    | NarrativeListId
+    | SpeechListId
+    | NarrativeMetadataId
+    | PageMetadataId
+    | PageListId
 
 
 type FieldType
@@ -49,6 +55,9 @@ type ScreenZone
     | PublishedWorkScreen
     | LanguageScreen
     | CharacterScreen
+    | NarrativeScreen
+    | StoryScreen
+    | PageScreen
 
 
 type PanelZone
@@ -64,6 +73,9 @@ type PanelZone
     | CharacterPanel
     | SpeechPanel
     | PublishedPanel
+    | NarrativePanel
+    | StoryPanel
+    | PagePanel
 
 
 type PredicateKey
@@ -81,17 +93,22 @@ type PredicateKey
     | PrintColorKey
     | ScreenColorKey
     | TranscriptKey
+    | InterlocutorKey
     | MediumKey
     | AlbumFormatKey
     | MediaFormatKey
     | LayoutKey
     | CompositionKey
     | CommentKey
+    | NarrativeListKey
+    | SpeechListKey
+    | NarrativeMetadataKey
+    | PageMetadataKey
+    | PageListKey
 
 
 type FieldUI
     = FieldUI PredicateKey String -- name description
-
 
 type PanelUI
     = DefaultPanel (List FieldUI)
@@ -154,6 +171,9 @@ predicateKeyToFieldType predicateKey =
         TranscriptKey ->
             SnatchType TranscriptId
 
+        InterlocutorKey ->
+            SnatchType InterlocutorId
+
         CompositionKey ->
             SnatchType CompositionId
 
@@ -175,6 +195,20 @@ predicateKeyToFieldType predicateKey =
         CommentKey ->
             TextAreaLocalizedType
 
+        NarrativeListKey ->
+            SnatchType NarrativeListId
+
+        SpeechListKey ->
+            SnatchType SpeechListId
+
+        NarrativeMetadataKey ->
+            SnatchType NarrativeMetadataId
+        
+        PageMetadataKey ->
+            SnatchType PageMetadataId
+        
+        PageListKey ->
+            SnatchType PageListId
 
 appUI : List ScreenUI
 appUI =
@@ -282,9 +316,49 @@ appUI =
             "Edit speech"
             [ FieldUI DescriptionKey "Speech in plain text"
             , FieldUI TranscriptKey "The transcript of the speech bubble with formatting"
+            , FieldUI InterlocutorKey "The different interlocutors of the speech bubble"
             , FieldUI CommentKey "Writers' comments about the speech"
             ]
         ]
+    , ScreenUI NarrativeScreen
+        "Panel's narrative"
+        [ ListPanelUI NarrativePanel "List of panel narratives"
+        , PanelUI NarrativePanel
+            "Edit panel's narrative"
+            [ FieldUI NameKey "Name of the narrative"
+            , FieldUI DescriptionKey "Description of what is happening in the comic panel"
+            , FieldUI SpeechListKey "Ordered list of speeches happening at the point of the narrative"
+            , FieldUI NarrativeMetadataKey "Metadata for the narrative"
+            , FieldUI CommentKey "Writers' comments about the narrative"
+            ]
+        ]
+
+    , ScreenUI StoryScreen
+        "Story"
+        [ PanelUI StoryPanel
+            "Edit story"
+            [ FieldUI NarrativeListKey "Ordered sequence of the narratives"
+            , FieldUI CommentKey "Writers' comments about the story"
+            ]
+        ]
+
+    , ScreenUI PageScreen
+        "Page"
+        [ ListPanelUI PagePanel "List of pages"
+        , PanelUI PagePanel
+            "Edit page"
+            [ FieldUI NameKey "Name of the page"
+            , FieldUI DescriptionKey "Description of the page"
+            , FieldUI NarrativeListKey "Ordered sequence of the narratives"
+            , FieldUI LanguageKey "The language of the page"
+            , FieldUI MediumKey "Material or physical carrier"
+            , FieldUI AlbumFormatKey "File format, physical medium, or dimensions"
+            , FieldUI PageMetadataKey "Metadata for the page" --include page:from page:to double-page
+            , FieldUI LayoutKey "Layout of the page"
+            , FieldUI CommentKey "Writers' comments about the page"
+            ]
+        ]
+
     , ScreenUI PublishedWorkScreen
         "Published Work"
         [ ListPanelUI PublishedPanel "List of published works"
@@ -296,7 +370,7 @@ appUI =
             , FieldUI LanguageKey "The language of the published work"
             , FieldUI MediumKey "Material or physical carrier"
             , FieldUI AlbumFormatKey "File format, physical medium, or dimensions"
-            , FieldUI LayoutKey "Layout of the album"
+            , FieldUI PageListKey "Ordered list of pages in the published work"
             ]
         ]
     ]

@@ -13,10 +13,8 @@ type PolymorphicData =
     RangeData ResourceId ResourceId SelectionRange -- font fontId range
     | ResourceIdData ResourceId ResourceId -- predicate entity-id
     | ResourceIdListData ResourceId (List ResourceId) -- predicate entity-id
-    | RelationshipData ResourceId ResourceId ResourceId --
-    | RelationshipsData ResourceId ResourceId (List ResourceId) --
     | FractionData ResourceId Fraction
     | Position2DData ResourceId Position2D
     | Dimension2DData ResourceId Dimension2D
     | IntData ResourceId Int
-    | NestedData CompositeData
+    | NestedData ResourceId CompositeData

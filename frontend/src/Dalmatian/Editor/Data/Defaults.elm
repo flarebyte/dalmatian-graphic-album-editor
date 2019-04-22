@@ -14,6 +14,12 @@ getListBoxItems dataId =
             speechActivityIdData
         ContributionActivityId ->
             contributionActivityIdData
+        PageMetadataId ->
+            pageMetadataIdData
+        NarrativeMetadataId ->
+            narrativeMetadataIdData
+        TranscriptDataId ->
+            transcriptData
 
 mediumIdData =
     """
@@ -60,4 +66,19 @@ contributionActivityIdData =
     dlm:contribution-activity/translating ---> Translating
     dlm:contribution-activity/sponsoring ---> Sponsoring
     dlm:contribution-activity/programming ---> Programming
+    """ |> ListBox.parse
+
+pageMetadataIdData =
+    """
+    double-page ---> Double page
+    """ |> ListBox.parse
+
+narrativeMetadataIdData =
+    """
+    good dsl ---> Option 1
+    """ |> ListBox.parse
+
+transcriptData =
+    """
+    good dsl ---> Option 1
     """ |> ListBox.parse

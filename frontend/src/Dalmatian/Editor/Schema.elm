@@ -16,14 +16,17 @@ type DataId
     | FormatId
     | SpeechActivityId
     | ContributionActivityId
+    | PageMetadataId
+    | NarrativeMetadataId
+    | TranscriptDataId
 
 
 type SnatchId
     = CompositionId -- recursive binary operations on image
     | LayoutId -- agencing of panels on a page
-    | TranscriptId -- formatting of speech text
+    | TranscriptId DataId PredicateKey -- formatting of speech text
     | OrderedRelation PanelZone
-    | MetadataId PanelZone
+    | MetadataId DataId
     | AnnotatedRelation PanelZone DataId Int -- max
 
 
@@ -175,7 +178,7 @@ predicateKeyToFieldType predicateKey =
             ChromaType
 
         TranscriptKey ->
-            SnatchType TranscriptId
+            SnatchType (TranscriptId TranscriptDataId DescriptionKey)
 
         InterlocutorKey ->
             SnatchType (AnnotatedRelation CharacterPanel SpeechActivityId 1)
@@ -208,10 +211,10 @@ predicateKeyToFieldType predicateKey =
             SnatchType (OrderedRelation SpeechPanel)
 
         NarrativeMetadataKey ->
-            SnatchType (MetadataId NarrativePanel)
+            SnatchType (MetadataId NarrativeMetadataId)
         
         PageMetadataKey ->
-            SnatchType (MetadataId PagePanel)
+            SnatchType (MetadataId PageMetadataId)
         
         PageListKey ->
             SnatchType (OrderedRelation PagePanel)
@@ -362,7 +365,7 @@ appUI =
             , FieldUI LanguageKey "The language of the page"
             , FieldUI MediumKey "Material or physical carrier"
             , FieldUI AlbumFormatKey "File format, physical medium, or dimensions"
-            , FieldUI PageMetadataKey "Metadata for the page" --include page:from page:to double-page
+            , FieldUI PageMetadataKey "Metadata for the page"
             , FieldUI LayoutKey "Layout of the page"
             , FieldUI CommentKey "Writers' comments about the page"
             ]

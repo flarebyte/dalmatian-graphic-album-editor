@@ -14,19 +14,18 @@ import Dalmatian.Editor.Dialect.LanguageIdentifier exposing (LanguageId)
 type DataId
     = MediumId
     | FormatId
+    | SpeechActivityId
+    | ContributionActivityId
 
 
 type SnatchId
-    = CompositionId
-    | LayoutId
-    | TranscriptId
-    | ChromaId
-    | InterlocutorId
-    | NarrativeListId
-    | SpeechListId
-    | NarrativeMetadataId
-    | PageMetadataId
-    | PageListId
+    = CompositionId -- recursive binary operations on image
+    | LayoutId -- agencing of panels on a page
+    | TranscriptId -- formatting of speech text
+    | ChromaId -- color information
+    | OrderedRelation PanelZone
+    | MetadataId PanelZone
+    | AnnotatedRelation PanelZone DataId Int -- max
 
 
 type FieldType
@@ -34,7 +33,6 @@ type FieldType
     | MediumLocalizedType
     | TextAreaLocalizedType
     | UrlListType
-    | ResourceIdListType
     | DateTimeType
     | VersionType
     | LanguageType
@@ -180,7 +178,7 @@ predicateKeyToFieldType predicateKey =
             SnatchType TranscriptId
 
         InterlocutorKey ->
-            SnatchType InterlocutorId
+            SnatchType (AnnotatedRelation CharacterPanel SpeechActivityId 1)
 
         CompositionKey ->
             SnatchType CompositionId
@@ -198,25 +196,25 @@ predicateKeyToFieldType predicateKey =
             SnatchType LayoutId
 
         ContributorKey ->
-            ResourceIdListType
+            SnatchType (AnnotatedRelation ContributorPanel ContributionActivityId 5)
 
         CommentKey ->
             TextAreaLocalizedType
 
         NarrativeListKey ->
-            SnatchType NarrativeListId
+            SnatchType (OrderedRelation NarrativePanel)
 
         SpeechListKey ->
-            SnatchType SpeechListId
+            SnatchType (OrderedRelation SpeechPanel)
 
         NarrativeMetadataKey ->
-            SnatchType NarrativeMetadataId
+            SnatchType (MetadataId NarrativePanel)
         
         PageMetadataKey ->
-            SnatchType PageMetadataId
+            SnatchType (MetadataId PagePanel)
         
         PageListKey ->
-            SnatchType PageListId
+            SnatchType (OrderedRelation PagePanel)
 
 appUI : List ScreenUI
 appUI =

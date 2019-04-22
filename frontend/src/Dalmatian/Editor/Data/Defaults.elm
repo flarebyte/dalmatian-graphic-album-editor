@@ -10,6 +10,10 @@ getListBoxItems dataId =
             mediumIdData
         FormatId ->
             formatIdData
+        SpeechActivityId ->
+            speechActivityIdData
+        ContributionActivityId ->
+            contributionActivityIdData
 
 mediumIdData =
     """
@@ -31,4 +35,29 @@ formatIdData =
     dlm:format/japanese-b6 ---> Japanese B6
     dlm:format/screen/landscape ---> Screen Landscape
     dlm:format/screen/portrait ---> Screen Portrait
+    """ |> ListBox.parse
+
+speechActivityIdData =
+    """
+    dlm:speech-activity/speaking ---> Speaking
+    dlm:speech-activity/yelling ---> Yelling
+    dlm:speech-activity/whispering ---> Whispering 
+    dlm:speech-activity/thinking ---> Thinking
+    dlm:speech-activity/listening ---> Listening
+    dlm:speech-activity/narrating ---> Narrating
+    """ |> ListBox.parse
+
+contributionActivityIdData =
+    """
+    dlm:contribution-activity/pencilling ---> Pencilling
+    dlm:contribution-activity/coloring ---> Coloring
+    dlm:contribution-activity/inking ---> Inking
+    dlm:contribution-activity/lettering ---> Lettering
+    dlm:contribution-activity/sketching ---> Sketching
+    dlm:contribution-activity/designing ---> Designing
+    dlm:contribution-activity/writing ---> Writing
+    dlm:contribution-activity/editing ---> Editing
+    dlm:contribution-activity/translating ---> Translating
+    dlm:contribution-activity/sponsoring ---> Sponsoring
+    dlm:contribution-activity/programming ---> Programming
     """ |> ListBox.parse

@@ -32,6 +32,13 @@ toResourceIdentifier key =
         FormatKey -> ResourceIdentifier.create dcterms "format"
         LayoutKey -> ResourceIdentifier.create dlm "layout"
         CommentKey -> ResourceIdentifier.create rdfs "comment"
+        NarrativeListKey -> ResourceIdentifier.create dlm "narrative"
+        SpeechListKey -> ResourceIdentifier.create dlm "speech"
+        NarrativeMetadataKey -> ResourceIdentifier.create dlm "narrative-metadata"
+        PageMetadataKey -> ResourceIdentifier.create dlm "page-metadata"
+        PageListKey -> ResourceIdentifier.create dlm "page"
+        SpatialCoverageKey -> ResourceIdentifier.create dcterms "spatial"
+        TemporalCoverageKey -> ResourceIdentifier.create dcterms "temporal"
 
 fromResourceIdentifier: ResourceIdentifier -> Maybe PredicateKey
 fromResourceIdentifier id =

@@ -105,6 +105,8 @@ type PredicateKey
     | NarrativeMetadataKey
     | PageMetadataKey
     | PageListKey
+    | SpatialCoverageKey
+    | TemporalCoverageKey
 
 
 type FieldUI
@@ -142,6 +144,12 @@ predicateKeyToFieldType predicateKey =
             DateTimeType
 
         TitleKey ->
+            MediumLocalizedType
+
+        TemporalCoverageKey ->
+            MediumLocalizedType
+
+        SpatialCoverageKey ->
             MediumLocalizedType
 
         DescriptionKey ->
@@ -311,7 +319,7 @@ appUI =
         ]
     , ScreenUI SpeechScreen
         "Speech"
-        [ ListPanelUI SpeechPanel "List of speech"
+        [ ListPanelUI SpeechPanel "List of speeches"
         , PanelUI SpeechPanel
             "Edit speech"
             [ FieldUI DescriptionKey "Speech in plain text"
@@ -326,10 +334,13 @@ appUI =
         , PanelUI NarrativePanel
             "Edit panel's narrative"
             [ FieldUI NameKey "Name of the narrative"
+            , FieldUI SpatialCoverageKey "Location of the action"
+            , FieldUI TemporalCoverageKey "Time of the action"
             , FieldUI DescriptionKey "Description of what is happening in the comic panel"
             , FieldUI SpeechListKey "Ordered list of speeches happening at the point of the narrative"
             , FieldUI NarrativeMetadataKey "Metadata for the narrative"
             , FieldUI CommentKey "Writers' comments about the narrative"
+            , FieldUI HomepageKey "Helpful links"
             ]
         ]
 

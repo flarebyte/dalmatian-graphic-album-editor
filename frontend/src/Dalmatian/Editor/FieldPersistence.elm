@@ -34,6 +34,7 @@ type FieldValue
     | ResourceIdListValue (List ResourceId)
     | DateTimeValue String
     | LanguageValue LanguageId
+    | ChromaValue Chroma
     | ListBoxValue String
     | SnatchValue Int (List Snatch)
     | LocalizedSnatchesValue Int (List LocalizedSnatches)
@@ -50,6 +51,7 @@ toInfoString fieldValue =
         ResourceIdListValue a -> "ResourceIdListValue"
         DateTimeValue a -> "DateTimeValue"
         LanguageValue a -> "LanguageValue"
+        ChromaValue a -> "ChromaValue"
         ListBoxValue a -> "ListBoxValue"
         SnatchValue a b -> "SnatchValue"
         LocalizedSnatchesValue a b -> "LocalizedSnatchesValue"
@@ -171,14 +173,14 @@ updateFieldValue selector fieldOp str old =
                     otherwise ->
                         warnUnsupportedOp fieldOp old
        
-        Just ResourceIdListType ->
-            case fieldOp of
-                    AddValueOp ->
-                        getFieldValueAsResourceIdList old |> (::) (ResourceIdentifier.fromString str) |> ResourceIdListValue
-                    RemoveValueOp ->
-                        getFieldValueAsResourceIdList old |> List.filter (\v -> v /= (ResourceIdentifier.fromString str)) |> ResourceIdListValue
-                    otherwise ->
-                        warnUnsupportedOp fieldOp old
+        Just ChromaType ->
+            case run Coloring.parser str of
+                Ok chroma ->
+                    ChromaValue chroma
+
+                Err msg ->
+                    WarningMessage "The format for color is invalid"
+
         Just (SnatchType a) ->
             TodoField
 
@@ -220,7 +222,7 @@ reshapeFieldValue selector fieldOp old =
         Just UrlListType ->
             clearOrWarn fieldOp old
 
-        Just ResourceIdListType ->
+        Just ChromaType ->
             clearOrWarn fieldOp old
 
         Just (SnatchType a) ->

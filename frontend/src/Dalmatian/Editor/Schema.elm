@@ -22,7 +22,6 @@ type SnatchId
     = CompositionId -- recursive binary operations on image
     | LayoutId -- agencing of panels on a page
     | TranscriptId -- formatting of speech text
-    | ChromaId -- color information
     | OrderedRelation PanelZone
     | MetadataId PanelZone
     | AnnotatedRelation PanelZone DataId Int -- max
@@ -36,6 +35,7 @@ type FieldType
     | DateTimeType
     | VersionType
     | LanguageType
+    | ChromaType
     | ListBoxType DataId
     | SnatchType SnatchId
 
@@ -169,10 +169,10 @@ predicateKeyToFieldType predicateKey =
             UrlListType
 
         PrintColorKey ->
-            SnatchType ChromaId
+            ChromaType
 
         ScreenColorKey ->
-            SnatchType ChromaId
+            ChromaType
 
         TranscriptKey ->
             SnatchType TranscriptId

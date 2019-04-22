@@ -80,5 +80,12 @@ narrativeMetadataIdData =
 
 transcriptData =
     """
-    good dsl ---> Option 1
+    dlm:font $1 ---> $2
+    dlm:text/strong ---> Strong
+    dlm:text/emphasized ---> Emphasized
+    dlm:text/deleted ---> Deleted
+    dlm:text/subscript ---> Subscript
+    dlm:text/superscript ---> Superscript
+    dlm:text/right-to-left ---> Right to left
+    dlm:text/left-to-right ---> Left to Right
     """ |> ListBox.parse

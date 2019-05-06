@@ -1,9 +1,7 @@
-module Dalmatian.Editor.Pathway exposing (SnatchPath, Pathway)
+module Dalmatian.Editor.Pathway exposing (SnatchPath(..), PrimaryPathway(..))
 
-type Pathway = SpeechPath | CompositionPath | TilingPath | PropsPath | PanelPath
+type PrimaryPathway = SpeechPath | NarrativePath | PagePath | TilePath
 
 type SnatchPath =
-    RootPath Pathway Int
-    | Path2 Pathway Int Pathway Int
-    | Path3 Pathway Int Pathway Int Pathway Int
-
+    PrimaryPath PrimaryPathway Int
+    | PrimaryPathProps PrimaryPathway Int

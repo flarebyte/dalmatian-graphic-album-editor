@@ -13,7 +13,7 @@ import Dalmatian.Editor.Dialect.LanguageIdentifier exposing (LanguageId)
 
 type DataId
     = MediumId
-    | FormatId
+    | AlbumFormatId
     | SpeechActivityId
     | ContributionActivityId
     | PageMetadataId
@@ -26,8 +26,12 @@ type SnatchId
     | LayoutId -- agencing of panels on a page
     | TranscriptId DataId PredicateKey -- formatting of speech text
     | OrderedRelation PanelZone
+    | SingleRelation PanelZone
+    | OrderedRelationPair PanelZone PanelZone
     | MetadataId DataId
     | AnnotatedRelation PanelZone DataId Int -- max
+    | DimensionSnatchId
+    | CroppingSnatchId
 
 
 type FieldType
@@ -51,6 +55,7 @@ type ScreenZone
     | ColorScreen
     | FontScreen
     | IllustrationScreen
+    | CroppedIllustrationScreen
     | StencilScreen
     | SpeechScreen
     | PublishedWorkScreen
@@ -59,6 +64,8 @@ type ScreenZone
     | NarrativeScreen
     | StoryScreen
     | PageScreen
+    | DimensionScreen
+    | MonochromeScreen
 
 
 type PanelZone
@@ -67,6 +74,7 @@ type PanelZone
     | ContributorPanel
     | ContributionPanel
     | IllustrationPanel
+    | CroppedIllustrationPanel
     | AttributionPanel
     | StencilPanel
     | FontPanel
@@ -77,6 +85,8 @@ type PanelZone
     | NarrativePanel
     | StoryPanel
     | PagePanel
+    | DimensionPanel
+    | MonochromePanel
 
 
 type PredicateKey
@@ -108,6 +118,9 @@ type PredicateKey
     | PageListKey
     | SpatialCoverageKey
     | TemporalCoverageKey
+    | DimensionKey
+    | ColorLayeringKey
+    | CroppingKey
 
 
 type FieldUI
@@ -190,10 +203,10 @@ predicateKeyToFieldType predicateKey =
             ListBoxType MediumId
 
         MediaFormatKey ->
-            ListBoxType FormatId
+             SnatchType (SingleRelation DimensionPanel)
 
         AlbumFormatKey ->
-            ListBoxType FormatId
+            ListBoxType AlbumFormatId
 
         LayoutKey ->
             SnatchType LayoutId
@@ -218,6 +231,16 @@ predicateKeyToFieldType predicateKey =
         
         PageListKey ->
             SnatchType (OrderedRelation PagePanel)
+        
+        DimensionKey ->
+            SnatchType DimensionSnatchId
+
+        ColorLayeringKey ->
+            SnatchType (OrderedRelationPair MonochromePanel ColorPanel)
+        
+        CroppingKey ->
+            SnatchType CroppingSnatchId
+
 
 appUI : List ScreenUI
 appUI =
@@ -263,18 +286,57 @@ appUI =
             , FieldUI ContributorKey "List of contributors"
             ]
         ]
+
+   , ScreenUI StencilScreen
+        "Stencil" -- link a single B/W image
+        [ ListPanelUI StencilPanel "List of stencils"
+        , PanelUI StencilPanel
+            "Edit stencil"
+            [ FieldUI NameKey "Name of the stencil"
+            , FieldUI DescriptionKey "Description of the stencil"
+            , FieldUI MediaFormatKey "Dimension of the stencil"
+            , FieldUI CommentKey "Writers' comments for the stencil"
+            ]
+        ]
+     
+     , ScreenUI MonochromeScreen
+        "Monochrome composition"
+        [ ListPanelUI MonochromePanel "List of monochrome composition"
+        , PanelUI MonochromePanel
+            "Edit monochrome composition"
+            [ FieldUI NameKey "Name of the monochrome composition"
+            , FieldUI DescriptionKey "Description of the monochrome composition"
+            , FieldUI MediaFormatKey "Dimension of the illustration"
+            , FieldUI CompositionKey "Composition of the illustration"
+            , FieldUI CommentKey "Writers' comments for the monochrome composition"
+            ]
+        ]
+
     , ScreenUI IllustrationScreen
-        "Illustration"
+        "Colored Illustration"
         [ ListPanelUI IllustrationPanel "List of illustrations"
         , PanelUI IllustrationPanel
             "Edit illustration"
             [ FieldUI NameKey "Name of the illustration"
             , FieldUI DescriptionKey "Description of the illustration"
             , FieldUI MediaFormatKey "Dimension of the illustration"
-            , FieldUI CompositionKey "Composition of the illustration"
+            , FieldUI ColorLayeringKey "Color layering of the illustration"
             , FieldUI CommentKey "Writers' comments for the illustration"
             ]
         ]
+
+    , ScreenUI CroppedIllustrationScreen
+        "Cropped Illustration"
+        [ ListPanelUI CroppedIllustrationPanel "List of cropped illustrations"
+        , PanelUI CroppedIllustrationPanel
+            "Edit cropped illustration"
+            [ FieldUI NameKey "Name of the illustration"
+            , FieldUI DescriptionKey "Description of the illustration"
+            , FieldUI MediaFormatKey "Dimension of the illustration"
+            , FieldUI CroppingKey "Cropping of the illustration"
+            ]
+        ]
+   
     , ScreenUI ContributorScreen
         "Contributor"
         [ ListPanelUI ContributorPanel "List of contributors"
@@ -305,6 +367,17 @@ appUI =
             , FieldUI SameAsKey "Links to that font on encyclopedia sites"
             , FieldUI PrintColorKey "The best color used for print"
             , FieldUI ScreenColorKey "The best color used for screen"
+            ]
+        ]
+    
+    , ScreenUI DimensionScreen
+        "Dimension"
+        [ ListPanelUI DimensionPanel "List of dimensions"
+        , PanelUI DimensionPanel
+            "Edit Dimension"
+            [ FieldUI NameKey "Name of the dimension"
+            , FieldUI DescriptionKey "Description of the dimension"
+            , FieldUI DimensionKey "Width and height (absolute or fraction)"
             ]
         ]
     , ScreenUI CharacterScreen

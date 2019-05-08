@@ -8,8 +8,8 @@ getListBoxItems dataId =
     case dataId of
         MediumId ->
             mediumIdData
-        FormatId ->
-            formatIdData
+        AlbumFormatId ->
+            albumFormatIdData
         SpeechActivityId ->
             speechActivityIdData
         ContributionActivityId ->
@@ -29,7 +29,7 @@ mediumIdData =
     dlm:medium/polychrome/screen ---> Polychrome screen
     """ |> ListBox.parse
 
-formatIdData =
+albumFormatIdData =
     """
     dlm:format/a5 ---> A5
     dlm:format/a4 ---> A4

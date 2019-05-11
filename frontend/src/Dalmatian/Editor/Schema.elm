@@ -308,6 +308,7 @@ appUI =
             , FieldUI PixelDimensionKey -- "Dimension of the illustration"
             , FieldUI CompositionKey -- "Composition of the illustration"
             , FieldUI CommentKey -- "Writers' comments for the monochrome composition"
+            , FieldUI StatusKey
             ]
         ]
 
@@ -319,15 +320,14 @@ appUI =
             , FieldUI PixelDimensionKey -- "Dimension of the illustration"
             , FieldUI ColorLayeringKey -- "Color layering of the illustration"
             , FieldUI CommentKey -- "Writers' comments for the illustration"
+            , FieldUI StatusKey
             ]
         ]
 
     , ScreenUI CroppedIllustrationScreen
         [ ListPanelUI CroppedIllustrationPanel
         , PanelUI CroppedIllustrationPanel
-            [ FieldUI NameKey -- "Name of the illustration"
-            , FieldUI DescriptionKey -- "Description of the illustration"
-            , FieldUI MediaFormatKey -- "Dimension of the illustration"
+            [ FieldUI MediaFormatKey -- "Dimension of the illustration"
             , FieldUI CroppingKey -- "Cropping of the illustration"
             ]
         ]
@@ -364,7 +364,7 @@ appUI =
         , PanelUI DimensionPanel
             [ FieldUI NameKey -- "Name of the dimension"
             , FieldUI DescriptionKey -- "Description of the dimension"
-            , FieldUI DimensionKey -- "Width and height (fraction)"
+            , FieldUI DimensionKey -- "Width and Height"
             ]
         ]
     , ScreenUI CharacterScreen
@@ -383,6 +383,7 @@ appUI =
             , FieldUI TranscriptKey -- "The transcript of the speech bubble with formatting"
             , FieldUI InterlocutorKey -- "The different interlocutors of the speech bubble"
             , FieldUI CommentKey -- "Writers' comments about the speech"
+            , FieldUI StatusKey
             ]
         ]
     , ScreenUI NarrativeScreen
@@ -395,7 +396,7 @@ appUI =
             , FieldUI SpeechListKey -- "Ordered list of speeches happening at the point of the narrative"
             , FieldUI NarrativeMetadataKey -- "Metadata for the narrative"
             , FieldUI CommentKey -- "Writers' comments about the narrative"
-            , FieldUI HomepageKey -- "Helpful links"
+            , FieldUI StatusKey
             ]
         ]
 
@@ -403,6 +404,7 @@ appUI =
         [ PanelUI StoryPanel
             [ FieldUI NarrativeListKey -- "Ordered sequence of the narratives"
             , FieldUI CommentKey -- "Writers' comments about the story"
+            , FieldUI StatusKey
             ]
         ]
 
@@ -418,6 +420,7 @@ appUI =
             , FieldUI PageMetadataKey -- "Metadata for the page"
             , FieldUI LayoutKey -- "Layout of the page"
             , FieldUI CommentKey -- "Writers' comments about the page"
+            , FieldUI StatusKey
             ]
         ]
 

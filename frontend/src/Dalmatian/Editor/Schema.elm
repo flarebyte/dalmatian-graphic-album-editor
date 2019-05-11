@@ -19,6 +19,7 @@ type DataId
     | PageMetadataId
     | NarrativeMetadataId
     | TranscriptDataId
+    | StatusDataId
 
 
 type SnatchId
@@ -31,6 +32,7 @@ type SnatchId
     | MetadataId DataId
     | AnnotatedRelation PanelZone DataId Int -- max
     | DimensionSnatchId
+    | PixelDimensionSnatchId
     | CroppingSnatchId
 
 
@@ -69,7 +71,8 @@ type ScreenZone
 
 
 type PanelZone
-    = CopyrightsPanel
+    = AlbumPanel
+    | CopyrightsPanel
     | LicensePanel
     | ContributorPanel
     | ContributionPanel
@@ -119,21 +122,22 @@ type PredicateKey
     | SpatialCoverageKey
     | TemporalCoverageKey
     | DimensionKey
+    | PixelDimensionKey
     | ColorLayeringKey
     | CroppingKey
+    | StatusKey
 
 
 type FieldUI
-    = FieldUI PredicateKey String -- name description
+    = FieldUI PredicateKey -- name
 
 type PanelUI
-    = DefaultPanel (List FieldUI)
-    | PanelUI PanelZone String (List FieldUI)
-    | ListPanelUI PanelZone String
+    = PanelUI PanelZone (List FieldUI)
+    | ListPanelUI PanelZone
 
 
 type ScreenUI
-    = ScreenUI ScreenZone String (List PanelUI)
+    = ScreenUI ScreenZone (List PanelUI)
 
 
 getParentScreenZone : PanelZone -> ScreenZone
@@ -235,227 +239,198 @@ predicateKeyToFieldType predicateKey =
         DimensionKey ->
             SnatchType DimensionSnatchId
 
+        PixelDimensionKey ->
+            SnatchType PixelDimensionSnatchId
+
         ColorLayeringKey ->
             SnatchType (OrderedRelationPair MonochromePanel ColorPanel)
         
         CroppingKey ->
             SnatchType CroppingSnatchId
+        
+        StatusKey ->
+            SnatchType (MetadataId StatusDataId)
 
 
 appUI : List ScreenUI
 appUI =
     [ ScreenUI GraphicAlbumScreen
-        "Graphic Album"
-        [ DefaultPanel
-            [ FieldUI VersionKey "Version of the album"
-            , FieldUI CreatedKey "Date the album was first created"
-            , FieldUI ModifiedKey "Date the album was officially modified"
-            , FieldUI TitleKey "Official title of the album"
-            , FieldUI DescriptionKey "Official description of the album"
-            , FieldUI KeywordKey "Keywords that describe the nature of the content"
+        [ PanelUI AlbumPanel
+            [ FieldUI VersionKey -- "Version of the album"
+            , FieldUI CreatedKey -- "Date the album was first created"
+            , FieldUI ModifiedKey  -- "Date the album was officially modified"
+            , FieldUI TitleKey -- "Official title of the album"
+            , FieldUI DescriptionKey -- "Official description of the album"
+            , FieldUI KeywordKey -- "Keywords that describe the nature of the content"
             ]
         ]
     , ScreenUI RightsScreen
-        "Rights and License"
         [ PanelUI LicensePanel
-            "License"
-            [ FieldUI NameKey "Common name for the license"
-            , FieldUI DescriptionKey "Details of the license"
-            , FieldUI HomepageKey "Webpages linking to the license"
+            [ FieldUI NameKey -- "Common name for the license"
+            , FieldUI DescriptionKey -- "Details of the license"
+            , FieldUI HomepageKey -- "Webpages linking to the license"
             ]
         , PanelUI CopyrightsPanel
-            "Rights"
-            [ FieldUI NameKey "Copyright name"
-            , FieldUI DescriptionKey "Copyrights detailed description"
-            , FieldUI HomepageKey "Webpages linking to the copyrights"
+            [ FieldUI NameKey -- "Copyright name"
+            , FieldUI DescriptionKey -- "Copyrights detailed description"
+            , FieldUI HomepageKey -- "Webpages linking to the copyrights"
             ]
         , PanelUI AttributionPanel
-            "Attribution"
-            [ FieldUI NameKey "Short attribution"
-            , FieldUI DescriptionKey "Detailed attribution"
-            , FieldUI HomepageKey "Webpages linking to the attributions"
+            [ FieldUI NameKey -- "Short attribution"
+            , FieldUI DescriptionKey -- "Detailed attribution"
+            , FieldUI HomepageKey -- "Webpages linking to the attributions"
             ]
         ]
     , ScreenUI ContributionScreen
-        "Contribution"
-        [ ListPanelUI ContributionPanel "List of contributions"
+        [ ListPanelUI ContributionPanel
         , PanelUI ContributionPanel
-            "Edit contribution"
-            [ FieldUI NameKey "Name of the contribution"
-            , FieldUI DescriptionKey "Description of the contribution"
-            , FieldUI ContributorKey "List of contributors"
+            [ FieldUI NameKey -- "Name of the contribution"
+            , FieldUI DescriptionKey -- "Description of the contribution"
+            , FieldUI ContributorKey -- "List of contributors"
             ]
         ]
 
-   , ScreenUI StencilScreen
-        "Stencil" -- link a single B/W image
-        [ ListPanelUI StencilPanel "List of stencils"
+   , ScreenUI StencilScreen -- link a single B/W image
+        [ ListPanelUI StencilPanel
         , PanelUI StencilPanel
-            "Edit stencil"
-            [ FieldUI NameKey "Name of the stencil"
-            , FieldUI DescriptionKey "Description of the stencil"
-            , FieldUI MediaFormatKey "Dimension of the stencil"
-            , FieldUI CommentKey "Writers' comments for the stencil"
+            [ FieldUI NameKey -- "Name of the stencil"
+            , FieldUI DescriptionKey -- "Description of the stencil"
+            , FieldUI PixelDimensionKey -- "Dimension of the stencil"
+            , FieldUI CommentKey -- "Writers' comments for the stencil"
             ]
         ]
      
      , ScreenUI MonochromeScreen
-        "Monochrome composition"
-        [ ListPanelUI MonochromePanel "List of monochrome composition"
+        [ ListPanelUI MonochromePanel
         , PanelUI MonochromePanel
-            "Edit monochrome composition"
-            [ FieldUI NameKey "Name of the monochrome composition"
-            , FieldUI DescriptionKey "Description of the monochrome composition"
-            , FieldUI MediaFormatKey "Dimension of the illustration"
-            , FieldUI CompositionKey "Composition of the illustration"
-            , FieldUI CommentKey "Writers' comments for the monochrome composition"
+            [ FieldUI NameKey -- "Name of the monochrome composition"
+            , FieldUI DescriptionKey -- "Description of the monochrome composition"
+            , FieldUI PixelDimensionKey -- "Dimension of the illustration"
+            , FieldUI CompositionKey -- "Composition of the illustration"
+            , FieldUI CommentKey -- "Writers' comments for the monochrome composition"
             ]
         ]
 
-    , ScreenUI IllustrationScreen
-        "Colored Illustration"
-        [ ListPanelUI IllustrationPanel "List of illustrations"
+    , ScreenUI IllustrationScreen -- Colored Illustration
+        [ ListPanelUI IllustrationPanel
         , PanelUI IllustrationPanel
-            "Edit illustration"
-            [ FieldUI NameKey "Name of the illustration"
-            , FieldUI DescriptionKey "Description of the illustration"
-            , FieldUI MediaFormatKey "Dimension of the illustration"
-            , FieldUI ColorLayeringKey "Color layering of the illustration"
-            , FieldUI CommentKey "Writers' comments for the illustration"
+            [ FieldUI NameKey -- "Name of the illustration"
+            , FieldUI DescriptionKey -- "Description of the illustration"
+            , FieldUI PixelDimensionKey -- "Dimension of the illustration"
+            , FieldUI ColorLayeringKey -- "Color layering of the illustration"
+            , FieldUI CommentKey -- "Writers' comments for the illustration"
             ]
         ]
 
     , ScreenUI CroppedIllustrationScreen
-        "Cropped Illustration"
-        [ ListPanelUI CroppedIllustrationPanel "List of cropped illustrations"
+        [ ListPanelUI CroppedIllustrationPanel
         , PanelUI CroppedIllustrationPanel
-            "Edit cropped illustration"
-            [ FieldUI NameKey "Name of the illustration"
-            , FieldUI DescriptionKey "Description of the illustration"
-            , FieldUI MediaFormatKey "Dimension of the illustration"
-            , FieldUI CroppingKey "Cropping of the illustration"
+            [ FieldUI NameKey -- "Name of the illustration"
+            , FieldUI DescriptionKey -- "Description of the illustration"
+            , FieldUI MediaFormatKey -- "Dimension of the illustration"
+            , FieldUI CroppingKey -- "Cropping of the illustration"
             ]
         ]
    
     , ScreenUI ContributorScreen
-        "Contributor"
-        [ ListPanelUI ContributorPanel "List of contributors"
+        [ ListPanelUI ContributorPanel
         , PanelUI ContributorPanel
-            "Edit Contributor"
-            [ FieldUI NameKey "Name of the contributor"
-            , FieldUI DescriptionKey "Description of the contributor"
-            , FieldUI HomepageKey "Links to webpages about the contributor"
+            [ FieldUI NameKey -- "Name of the contributor"
+            , FieldUI DescriptionKey -- "Description of the contributor"
+            , FieldUI HomepageKey -- "Links to webpages about the contributor"
             ]
         ]
     , ScreenUI FontScreen
-        "Font"
-        [ ListPanelUI FontPanel "List of fonts"
+        [ ListPanelUI FontPanel
         , PanelUI FontPanel
-            "Edit font"
-            [ FieldUI NameKey "Common name for the font"
-            , FieldUI DescriptionKey "Description of the font"
-            , FieldUI HomepageKey "Links to font"
+            [ FieldUI NameKey -- "Common name for the font"
+            , FieldUI DescriptionKey -- "Description of the font"
+            , FieldUI HomepageKey -- "Links to font"
             ]
         ]
     , ScreenUI ColorScreen
-        "Color"
-        [ ListPanelUI ColorPanel "List of colors"
+        [ ListPanelUI ColorPanel
         , PanelUI ColorPanel
-            "Edit color"
-            [ FieldUI NameKey "Common name for the color"
-            , FieldUI DescriptionKey "Description of the color"
-            , FieldUI SameAsKey "Links to that font on encyclopedia sites"
-            , FieldUI PrintColorKey "The best color used for print"
-            , FieldUI ScreenColorKey "The best color used for screen"
+            [ FieldUI NameKey -- "Common name for the color"
+            , FieldUI DescriptionKey -- "Description of the color"
+            , FieldUI SameAsKey -- "Links to that font on encyclopedia sites"
+            , FieldUI PrintColorKey -- "The best color used for print"
+            , FieldUI ScreenColorKey -- "The best color used for screen"
             ]
         ]
     
     , ScreenUI DimensionScreen
-        "Dimension"
-        [ ListPanelUI DimensionPanel "List of dimensions"
+        [ ListPanelUI DimensionPanel
         , PanelUI DimensionPanel
-            "Edit Dimension"
-            [ FieldUI NameKey "Name of the dimension"
-            , FieldUI DescriptionKey "Description of the dimension"
-            , FieldUI DimensionKey "Width and height (absolute or fraction)"
+            [ FieldUI NameKey -- "Name of the dimension"
+            , FieldUI DescriptionKey -- "Description of the dimension"
+            , FieldUI DimensionKey -- "Width and height (fraction)"
             ]
         ]
     , ScreenUI CharacterScreen
-        "Character"
-        [ ListPanelUI CharacterPanel "List of characters"
+        [ ListPanelUI CharacterPanel
         , PanelUI CharacterPanel
-            "Edit character"
-            [ FieldUI NameKey "Name of the character"
-            , FieldUI DescriptionKey "Description of the character"
-            , FieldUI HomepageKey "Links to webpages about this character"
-            , FieldUI CommentKey "Writers' comments about this character"
+            [ FieldUI NameKey -- "Name of the character"
+            , FieldUI DescriptionKey -- "Description of the character"
+            , FieldUI HomepageKey -- "Links to webpages about this character"
+            , FieldUI CommentKey -- "Writers' comments about this character"
             ]
         ]
     , ScreenUI SpeechScreen
-        "Speech"
-        [ ListPanelUI SpeechPanel "List of speeches"
+        [ ListPanelUI SpeechPanel
         , PanelUI SpeechPanel
-            "Edit speech"
-            [ FieldUI DescriptionKey "Speech in plain text"
-            , FieldUI TranscriptKey "The transcript of the speech bubble with formatting"
-            , FieldUI InterlocutorKey "The different interlocutors of the speech bubble"
-            , FieldUI CommentKey "Writers' comments about the speech"
+            [ FieldUI DescriptionKey -- "Speech in plain text"
+            , FieldUI TranscriptKey -- "The transcript of the speech bubble with formatting"
+            , FieldUI InterlocutorKey -- "The different interlocutors of the speech bubble"
+            , FieldUI CommentKey -- "Writers' comments about the speech"
             ]
         ]
     , ScreenUI NarrativeScreen
-        "Panel's narrative"
-        [ ListPanelUI NarrativePanel "List of panel narratives"
+        [ ListPanelUI NarrativePanel
         , PanelUI NarrativePanel
-            "Edit panel's narrative"
-            [ FieldUI NameKey "Name of the narrative"
-            , FieldUI SpatialCoverageKey "Location of the action"
-            , FieldUI TemporalCoverageKey "Time of the action"
-            , FieldUI DescriptionKey "Description of what is happening in the comic panel"
-            , FieldUI SpeechListKey "Ordered list of speeches happening at the point of the narrative"
-            , FieldUI NarrativeMetadataKey "Metadata for the narrative"
-            , FieldUI CommentKey "Writers' comments about the narrative"
-            , FieldUI HomepageKey "Helpful links"
+            [ FieldUI NameKey -- "Name of the narrative"
+            , FieldUI SpatialCoverageKey -- "Location of the action"
+            , FieldUI TemporalCoverageKey -- "Time of the action"
+            , FieldUI DescriptionKey -- "Description of what is happening in the comic panel"
+            , FieldUI SpeechListKey -- "Ordered list of speeches happening at the point of the narrative"
+            , FieldUI NarrativeMetadataKey -- "Metadata for the narrative"
+            , FieldUI CommentKey -- "Writers' comments about the narrative"
+            , FieldUI HomepageKey -- "Helpful links"
             ]
         ]
 
     , ScreenUI StoryScreen
-        "Story"
         [ PanelUI StoryPanel
-            "Edit story"
-            [ FieldUI NarrativeListKey "Ordered sequence of the narratives"
-            , FieldUI CommentKey "Writers' comments about the story"
+            [ FieldUI NarrativeListKey -- "Ordered sequence of the narratives"
+            , FieldUI CommentKey -- "Writers' comments about the story"
             ]
         ]
 
     , ScreenUI PageScreen
-        "Page"
-        [ ListPanelUI PagePanel "List of pages"
+        [ ListPanelUI PagePanel
         , PanelUI PagePanel
-            "Edit page"
-            [ FieldUI NameKey "Name of the page"
-            , FieldUI DescriptionKey "Description of the page"
-            , FieldUI NarrativeListKey "Ordered sequence of the narratives"
-            , FieldUI LanguageKey "The language of the page"
-            , FieldUI MediumKey "Material or physical carrier"
-            , FieldUI AlbumFormatKey "File format, physical medium, or dimensions"
-            , FieldUI PageMetadataKey "Metadata for the page"
-            , FieldUI LayoutKey "Layout of the page"
-            , FieldUI CommentKey "Writers' comments about the page"
+            [ FieldUI NameKey -- "Name of the page"
+            , FieldUI DescriptionKey -- "Description of the page"
+            , FieldUI NarrativeListKey -- "Ordered sequence of the narratives"
+            , FieldUI LanguageKey -- "The language of the page"
+            , FieldUI MediumKey -- "Material or physical carrier"
+            , FieldUI AlbumFormatKey -- "File format, physical medium, or dimensions"
+            , FieldUI PageMetadataKey -- "Metadata for the page"
+            , FieldUI LayoutKey -- "Layout of the page"
+            , FieldUI CommentKey -- "Writers' comments about the page"
             ]
         ]
 
     , ScreenUI PublishedWorkScreen
-        "Published Work"
-        [ ListPanelUI PublishedPanel "List of published works"
+        [ ListPanelUI PublishedPanel
         , PanelUI PublishedPanel
-            "Edit published work"
-            [ FieldUI VersionKey "Version of the published work"
-            , FieldUI TitleKey "Title if different than album"
-            , FieldUI DescriptionKey "Description if different than album"
-            , FieldUI LanguageKey "The language of the published work"
-            , FieldUI MediumKey "Material or physical carrier"
-            , FieldUI AlbumFormatKey "File format, physical medium, or dimensions"
-            , FieldUI PageListKey "Ordered list of pages in the published work"
+            [ FieldUI VersionKey -- "Version of the published work"
+            , FieldUI TitleKey -- "Title if different than album"
+            , FieldUI DescriptionKey -- "Description if different than album"
+            , FieldUI LanguageKey -- "The language of the published work"
+            , FieldUI MediumKey -- "Material or physical carrier"
+            , FieldUI AlbumFormatKey -- "File format, physical medium, or dimensions"
+            , FieldUI PageListKey -- "Ordered list of pages in the published work"
             ]
         ]
     ]

@@ -20,6 +20,9 @@ getListBoxItems dataId =
             narrativeMetadataIdData
         TranscriptDataId ->
             transcriptData
+        StatusDataId ->
+            statusData
+
 
 mediumIdData =
     """
@@ -88,4 +91,13 @@ transcriptData =
     dlm:text/superscript ---> Superscript
     dlm:text/right-to-left ---> Right to left
     dlm:text/left-to-right ---> Left to Right
+    """ |> ListBox.parse
+
+statusData =
+    """
+    dlm:status/blue ---> Blue
+    dlm:status/green ---> Green
+    dlm:status/green ---> Yellow
+    dlm:status/orange ---> Orange
+    dlm:status/red ---> Red
     """ |> ListBox.parse

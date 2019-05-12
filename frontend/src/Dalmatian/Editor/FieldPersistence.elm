@@ -177,6 +177,15 @@ updateFieldValue selector fieldOp str old =
 
                 Err msg ->
                     WarningMessage "The format for color is invalid"
+        
+        Just PixelDimensionType ->
+            TodoField
+
+        Just DimensionType ->
+            TodoField
+
+        Just (SingleRelation panelType) ->
+            TodoField
 
         Just (SnatchType a) ->
             TodoField
@@ -220,6 +229,15 @@ reshapeFieldValue selector fieldOp old =
             clearOrWarn fieldOp old
 
         Just ChromaType ->
+            clearOrWarn fieldOp old
+
+        Just PixelDimensionType ->
+            clearOrWarn fieldOp old
+
+        Just DimensionType ->
+            clearOrWarn fieldOp old
+
+        Just (SingleRelation panelType) ->
             clearOrWarn fieldOp old
 
         Just (SnatchType a) ->

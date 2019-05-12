@@ -27,12 +27,9 @@ type SnatchId
     | LayoutId -- agencing of panels on a page
     | TranscriptId DataId PredicateKey -- formatting of speech text
     | OrderedRelation PanelZone
-    | SingleRelation PanelZone
     | OrderedRelationPair PanelZone PanelZone
     | MetadataId DataId
     | AnnotatedRelation PanelZone DataId Int -- max
-    | DimensionSnatchId
-    | PixelDimensionSnatchId
     | CroppingSnatchId
 
 
@@ -45,8 +42,11 @@ type FieldType
     | VersionType
     | LanguageType
     | ChromaType
+    | PixelDimensionType
+    | DimensionType
     | ListBoxType DataId
     | SnatchType SnatchId
+    | SingleRelation PanelZone
 
 
 type ScreenZone
@@ -115,6 +115,7 @@ type PredicateKey
     | CompositionKey
     | CommentKey
     | NarrativeListKey
+    | NarrativeKey
     | SpeechListKey
     | NarrativeMetadataKey
     | PageMetadataKey
@@ -207,7 +208,7 @@ predicateKeyToFieldType predicateKey =
             ListBoxType MediumId
 
         MediaFormatKey ->
-             SnatchType (SingleRelation DimensionPanel)
+             SingleRelation DimensionPanel
 
         AlbumFormatKey ->
             ListBoxType AlbumFormatId
@@ -224,6 +225,9 @@ predicateKeyToFieldType predicateKey =
         NarrativeListKey ->
             SnatchType (OrderedRelation NarrativePanel)
 
+        NarrativeKey ->
+            SingleRelation NarrativePanel
+
         SpeechListKey ->
             SnatchType (OrderedRelation SpeechPanel)
 
@@ -237,10 +241,10 @@ predicateKeyToFieldType predicateKey =
             SnatchType (OrderedRelation PagePanel)
         
         DimensionKey ->
-            SnatchType DimensionSnatchId
+            DimensionType
 
         PixelDimensionKey ->
-            SnatchType PixelDimensionSnatchId
+            PixelDimensionType
 
         ColorLayeringKey ->
             SnatchType (OrderedRelationPair MonochromePanel ColorPanel)
@@ -329,6 +333,7 @@ appUI =
         , PanelUI CroppedIllustrationPanel
             [ FieldUI MediaFormatKey -- "Dimension of the illustration"
             , FieldUI CroppingKey -- "Cropping of the illustration"
+            , FieldUI NarrativeKey
             ]
         ]
    

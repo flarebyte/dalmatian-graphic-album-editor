@@ -34,8 +34,7 @@ type SnatchId
 
 
 type FieldType
-    = ShortLocalizedListType
-    | MediumLocalizedType
+    = MediumLocalizedType
     | TextAreaLocalizedType
     | UrlListType
     | DateTimeType
@@ -99,7 +98,6 @@ type PredicateKey
     | TitleKey
     | DescriptionKey
     | LanguageKey
-    | KeywordKey
     | HomepageKey
     | ContributorKey
     | NameKey
@@ -176,9 +174,6 @@ predicateKeyToFieldType predicateKey =
 
         LanguageKey ->
             LanguageType
-
-        KeywordKey ->
-            ShortLocalizedListType
 
         HomepageKey ->
             UrlListType
@@ -265,7 +260,6 @@ appUI =
             , FieldUI ModifiedKey  -- "Date the album was officially modified"
             , FieldUI TitleKey -- "Official title of the album"
             , FieldUI DescriptionKey -- "Official description of the album"
-            , FieldUI KeywordKey -- "Keywords that describe the nature of the content"
             ]
         ]
     , ScreenUI RightsScreen

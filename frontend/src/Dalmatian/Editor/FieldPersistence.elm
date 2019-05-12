@@ -140,13 +140,6 @@ updateFieldValue selector fieldOp str old =
                 otherwise ->
                         warnUnsupportedOp fieldOp old
 
-        Just  ShortLocalizedListType ->
-            case fieldOp of
-                SetValueOp ->
-                    updateLocalizedString (selector |> Selecting.toLanguage) str old
-                otherwise ->
-                        warnUnsupportedOp fieldOp old
-
         Just  MediumLocalizedType ->
             case fieldOp of
                 SetValueOp ->
@@ -214,9 +207,6 @@ reshapeFieldValue selector fieldOp old =
            clearOrWarn fieldOp old
 
         Just (ListBoxType any) ->
-            clearOrWarn fieldOp old
-
-        Just  ShortLocalizedListType ->
             clearOrWarn fieldOp old
 
         Just  MediumLocalizedType ->

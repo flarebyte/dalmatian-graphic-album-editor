@@ -1,5 +1,4 @@
-module Dalmatian.Editor.FieldPersistence exposing (FieldValue(..)
-    , updateFieldValue, reshapeFieldValue)
+module Dalmatian.Editor.FieldPersistence exposing (FieldValue(..), isValid)
 
 {-| Manage operations on a field.
 
@@ -15,35 +14,55 @@ module Dalmatian.Editor.FieldPersistence exposing (FieldValue(..)
 
 import Parser exposing(run)
 import Dalmatian.Editor.Dialect.Coloring as Coloring exposing (Chroma)
-import Dalmatian.Editor.Tokens.Compositing exposing (BinaryData(..), Composition)
 import Dalmatian.Editor.LocalizedString as LocalizedString exposing (Model)
 import Dalmatian.Editor.Schema exposing (FieldType(..))
-import Dalmatian.Editor.Tokens.Speech exposing (Interlocutor, Transcript, fromStringInterlocutor)
-import Dalmatian.Editor.Tokens.Tiling exposing (TileInstruction)
-import Dalmatian.Editor.Tokens.Token as Token exposing (TokenValue)
 import Dalmatian.Editor.Dialect.Dimension2DIntUnit as Dimension2DIntUnit exposing (Dimension2DInt)
 import Dalmatian.Editor.Dialect.Version as Version exposing (SemanticVersion)
 import Dalmatian.Editor.Dialect.LanguageIdentifier as LanguageIdentifier exposing (LanguageId)
-import Dalmatian.Editor.AppContext as AppContext
+import Dalmatian.Editor.Dialect.ResourceIdentifier as ResourceIdentifier exposing(ResourceId)
 import Dalmatian.Editor.Selecting as Selecting exposing (UISelector(..))
+import Dalmatian.Editor.FieldOperating as FieldOperating exposing (FieldOperation(..))
+import Dalmatian.Editor.Snatching exposing (Snatch, LocalizedSnatches)
 
 type FieldValue
     = LocalizedListValue (List LocalizedString.Model)
     | VersionValue SemanticVersion
     | UrlListValue (List String)
+    | ResourceIdListValue (List ResourceId)
     | DateTimeValue String
     | LanguageValue LanguageId
     | ChromaValue Chroma
-    | BinaryDataValue BinaryData
-    | Dimension2DIntValue Dimension2DInt
     | ListBoxValue String
-    | CompositionValue (List (TokenValue Composition))
-    | LayoutValue (List (TokenValue TileInstruction))
-    | InterlocutorValue (List (TokenValue Interlocutor))
-    | TranscriptValue (List (TokenValue Transcript))
+    | SnatchValue Int (List Snatch)
+    | LocalizedSnatchesValue Int (List LocalizedSnatches)
     | WarningMessage String
     | TodoField
     | NoValue
+
+toInfoString: FieldValue -> String
+toInfoString fieldValue =
+    case fieldValue of
+        LocalizedListValue a -> "LocalizedListValue"
+        VersionValue a -> "VersionValue"
+        UrlListValue a -> "UrlListValue"
+        ResourceIdListValue a -> "ResourceIdListValue"
+        DateTimeValue a -> "DateTimeValue"
+        LanguageValue a -> "LanguageValue"
+        ChromaValue a -> "ChromaValue"
+        ListBoxValue a -> "ListBoxValue"
+        SnatchValue a b -> "SnatchValue"
+        LocalizedSnatchesValue a b -> "LocalizedSnatchesValue"
+        WarningMessage a -> "WarningMessage"
+        TodoField -> "TodoField"
+        NoValue -> "NoValue"
+
+isValid: FieldValue -> Bool
+isValid fieldValue =
+    case fieldValue of
+        WarningMessage a -> False
+        TodoField -> False
+        NoValue -> False
+        otherwise -> True
 
 getFieldValueAsStringList : FieldValue -> List String
 getFieldValueAsStringList value =
@@ -54,6 +73,14 @@ getFieldValueAsStringList value =
         _ ->
             []
 
+getFieldValueAsResourceIdList : FieldValue -> List ResourceId
+getFieldValueAsResourceIdList value =
+    case value of
+        ResourceIdListValue list ->
+            list
+
+        _ ->
+            []
 
 updateLocalizedString : LanguageId -> String -> FieldValue -> FieldValue
 updateLocalizedString language value old =
@@ -67,168 +94,145 @@ updateLocalizedString language value old =
         _ ->
             old
 
+warnUnsupportedOp: FieldOperation -> FieldValue -> FieldValue
+warnUnsupportedOp fieldOp value =
+    "Unsupported operation " ++ (FieldOperating.toString fieldOp) ++ "for " ++ (toInfoString value) |> WarningMessage
 
--- upsertContributionValue : FieldValue -> TokenValue Contribution -> FieldValue
--- upsertContributionValue oldValue tokenContribution =
---     case oldValue of
---         ContributionValue tokens ->
---             Token.upsert tokenContribution tokens |> ContributionValue
-
---         otherwise ->
---             WarningMessage "Something went wrong (upsertContributionValue)"
-
-
-getNextRank : Int -> FieldValue -> Int
-getNextRank start fieldValue =
-    case fieldValue of
-        CompositionValue tokens ->
-            Token.getNextRank start tokens
-
-        LayoutValue tokens ->
-            Token.getNextRank start tokens
-
-        InterlocutorValue tokens ->
-            Token.getNextRank start tokens
-
-        TranscriptValue tokens ->
-            Token.getNextRank start tokens
-
-        otherwise ->
-            1000
-
-
-getPreviousRank : Int -> FieldValue -> Int
-getPreviousRank start fieldValue =
-    case fieldValue of
-        CompositionValue tokens ->
-            Token.getPreviousRank start tokens
-
-        LayoutValue tokens ->
-            Token.getPreviousRank start tokens
-
-        InterlocutorValue tokens ->
-            Token.getPreviousRank start tokens
-
-        TranscriptValue tokens ->
-            Token.getPreviousRank start tokens
-
-        otherwise ->
-            1000
-
-
-updateRank : Int -> Int -> FieldValue -> FieldValue
-updateRank tokenId rank fieldValue =
-    case fieldValue of
-        CompositionValue tokens ->
-            Token.updateRank tokens tokenId rank |> CompositionValue
-
-        LayoutValue tokens ->
-            Token.updateRank tokens tokenId rank |> LayoutValue
-
-        InterlocutorValue tokens ->
-            Token.updateRank tokens tokenId rank |> InterlocutorValue
-
-        TranscriptValue tokens ->
-            Token.updateRank tokens tokenId rank |> TranscriptValue
-
-        otherwise ->
-            WarningMessage "Something went wrong (updateRank)"
-
-updateFieldValue : AppContext.Model -> UISelector -> String -> FieldValue -> FieldValue
-updateFieldValue appContext selector value old =
+updateFieldValue : UISelector -> FieldOperation -> String -> FieldValue -> FieldValue
+updateFieldValue selector fieldOp str old =
     case (Selecting.toFieldType selector) of
         Just DateTimeType ->
-            DateTimeValue value
-
+            case fieldOp of
+                    SetValueOp ->
+                        DateTimeValue str
+                    otherwise ->
+                        warnUnsupportedOp fieldOp old
+ 
         Just  VersionType ->
-            case run Version.parser value of
-                Ok version ->
-                    VersionValue version
+            case fieldOp of
+                SetValueOp ->
+                    case run Version.parser str of
+                        Ok version ->
+                            VersionValue version
 
-                Err msg ->
-                    WarningMessage "The format for version is invalid"
+                        Err msg ->
+                            WarningMessage "The format for version is invalid"
+                otherwise ->
+                    warnUnsupportedOp fieldOp old
 
         Just LanguageType ->
-            case run LanguageIdentifier.parser value of
-                Ok lang ->
-                    LanguageValue lang
+            case fieldOp of
+                SetValueOp ->
+                    case run LanguageIdentifier.parser str of
+                        Ok lang ->
+                            LanguageValue lang
 
-                Err msg ->
-                    WarningMessage "The format for language is invalid"
+                        Err msg ->
+                            WarningMessage "The format for language is invalid"
 
-        Just Dimension2DIntType ->
-           case run Dimension2DIntUnit.parser value of
-                Ok dim ->
-                    Dimension2DIntValue dim
-
-                Err msg ->
-                    WarningMessage "The format for dimension is invalid"
+                otherwise ->
+                    warnUnsupportedOp fieldOp old
 
         Just (ListBoxType any) ->
-            ListBoxValue value
-
-        Just  ShortLocalizedListType ->
-            updateLocalizedString (selector |> Selecting.toLanguage) value old
+            case fieldOp of
+                SetValueOp ->
+                    ListBoxValue str
+                otherwise ->
+                        warnUnsupportedOp fieldOp old
 
         Just  MediumLocalizedType ->
-            updateLocalizedString (selector |> Selecting.toLanguage) value old
+            case fieldOp of
+                SetValueOp ->
+                    updateLocalizedString (selector |> Selecting.toLanguage) str old
+                otherwise ->
+                        warnUnsupportedOp fieldOp old
 
         Just TextAreaLocalizedType ->
-            updateLocalizedString (selector |> Selecting.toLanguage) value old
-
-        Just  BinaryDataType ->
-            BinaryDataValue (ProxyImage value)
-
-        Just  ChromaType ->
-            case run Coloring.parser value of
+            case fieldOp of
+                SetValueOp ->
+                    updateLocalizedString (selector |> Selecting.toLanguage) str old
+                otherwise ->
+                        warnUnsupportedOp fieldOp old
+                   
+        Just UrlListType ->
+            case fieldOp of
+                    AddValueOp ->
+                        getFieldValueAsStringList old |> (::) str |> UrlListValue
+                    RemoveValueOp ->
+                        getFieldValueAsStringList old |> List.filter (\v -> v /= str) |> UrlListValue
+                    otherwise ->
+                        warnUnsupportedOp fieldOp old
+       
+        Just ChromaType ->
+            case run Coloring.parser str of
                 Ok chroma ->
                     ChromaValue chroma
 
                 Err msg ->
                     WarningMessage "The format for color is invalid"
+        
+        Just PixelDimensionType ->
+            TodoField
+
+        Just DimensionType ->
+            TodoField
+
+        Just (SingleRelation panelType) ->
+            TodoField
+
+        Just (SnatchType a) ->
+            TodoField
+
+        Nothing ->
+            WarningMessage "Could not infer the field type"
+
+clearOrWarn: FieldOperation -> FieldValue -> FieldValue
+clearOrWarn fieldOp old =
+    case fieldOp of
+        ClearOp ->
+            TodoField
+        otherwise ->
+            warnUnsupportedOp fieldOp old
+
+reshapeFieldValue : UISelector -> FieldOperation -> FieldValue -> FieldValue
+reshapeFieldValue selector fieldOp old =
+    case (Selecting.toFieldType selector) of
+        Just DateTimeType ->
+           clearOrWarn fieldOp old
+
+        Just  VersionType ->
+            clearOrWarn fieldOp old
+
+        Just LanguageType ->
+           clearOrWarn fieldOp old
+
+        Just (ListBoxType any) ->
+            clearOrWarn fieldOp old
+
+        Just  MediumLocalizedType ->
+            clearOrWarn fieldOp old
+
+        Just TextAreaLocalizedType ->
+           clearOrWarn fieldOp old
                     
         Just UrlListType ->
-            getFieldValueAsStringList old |> (::) value |> UrlListValue
+            clearOrWarn fieldOp old
 
-        Just  InterlocutorType ->
-            TodoField
+        Just ChromaType ->
+            clearOrWarn fieldOp old
 
-        Just CompositionType ->
-            TodoField
+        Just PixelDimensionType ->
+            clearOrWarn fieldOp old
 
-        Just ContributionType ->
-            TodoField
+        Just DimensionType ->
+            clearOrWarn fieldOp old
 
-        Just LayoutType ->
-            TodoField
+        Just (SingleRelation panelType) ->
+            clearOrWarn fieldOp old
 
-        Just TranscriptType ->
-            TodoField
-        
+        Just (SnatchType a) ->
+            clearOrWarn fieldOp old
+  
         Nothing ->
             WarningMessage "Could not infer the field type"
 
-reshapeFieldValue : AppContext.Model -> UISelector -> FieldValue -> FieldValue
-reshapeFieldValue appContext selector old =
-    case (Selecting.toFieldType selector) of
- 
-        Just  InterlocutorType ->
-            TodoField
-
-        Just CompositionType ->
-            TodoField
-
-        Just ContributionType ->
-            TodoField
-
-        Just LayoutType ->
-            TodoField
-
-        Just TranscriptType ->
-            TodoField
-
-        Just otherwise ->
-            WarningMessage "Reshape is not applicable"
-        
-        Nothing ->
-            WarningMessage "Could not infer the field type"

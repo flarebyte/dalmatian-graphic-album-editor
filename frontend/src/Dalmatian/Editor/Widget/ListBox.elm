@@ -2,6 +2,11 @@ module Dalmatian.Editor.Widget.ListBox exposing (ListBoxItem, create, toString, 
 
 import Dalmatian.Editor.Dialect.Separator as Separator
 
+-- Use case:
+--     one of
+--     many of
+--     sorted
+
 separator = "--->"
 
 type alias ListBoxItem =

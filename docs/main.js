@@ -4311,7 +4311,6 @@ function _Browser_load(url)
 	}));
 }
 var author$project$Dalmatian$Editor$Selecting$UnknownSelector = {$: 'UnknownSelector'};
-var author$project$Dalmatian$Editor$AppContext$reset = {counter: 1, selector: author$project$Dalmatian$Editor$Selecting$UnknownSelector};
 var elm$core$Maybe$Nothing = {$: 'Nothing'};
 var elm$core$Basics$EQ = {$: 'EQ'};
 var elm$core$Basics$LT = {$: 'LT'};
@@ -4393,7 +4392,7 @@ var elm$core$Set$toList = function (_n0) {
 	var dict = _n0.a;
 	return elm$core$Dict$keys(dict);
 };
-var author$project$Dalmatian$Editor$Applicative$reset = {album: _List_Nil, appContext: author$project$Dalmatian$Editor$AppContext$reset, languages: _List_Nil, panelValues: _List_Nil, tokenValue: elm$core$Maybe$Nothing};
+var author$project$Dalmatian$Editor$Applicative$reset = {album: _List_Nil, languages: _List_Nil, panelValues: _List_Nil, selector: author$project$Dalmatian$Editor$Selecting$UnknownSelector, snatch: elm$core$Maybe$Nothing};
 var author$project$Main$defaultModel = {applicative: author$project$Dalmatian$Editor$Applicative$reset, greeting: 'Hello Goodbye'};
 var elm$core$Basics$False = {$: 'False'};
 var elm$core$Basics$True = {$: 'True'};

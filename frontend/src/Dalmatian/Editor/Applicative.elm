@@ -1,6 +1,6 @@
 module Dalmatian.Editor.Applicative exposing (Model, reset, processUIEvent,
-    setAppContext
-    , asAppContextIn
+    setSelector
+    , asSelectorIn
     , setAlbum
     , asAlbumIn
     , setPanelValues
@@ -11,37 +11,38 @@ import Dalmatian.Editor.Persistence
     exposing
         ( StoreValue
         )
-import Dalmatian.Editor.Tokens.Token exposing (TokenValue)
 import Dalmatian.Editor.Dialect.LanguageIdentifier exposing (LanguageId)
-import Dalmatian.Editor.AppContext as AppContext
 import Dalmatian.Editor.AppEvent exposing (UIEvent(..))
+import Dalmatian.Editor.Selecting exposing (UISelector(..))
+import Dalmatian.Editor.Persistence as Persistence
+import Dalmatian.Editor.Snatching exposing (Snatch)
 
 type alias Model =
-    { appContext : AppContext.Model
+    { selector : UISelector
     , languages : List LanguageId
     , album : List StoreValue
     , panelValues : List StoreValue
-    , tokenValue : Maybe (TokenValue (List ( Int, String )))
+    , snatch : Maybe Snatch
     }
 
 reset: Model
 reset = { 
-    appContext = AppContext.reset
+    selector = UnknownSelector
     , languages = []
     , album = []
     , panelValues = []
-    , tokenValue= Nothing
+    , snatch= Nothing
     }
 
 -- set methods
 
-setAppContext: AppContext.Model -> Model -> Model
-setAppContext appContext model =
-    { model | appContext = appContext }
+setSelector: UISelector -> Model -> Model
+setSelector selector model =
+    { model | selector = selector }
 
-asAppContextIn: Model -> AppContext.Model -> Model
-asAppContextIn model appContext =
-    { model | appContext = appContext }
+asSelectorIn: Model -> UISelector -> Model
+asSelectorIn model selector =
+    { model | selector = selector }
 
 setAlbum: List StoreValue -> Model -> Model
 setAlbum album model =
@@ -59,6 +60,10 @@ asPanelValuesIn:  Model -> List StoreValue -> Model
 asPanelValuesIn model panelValues =
      { model | panelValues = panelValues }
 
+isPanelValid: Model -> Bool
+isPanelValid model =
+    model.panelValues |> List.all Persistence.isValid
+
 processUIEvent : UIEvent -> Model -> Model
 processUIEvent event model =
     case event of
@@ -75,13 +80,13 @@ processUIEvent event model =
             onSaveUI model
             
         OnUpdateCurrentField fieldOp str ->
-            onUpdateCurrentField fieldOp str model
+            onUpdateField model.selector fieldOp str model
 
         OnUpdateField selector fieldOp str ->
-            onUpdateField fieldOp str model
+            onUpdateField selector fieldOp str model
 
         OnReshapeCurrentField fieldOp ->
-            onReshapeCurrentField fieldOp model
+            onReshapeField model.selector fieldOp model
 
         OnReshapeField selector fieldOp ->
             onReshapeField selector fieldOp model           
@@ -90,23 +95,17 @@ processUIEvent event model =
 onNewUI selector model
     = model
 
-onLoadUI selector model
-    = model
+onLoadUI selector model = 
+    { model | panelValues = model.album |> List.filter (Persistence.isMatching selector)}
 
-onDeleteUI selector model
-    = model
+onDeleteUI selector model =
+    Persistence.delete selector model.panelValues |> asPanelValuesIn model
 
-onSaveUI model
-    = model
+onSaveUI model =
+   Persistence.replaceWith model.selector model.panelValues model.album |> asAlbumIn model
 
-onUpdateCurrentField fieldOp str model
-    = model
+onUpdateField selector fieldOp str model = 
+    Persistence.update selector fieldOp str model.panelValues |> asPanelValuesIn model
 
-onUpdateField fieldOp str model
-    = model
-
-onReshapeCurrentField fieldOp model
-    = model
-
-onReshapeField selector fieldOp model
-    = model
+onReshapeField selector fieldOp model =
+    model
